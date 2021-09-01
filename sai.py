@@ -743,9 +743,6 @@ class Window(Tk):
 
         
 
-
-
-
     #Creates self.displayFrame for selection of Salary or Wages Record
 
 
@@ -758,10 +755,38 @@ class Window(Tk):
             self.billing_method = 0
 
         def estimate_billing():
-            self.billing_method = 1
+            if self.billing_method == 0:
+                viewProductsInBill()
+                if (self.billingTotalAmount != 0):
+                    validate = messagebox.askokcancel("Billing on Process","Do you want to Clear Billing ? ")
+                    if (validate):
+                        self.productsInBill = {}
+                        self.billingTotalAmount = 0
+                        self.billingAmountLabel.config(text=self.billingTotalAmount)
+                        viewProductsInBill()
+                        self.billing_method = 1
+                        self.billtypelabel.config(text='ESTIMATE BILLING')
+                else:
+                    self.billing_method = 1
+                    self.billtypelabel.config(text='ESTIMATE BILLING')
         
         def vat_billing():
-            self.billing_method = 0
+            if self.billing_method ==1:
+                viewProductsInBill()
+                if (self.billingTotalAmount != 0):
+                    validate = messagebox.askokcancel("Billing on Process","Do you want to Clear Billing ? ")
+                    if (validate):
+                        self.productsInBill = {}
+                        self.billingTotalAmount = 0
+                        self.billingAmountLabel.config(text=self.billingTotalAmount)
+                        viewProductsInBill()
+                        self.billing_method = 0
+                        self.billtypelabel.config(text='VAT BILLING')
+                else:
+                    self.billing_method = 0
+                    self.billtypelabel.config(text='VAT BILLING')
+                
+
 
 
         buttonBg = "#284F9B"
@@ -792,6 +817,9 @@ class Window(Tk):
 
         self.displayFrame = Frame(tab,bg ="white")
         self.displayFrame.pack(fill = 'both')
+
+        self.billingtypeFrame = Frame(self.displayFrame,bg='white')
+        self.billingtypeFrame.pack(fill='x')
         
         self.mainBillingFrame =Frame(self.displayFrame,bg='white')
         self.mainBillingFrame.pack(side='left', fill='both', padx=20, pady=25, ipady=10)
@@ -799,6 +827,8 @@ class Window(Tk):
         self.billingButtonFrame = Frame(self.displayFrame, bg = 'white')
         self.billingButtonFrame.pack(side = 'left', fill = 'both', pady = 15,ipady=10)
         # self.billingButtonFrame.grid(column=1, row=0, sticky=NS)
+
+        
 
         self.billingSearchFrame=Frame(self.mainBillingFrame,bg='white')
         self.billingSearchFrame.pack(padx= 30)
@@ -1234,6 +1264,12 @@ class Window(Tk):
                 
         
         #Billing GUI starts here
+
+
+        #for billing name
+        self.billtypelabel = Label(self.billingtypeFrame, text="VAT BILLING",
+         bg='#FFFFFF', font=('Helvetica',30,'bold','underline'),fg ="#5A63F5", border=0 )
+        self.billtypelabel.pack(fill ="both",side="top")
 
         self.searchlabel = Label(self.billingSearchFrame, text=" Name", font=('Helvetica', 12,'bold'),bg='white')
         self.searchlabel.grid(column=0,row=1, padx = 15)
