@@ -758,7 +758,7 @@ class Window(Tk):
             if self.billing_method == 0:
                 viewProductsInBill()
                 if (self.billingTotalAmount != 0):
-                    validate = messagebox.askokcancel("Billing on Process","Do you want to Clear Billing ? ")
+                    validate = messagebox.askokcancel("Billing on Process","Do you want to swiitch to Estimate Billing ? ")
                     if (validate):
                         self.productsInBill = {}
                         self.billingTotalAmount = 0
@@ -774,7 +774,7 @@ class Window(Tk):
             if self.billing_method ==1:
                 viewProductsInBill()
                 if (self.billingTotalAmount != 0):
-                    validate = messagebox.askokcancel("Billing on Process","Do you want to Clear Billing ? ")
+                    validate = messagebox.askokcancel("Billing on Process","Do you want to swiitch to VAT Billing ? ")
                     if (validate):
                         self.productsInBill = {}
                         self.billingTotalAmount = 0
@@ -974,9 +974,6 @@ class Window(Tk):
                     phnNumEntry.bind('<KeyRelease>',validateContact)
                     btn = Button(top, text ="Enter", width = 10, command = saveBilltoDbs)
                     btn.grid(row = 2, column = 1, padx = 5, pady = 5)
-
-
-
 
 
 
