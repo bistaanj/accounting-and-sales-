@@ -57,6 +57,9 @@ class Window(Tk):
 
         self.settingsTab = ttk.Frame(tab_control)
         tab_control.add(self.settingsTab, text="App Settings")
+
+        self.customerTab = ttk.Frame(tab_control)
+        tab_control.add(self.customerTab, text="Customer Details")
  
 
         #Packs the Created Tabs in the Frame
@@ -73,6 +76,9 @@ class Window(Tk):
 
         #Creates Frame for Settings Tab
         self.navigationFrame_settings(self.settingsTab)
+
+        #Creates Frame for Customer Details
+        self.navigationFrame_customerDetails(self.customerTab)
 
 
 
@@ -1525,7 +1531,7 @@ class Window(Tk):
                     result = collection.find({key: {'$regex': searchValue, '$options': searchFilter}})
                     connection.close()
                     for x in result:
-                        example.append(x['Customer Name'] + ' ------  ' + x['Date'])
+                        example.append(x['Customer Name'] + ' ------  ' + x['Date'] + '------' +  x['Contact Number'])
                         self.view_productId.append(x['_id'])
                         
                     itemlistbox_view.insert(0, *example)
@@ -1635,6 +1641,10 @@ class Window(Tk):
         Treescrollbar.config(command=view_viewTree.yview )
         Treescrollbar.pack(side='left' , fill= 'y')
 
+        def searchSale():
+
+            pass
+
         def customerCopy():
             billIndex = itemlistbox_view.index(ANCHOR)
             billId = self.view_productId[billIndex]
@@ -1735,6 +1745,9 @@ class Window(Tk):
 
         prntBill = Button(self.buttonFrame, text = "Print Bill", command=customerCopy, width = 15,font = ('Helvetica', 15,'bold'))
         prntBill.pack(side = "top", pady = 10)
+
+       
+
 
         # sendBill = Button(self.buttonFrame, text = "Send Bill")
         # sendBill.pack(pady= 10 )
@@ -1895,6 +1908,104 @@ class Window(Tk):
             except TypeError:
                 pass
         displayContents()
+    
+    def navigationFrame_customerDetails(self, tab):
+        buttonBg = "#284F9B"
+        self.buttonFrame = Frame(tab, bg=buttonBg)
+        self.buttonFrame.pack(fill=Y, side="left")
+
+        self.belowFrame = Frame(tab, bg="#d1eded")
+        self.belowFrame.pack(fill=X, side="bottom")
+
+        # self.customerDisplay.destroy()
+        #Frame for left 
+        self.customerDisplay = Frame(tab, bg='#FFFFFF')
+        self.customerDisplay.pack(fill="both", side="left")
+
+        #Frame for right
+        self.customerBillDisplay = Frame(tab, bg='#FFFFFF')
+        self.customerBillDisplay.pack(fill="both", side="left")
+
+        #Top Frame inside Left Frame
+        self.customerDisplay_top = Frame(self.customerDisplay, bg = '#ffffff')
+        self.customerDisplay_top.pack(fill = 'both', padx= 20)
+
+        #Bottom Frame inside Left Frame
+        self.customerDisplay_dwn = Frame(self.customerDisplay, bg='#ffffff')
+        self.customerDisplay_dwn.pack(fill='both', padx=20, pady = 10)
+
+        self.statusLabel = Label(self.belowFrame, text="�Anuj Bista 2020")
+        self.statusLabel.pack()
+
+        
+        def customerHistory():
+
+            def searchCustomer():
+                name = ent_name.get()
+                number = ent_phone.get()
+                connection = pymongo.MongoClient("localhost", 27017)
+                database = connection['saiRecords']
+                collection = database['sales']
+                billList.delete(0, END)
+
+                name_list = []
+                result = collection.find({'Customer Name':{'$regex': name, '$options': 'i' } , 'Contact Number': number})
+                connection.close()
+                for x in result:
+                        name_list.append(
+                            x['Customer Name'] + ' ------  ' + '------' + x['Contact Number'] + '---' + 'Type')
+                        # self.view_productId.append(x['_id'])
+
+                billList.insert(0, *name_list)
+                
+            
+            lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', 17, 'bold'))
+            lbl_name.grid(row = 0, column = 0, pady=20)
+
+            ent_name = Entry(self.customerDisplay_top, font=("Helvetica", 15, 'bold'))
+            ent_name.grid(row=0,column=1)
+
+            lbl_phone = Label(self.customerDisplay_top, text="Contact Number",bg ='white', font=('Hevetica', 17, 'bold'))
+            lbl_phone.grid(row=1, column=0)
+
+            ent_phone = Entry(self.customerDisplay_top,
+                              font=("Helvetica", 15, 'bold'))
+            ent_phone.grid(row=1, column=1)
+
+            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 17,'bold'))
+            btn_search.grid(row=0, column= 2, rowspan=2, padx= 10)
+
+            lbl_BillDetails = Label(self.customerDisplay_dwn, text='Bill Records', font=('Comic Sans MS', 10, 'bold'))
+            lbl_BillDetails.grid(row=0, column=0, columnspan=3 )
+
+            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=30, width = 75)
+            billList.grid(row=1, column=0, pady=20)
+
+            viewScrollbar = Scrollbar(self.customerDisplay_dwn, orient=VERTICAL)
+            viewScrollbar.config(command=billList.yview)
+            viewScrollbar.grid(row=1, ipadx=5, column=5, sticky='ns')
+            
+
+
+        s_btn = ttk.Style()
+        s_btn.configure('TButton', height=3, width=20, border=0,
+                        background=buttonBg,
+                        font=("Helvetica", 14, 'bold'))
+        s_btn.map('TButton',
+                  foreground=[('disabled', 'yellow'),
+                              ('pressed', 'red'),
+                              ('active', '#5A63F5')],
+                  background=[('disabled', 'magenta'),
+                              ('pressed', '!focus', 'cyan'),
+                              ('active', 'green')],
+
+                  )
+
+        self.btn_details = ttk.Button(
+            self.buttonFrame, text="Customer History", style='TButton', command=customerHistory)
+        self.btn_details.grid(column=0, row=1, pady=10)
+
+        customerHistory()
 
 
 class AuthUser(Tk):
@@ -2021,8 +2132,8 @@ class AuthUser(Tk):
 
 
         
-authUser = AuthUser()
-authUser.mainloop()
-# window = Window()
-# window.mainloop()
+# authUser = AuthUser()
+# authUser.mainloop()
+window = Window()
+window.mainloop()
 
