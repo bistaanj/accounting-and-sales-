@@ -1957,6 +1957,7 @@ class Window(Tk):
                         # self.view_productId.append(x['_id'])
 
                 billList.insert(0, *name_list)
+            
                 
             
             lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', 17, 'bold'))
@@ -1984,6 +1985,12 @@ class Window(Tk):
             viewScrollbar = Scrollbar(self.customerDisplay_dwn, orient=VERTICAL)
             viewScrollbar.config(command=billList.yview)
             viewScrollbar.grid(row=1, ipadx=5, column=5, sticky='ns')
+
+            btn_dsp = Button(self.customerDisplay_dwn, text = 'Display', font=('Helvetica',15,'bold'))
+            btn_dsp.grid(row=2, column= 3)
+
+            #GUI for Right frame
+
             
 
 
@@ -2000,6 +2007,79 @@ class Window(Tk):
                               ('active', 'green')],
 
                   )
+        lbl = Label(self.customerBillDisplay, text="Bill Details", font=(
+            'Comic Snas MS ', 15, 'bold', 'underline'))
+        lbl.grid(row=0, column=0, columnspan=4)
+        #date label
+        Viewdatelabel = Label(
+            self.customerBillDisplay, text='Date : ', font=('Helvetica', 12))
+        Viewdatelabel.grid(row=1, column=0)
+
+        dateLabel = Label(self.customerBillDisplay, text='--/--/----',
+                          font=('Comic Sans MS', 15, 'bold'))
+        dateLabel.grid(row=1, column=1)
+
+        #custumer name label
+        Viewcustumername = Label(
+            self.customerBillDisplay, text='Customer Name: ', font=('Hevetica', 12))
+        Viewcustumername.grid(row=1, column=2)
+
+        customerNameLabel = Label(
+            self.customerBillDisplay, text='---------', font=('Comic Sans MS', 12, 'bold'))
+        customerNameLabel.grid(row=1, column=3)
+
+        ViewTime = Label(self.customerBillDisplay, text='Time:', font=('Hevetica', 12))
+        ViewTime.grid(row=2, column=0)
+
+        timeLabel = Label(self.customerBillDisplay, text='--:-- --',
+                          font=('Comic Snas MS', 12, 'bold'))
+        timeLabel.grid(row=2, column=1, padx=10)
+
+        helloatLabel = Label(
+            self.customerBillDisplay, text='Contact Number', font=('Hevetica', 12))
+        helloatLabel.grid(row=2, column=2)
+
+        helloat = Label(self.customerBillDisplay, text=' ----------- ',
+                        font=('Comic Sans MS', 10, 'bold'))
+        helloat.grid(row=2, column=3)
+
+        #Bill Total Labels
+        billTotal = Label(self.customerBillDisplay, text='Bill Total ',
+                          font=('Helvetica', 15, 'bold'))
+        billTotal.grid(row=3, column=1, padx=20)
+
+        billTotalLabel = Label(self.customerBillDisplay, text='------ /-',
+                               bg='#F2F81D', fg='#164ECF', font=('Helvetica', 15, 'bold'))
+        billTotalLabel.grid(row=3, column=2, pady = 10)
+
+        billFrame = Frame(self.customerBillDisplay)
+        billFrame.grid(row = 4, column = 0, columnspan=3)
+
+        view_viewTree = ttk.Treeview(
+            billFrame, height=10, style="mystyle.Treeview")
+
+        #Define Columns
+        view_viewTree['columns'] = (
+            'Product Name',  'Quantity', 'Sales Price', 'Product Total')
+        view_viewTree.column('#0', width=60, minwidth=25, anchor=CENTER)
+        view_viewTree.column('Product Name', width=200, anchor=W)
+        view_viewTree.column('Sales Price', width=100, anchor=CENTER)
+        view_viewTree.column('Quantity', width=120, anchor=CENTER)
+        view_viewTree.column('Product Total', width=150, anchor=CENTER)
+
+        #Create Headings
+        view_viewTree.heading('#0', text='S.N', anchor=CENTER)
+        view_viewTree.heading('Product Name', text='Product Name', anchor=W)
+        view_viewTree.heading('Sales Price', text='Sales Price', anchor=CENTER)
+        view_viewTree.heading('Quantity', text='Quantity', anchor=CENTER)
+        view_viewTree.heading(
+            'Product Total', text='Product Total', anchor=CENTER)
+        view_viewTree.pack(side='left', padx=5)
+        Treescrollbar = Scrollbar(billFrame, orient=VERTICAL)
+        Treescrollbar.config(command=view_viewTree.yview)
+        Treescrollbar.pack(side='left', fill='y')
+
+        ##Gui for Left Navigation Button
 
         self.btn_details = ttk.Button(
             self.buttonFrame, text="Customer History", style='TButton', command=customerHistory)
