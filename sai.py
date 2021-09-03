@@ -15,7 +15,7 @@ from PIL import ImageTk, Image
 from reportlab.pdfgen import canvas
 import webbrowser as wb
 import subprocess
-from win32api import GetSystemMetrics
+from win32api import GetSystemMetrics, WinExec
 
 
 
@@ -765,10 +765,17 @@ class Window(Tk):
                         self.billingAmountLabel.config(text=self.billingTotalAmount)
                         viewProductsInBill()
                         self.billing_method = 1
+                        templabel.grid(row= 1,column=6)
                         self.billtypelabel.config(text='ESTIMATE BILLING')
+                        checkbox.grid_forget()
                 else:
                     self.billing_method = 1
                     self.billtypelabel.config(text='ESTIMATE BILLING')
+                    checkbox.grid_forget()
+                    templabel.grid(row= 1,column=6)
+                    
+
+                    
         
         def vat_billing():
             if self.billing_method ==1:
@@ -782,9 +789,17 @@ class Window(Tk):
                         viewProductsInBill()
                         self.billing_method = 0
                         self.billtypelabel.config(text='VAT BILLING')
+                        checkbox.grid(row = 1,column=6)
+                        checkbox.deselect()
+                        templabel.grid_forget()
+
+                        
                 else:
                     self.billing_method = 0
                     self.billtypelabel.config(text='VAT BILLING')
+                    checkbox.grid(row=1,column=6)
+                    checkbox.deselect()                
+                    templabel.grid_forget()
                 
 
 
@@ -1262,6 +1277,16 @@ class Window(Tk):
         
         #Billing GUI starts here
 
+        def addvatprocess():
+            if (self.var1.get() == 1):
+                print('bill with vat')
+                billwithVAT = self.billingTotalAmount + 0.13*self.billingTotalAmount
+                print(billwithVAT)
+                self.billingAmountLabel.config(text=billwithVAT)
+            elif (self.var1.get() == 0):
+                print("Uncheck VAT")
+                self.billingAmountLabel.config(text=self.billingTotalAmount)
+
 
         #for billing name
         self.billtypelabel = Label(self.billingtypeFrame, text="VAT BILLING",
@@ -1274,7 +1299,7 @@ class Window(Tk):
         self.billingSearchEntry = Entry(self.billingSearchFrame,width=35,font=('Helvetica', 20,'bold'), bg='#f7eeee')
         self.billingSearchEntry.grid(column = 1 , row = 1, padx = 15)
         self.billingSearchEntry.bind('<KeyRelease>',displayProductOptions)
-        
+       
 
         #add button button
         self.searchButton = Button(self.billingSearchFrame, text="Add Product", font=(
@@ -1324,7 +1349,7 @@ class Window(Tk):
         viewTree.heading('Units', text='Units', anchor=CENTER)
         viewTree.heading('Sales Price', text='Price per unit', anchor=CENTER)
         viewTree.heading('Total', text='Total', anchor=CENTER)
-        viewTree.grid(row = 0,column = 0, pady=10,)
+        viewTree.grid(row = 0,column = 0,)
         
 
         #for scroll bar
@@ -1352,15 +1377,20 @@ class Window(Tk):
         amountLabel = font.Font(family = 'Helvetica', size = 22, weight = 'bold')
         amountTotal = font.Font(family='Helvetica', size=22, weight='bold') 
 
-        clearBilling = Button(self.billingButtonFrame, text="Clear Billing", bg="#f54949",cursor ='X_cursor',
+        clear_Billing = Button(self.billingButtonFrame, text="Clear Billing", bg="#f54949",cursor ='X_cursor',
                               width=10,  font=('Helvetica', 12, 'bold'), command=clearBilling)
-        clearBilling.grid(column=0, row=5, sticky="n",padx=10, pady=20, ipadx=8)
+        clear_Billing.grid(column=0, row=5, sticky="n",padx=10, pady=20, ipadx=8)
 
         applyDiscountToProduct = Button(self.billingButtonFrame, text="Apply Discounts", bg='#648EF1', fg='#FFFFFF', cursor='hand2',
                                         width=10,  font=('Helvetica', 12, 'bold'), command =applyDiscountProcess)
         applyDiscountToProduct.grid(column=0, row=6, sticky="n", padx=10, pady=20, ipadx=8)
 
 
+        self.var1 =IntVar()
+        checkbox = Checkbutton(self.amountFrame, text='Add VAT',width=8,height=1,font=('default',10),variable=self.var1, onvalue=1, offvalue=0, command=addvatprocess)
+        checkbox.grid(column=6)
+
+        templabel = Label(self.amountFrame,text='',font=('default',13),width=10,height = 1,bg='white')
        
         #total amount
         self.totalAmountLabel = Label(
