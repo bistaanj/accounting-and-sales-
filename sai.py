@@ -1949,14 +1949,18 @@ class Window(Tk):
                 billList.delete(0, END)
 
                 name_list = []
+                totalPurchase = 0
                 result = collection.find({'Customer Name':{'$regex': name, '$options': 'i' } , 'Contact Number': number})
                 connection.close()
                 for x in result:
+                        totalPurchase+=x['Grand Total']
                         name_list.append(
-                            x['Customer Name'] + ' ------  ' + '------' + x['Contact Number'] + '---' + 'Type')
+                            x['Customer Name'] +  '------' + x['Contact Number'] + '---' + 'Type')
                         # self.view_productId.append(x['_id'])
 
                 billList.insert(0, *name_list)
+                salesTotal.config(text = totalPurchase)
+
             
                 
             
@@ -1976,10 +1980,18 @@ class Window(Tk):
             btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 17,'bold'))
             btn_search.grid(row=0, column= 2, rowspan=2, padx= 10)
 
+            salesTotalLabel = Label(self.customerDisplay_top, bg='#ffffff', text='Total Purchase',
+                                    fg='#164ECF', font=('Helvetica', 15, 'bold'))
+            salesTotalLabel.grid(row=2, column=0, pady=10)
+
+            salesTotal = Label(self.customerDisplay_top, text='------ /-',
+                           bg='#F2F81D', fg='#164ECF', font=('Helvetica', 15, 'bold'))
+            salesTotal.grid(row=2, column=1, pady=10)
+
             lbl_BillDetails = Label(self.customerDisplay_dwn, text='Bill Records', font=('Comic Sans MS', 10, 'bold'))
             lbl_BillDetails.grid(row=0, column=0, columnspan=3 )
 
-            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=30, width = 75)
+            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=20, width = 50, font=('Helvetica', 12, 'bold'))
             billList.grid(row=1, column=0, pady=20)
 
             viewScrollbar = Scrollbar(self.customerDisplay_dwn, orient=VERTICAL)
@@ -2007,12 +2019,12 @@ class Window(Tk):
                               ('active', 'green')],
 
                   )
-        lbl = Label(self.customerBillDisplay, text="Bill Details", font=(
+        lbl = Label(self.customerBillDisplay, text="Bill Details", bg = '#ffffff', font=(
             'Comic Snas MS ', 15, 'bold', 'underline'))
         lbl.grid(row=0, column=0, columnspan=4)
         #date label
         Viewdatelabel = Label(
-            self.customerBillDisplay, text='Date : ', font=('Helvetica', 12))
+            self.customerBillDisplay, bg='#ffffff', text='Date : ', font=('Helvetica', 12))
         Viewdatelabel.grid(row=1, column=0)
 
         dateLabel = Label(self.customerBillDisplay, text='--/--/----',
@@ -2021,39 +2033,41 @@ class Window(Tk):
 
         #custumer name label
         Viewcustumername = Label(
-            self.customerBillDisplay, text='Customer Name: ', font=('Hevetica', 12))
-        Viewcustumername.grid(row=1, column=2)
+            self.customerBillDisplay, bg='#ffffff', text='Customer Name: ', font=('Hevetica', 12))
+        Viewcustumername.grid(row=3, column=0)
 
         customerNameLabel = Label(
-            self.customerBillDisplay, text='---------', font=('Comic Sans MS', 12, 'bold'))
-        customerNameLabel.grid(row=1, column=3)
+            self.customerBillDisplay, bg='#ffffff', text='---------', font=('Comic Sans MS', 12, 'bold'))
+        customerNameLabel.grid(row=3, column=1)
 
-        ViewTime = Label(self.customerBillDisplay, text='Time:', font=('Hevetica', 12))
+        ViewTime = Label(self.customerBillDisplay, bg = '#ffffff', text='Time:', font=('Hevetica', 12))
         ViewTime.grid(row=2, column=0)
 
-        timeLabel = Label(self.customerBillDisplay, text='--:-- --',
+        timeLabel = Label(self.customerBillDisplay, bg='#ffffff', text='--:-- --',
                           font=('Comic Snas MS', 12, 'bold'))
         timeLabel.grid(row=2, column=1, padx=10)
 
         helloatLabel = Label(
-            self.customerBillDisplay, text='Contact Number', font=('Hevetica', 12))
-        helloatLabel.grid(row=2, column=2)
+            self.customerBillDisplay, bg = '#ffffff', text='Contact Number', font=('Hevetica', 12))
+        helloatLabel.grid(row=4, column=0)
 
-        helloat = Label(self.customerBillDisplay, text=' ----------- ',
+        helloat = Label(self.customerBillDisplay, bg='#ffffff', text=' ----------- ',
                         font=('Comic Sans MS', 10, 'bold'))
-        helloat.grid(row=2, column=3)
+        helloat.grid(row=4, column=1)
 
         #Bill Total Labels
-        billTotal = Label(self.customerBillDisplay, text='Bill Total ',
+        billTotal = Label(self.customerBillDisplay, bg='#ffffff', text='Bill Total ',
                           font=('Helvetica', 15, 'bold'))
-        billTotal.grid(row=3, column=1, padx=20)
+        billTotal.grid(row=5, column=0, padx=20)
 
-        billTotalLabel = Label(self.customerBillDisplay, text='------ /-',
+        billTotalLabel = Label(self.customerBillDisplay,  text='------ /-',
                                bg='#F2F81D', fg='#164ECF', font=('Helvetica', 15, 'bold'))
-        billTotalLabel.grid(row=3, column=2, pady = 10)
+        billTotalLabel.grid(row=5, column=1, pady = 10)
+
+        
 
         billFrame = Frame(self.customerBillDisplay)
-        billFrame.grid(row = 4, column = 0, columnspan=3)
+        billFrame.grid(row = 7, column = 0, columnspan=3)
 
         view_viewTree = ttk.Treeview(
             billFrame, height=10, style="mystyle.Treeview")
@@ -2212,8 +2226,8 @@ class AuthUser(Tk):
 
 
         
-# authUser = AuthUser()
-# authUser.mainloop()
-window = Window()
-window.mainloop()
+authUser = AuthUser()
+authUser.mainloop()
+# window = Window()
+# window.mainloop()
 
