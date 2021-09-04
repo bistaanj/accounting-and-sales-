@@ -800,6 +800,8 @@ class Window(Tk):
                     checkbox.grid(row=1,column=6)
                     checkbox.deselect()                
                     templabel.grid_forget()
+            else:
+                checkbox.deselect()
                 
 
 
@@ -922,6 +924,8 @@ class Window(Tk):
 
                     # collection = db.sales
                     if self.billing_method == 0:
+                        if (self.var1.get() == 1):
+                            billDict['Grand Total'] = int(int(self.billingTotalAmount)+0.13*int(self.billingTotalAmount))
                         collection = database['sales']
                         print("bill saved to vat bill")
                     else:
@@ -1280,7 +1284,7 @@ class Window(Tk):
         def addvatprocess():
             if (self.var1.get() == 1):
                 print('bill with vat')
-                billwithVAT = self.billingTotalAmount + 0.13*self.billingTotalAmount
+                billwithVAT = int(self.billingTotalAmount + 0.13*self.billingTotalAmount)
                 print(billwithVAT)
                 self.billingAmountLabel.config(text=billwithVAT)
             elif (self.var1.get() == 0):
