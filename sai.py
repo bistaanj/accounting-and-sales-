@@ -15,6 +15,8 @@ from PIL import ImageTk, Image
 from reportlab.pdfgen import canvas
 import webbrowser as wb
 import subprocess
+from win32api import GetSystemMetrics, WinExec
+
 
 
 
@@ -29,6 +31,9 @@ class Window(Tk):
         self.title("Inventory and sales")
         self.iconbitmap('./res/dsk.ico')
         self.geometry('1366x768+0+0')
+        print("Width =", GetSystemMetrics(0))
+        print("Height =", GetSystemMetrics(1))
+        
         # self.maxsize(w,h)
         self.minsize(850,530)
         # self.maxsize(850,530)
@@ -744,9 +749,6 @@ class Window(Tk):
 
         
 
-
-
-
     #Creates self.displayFrame for selection of Salary or Wages Record
 
 
@@ -754,20 +756,100 @@ class Window(Tk):
 
     # creates frame and buttons inside the Billing tab's Navigation Button
     def navigationFrame_billing(self,tab):
+    
+        if 1:
+            self.billing_method = 0
+
+        def estimate_billing():
+            if self.billing_method == 0:
+                viewProductsInBill()
+                if (self.billingTotalAmount != 0):
+                    validate = messagebox.askokcancel("Billing on Process","Do you want to swiitch to Estimate Billing ? ")
+                    if (validate):
+                        self.productsInBill = {}
+                        self.billingTotalAmount = 0
+                        self.billingAmountLabel.config(text=self.billingTotalAmount)
+                        viewProductsInBill()
+                        self.billing_method = 1
+                        templabel.grid(row= 1,column=6)
+                        self.billtypelabel.config(text='ESTIMATE BILLING')
+                        checkbox.grid_forget()
+                else:
+                    self.billing_method = 1
+                    self.billtypelabel.config(text='ESTIMATE BILLING')
+                    checkbox.grid_forget()
+                    templabel.grid(row= 1,column=6)
+                    
+
+                    
+        
+        def vat_billing():
+            if self.billing_method ==1:
+                viewProductsInBill()
+                if (self.billingTotalAmount != 0):
+                    validate = messagebox.askokcancel("Billing on Process","Do you want to swiitch to VAT Billing ? ")
+                    if (validate):
+                        self.productsInBill = {}
+                        self.billingTotalAmount = 0
+                        self.billingAmountLabel.config(text=self.billingTotalAmount)
+                        viewProductsInBill()
+                        self.billing_method = 0
+                        self.billtypelabel.config(text='VAT BILLING')
+                        checkbox.grid(row = 1,column=6)
+                        checkbox.deselect()
+                        templabel.grid_forget()
+
+                        
+                else:
+                    self.billing_method = 0
+                    self.billtypelabel.config(text='VAT BILLING')
+                    checkbox.grid(row=1,column=6)
+                    checkbox.deselect()                
+                    templabel.grid_forget()
+                
+
+
+
+        buttonBg = "#284F9B"
+
+        self.buttonFrame = Frame(tab, bg=buttonBg)
+        self.buttonFrame.pack(side = LEFT,fill= Y)
+
+        s_btn = ttk.Style()
+        s_btn.configure('TButton', height=3, width=20,border=0,
+        background=buttonBg,
+        font=("Helvetica",14,'bold'))
+        s_btn.map('TButton',
+              foreground=[('disabled', 'yellow'),
+                          ('pressed', 'red'),
+                          ('active', '#5A63F5')],
+              background=[('disabled', 'magenta'),
+                          ('pressed', '!focus', 'cyan'),
+                          ('active', 'green')],
+              
+              )
+
+        self.btn_addProduct = ttk.Button(self.buttonFrame, text = "VAT Billing",style ='TButton', command = vat_billing)
+        self.btn_addProduct.grid(column = 0 , row = 1, pady = 10)
+
+        self.btn_update = ttk.Button(self.buttonFrame, text="Estimate Billing", style='TButton', command=estimate_billing)
+        self.btn_update.grid(column=0, row=2, pady=5)
+
+
         self.displayFrame = Frame(tab,bg ="white")
         self.displayFrame.pack(fill = 'both')
-        
-        self.bottomFrame = Frame(tab)
-        self.bottomFrame.pack(side='bottom')
-        self.statusLabel = Label(self.bottomFrame, text="� Anuj Bista 2020")
-        self.statusLabel.pack()
 
+        self.billingtypeFrame = Frame(self.displayFrame,bg='white')
+        self.billingtypeFrame.pack(fill='x')
+        
         self.mainBillingFrame =Frame(self.displayFrame,bg='white')
         self.mainBillingFrame.pack(side='left', fill='both', padx=20, pady=25, ipady=10)
 
         self.billingButtonFrame = Frame(self.displayFrame, bg = 'white')
         self.billingButtonFrame.pack(side = 'left', fill = 'both', pady = 15,ipady=10)
         # self.billingButtonFrame.grid(column=1, row=0, sticky=NS)
+
+        
 
         self.billingSearchFrame=Frame(self.mainBillingFrame,bg='white')
         self.billingSearchFrame.pack(padx= 30)
@@ -845,7 +927,12 @@ class Window(Tk):
                     billDict['Grand Total'] = int(self.billingTotalAmount)
 
                     # collection = db.sales
-                    collection = database['sales']
+                    if self.billing_method == 0:
+                        collection = database['sales']
+                        print("bill saved to vat bill")
+                    else:
+                        collection = database['estimate_sale']
+                        print("bill saved to estimate data set")
 
 
 
@@ -908,9 +995,6 @@ class Window(Tk):
                     phnNumEntry.bind('<KeyRelease>',validateContact)
                     btn = Button(top, text ="Enter", width = 10, command = saveBilltoDbs)
                     btn.grid(row = 2, column = 1, padx = 5, pady = 5)
-
-
-
 
 
 
@@ -1039,7 +1123,7 @@ class Window(Tk):
                 askQuantityEntry.focus()
                 askQuantityEntry.bind('<Return>', displayToBillView)
 
-                okBtn = Button(top, text="Add", padx=5,pady=10, width = 8,font=('Georgia', 10,'bold'), command=displayToBillView)
+                okBtn = Button(top, text="Sell", padx=5,pady=10, width = 8,font=('Georgia', 10,'bold'), command=displayToBillView)
                 okBtn.grid(row=3, column=0)
             except TypeError:
                 self.warnUser("Product Selection Required")
@@ -1193,8 +1277,27 @@ class Window(Tk):
             except IndexError:
                 self.warnUser("Product Selection Required")
 
+        def callback(event):
+            billingProcess()
+                
         
         #Billing GUI starts here
+
+        def addvatprocess():
+            if (self.var1.get() == 1):
+                print('bill with vat')
+                billwithVAT = self.billingTotalAmount + 0.13*self.billingTotalAmount
+                print(billwithVAT)
+                self.billingAmountLabel.config(text=billwithVAT)
+            elif (self.var1.get() == 0):
+                print("Uncheck VAT")
+                self.billingAmountLabel.config(text=self.billingTotalAmount)
+
+
+        #for billing name
+        self.billtypelabel = Label(self.billingtypeFrame, text="VAT BILLING",
+         bg='#FFFFFF', font=('Helvetica',30,'bold','underline'),fg ="#5A63F5", border=0 )
+        self.billtypelabel.pack(fill ="both",side="top")
 
         self.searchlabel = Label(self.billingSearchFrame, text=" Name", font=('Helvetica', 12,'bold'),bg='white')
         self.searchlabel.grid(column=0,row=1, padx = 15)
@@ -1202,6 +1305,7 @@ class Window(Tk):
         self.billingSearchEntry = Entry(self.billingSearchFrame,width=35,font=('Helvetica', 20,'bold'), bg='#f7eeee')
         self.billingSearchEntry.grid(column = 1 , row = 1, padx = 15)
         self.billingSearchEntry.bind('<KeyRelease>',displayProductOptions)
+       
 
         #add button button
         self.searchButton = Button(self.billingSearchFrame, text="Add Product", font=(
@@ -1212,6 +1316,8 @@ class Window(Tk):
         self.itemlistbox = Listbox(
             self.billingSearchFrame, width=80, height=5, bg="#e8eddf")
         self.itemlistbox.grid(column=1,row=2,columnspan=4,pady=0)
+        self.itemlistbox.bind("<<ListboxSelect>>", callback)
+        
 
 
         #for scroll bar
@@ -1222,7 +1328,7 @@ class Window(Tk):
        
         #treeview Styling 
         vtStyle = ttk.Style()
-        vtStyle.configure('Treeview.Heading', font=('Comic Sans MS', 16, 'bold'))
+        vtStyle.configure('Treeview.Heading', font=('Comic Sans MS', 12, 'bold'))
         treeStyle=ttk.Style()
 
         treeStyle.configure("mystyle.Treeview", highlightthickness=1, bd = 0,rowheight=25, font=('Georgia', 13))
@@ -1232,12 +1338,12 @@ class Window(Tk):
         viewTree = ttk.Treeview(self.billingFrame, height = 12, style="mystyle.Treeview")
         #Define Columns
         viewTree['columns']= ('Product Name','Quantity','Units', 'Sales Price','Total')
-        viewTree.column('#0', width = 60, minwidth = 20, anchor = CENTER)
-        viewTree.column('Product Name', width =500, anchor = 'w')
-        viewTree.column('Quantity', width = 150, anchor = CENTER)
-        viewTree.column('Units', width = 80, anchor = CENTER)
-        viewTree.column('Sales Price', width=150, anchor=CENTER)
-        viewTree.column('Total', width=150, anchor=CENTER)
+        viewTree.column('#0', width = 40, minwidth = 20, anchor = CENTER)
+        viewTree.column('Product Name', width =300, anchor = 'w')
+        viewTree.column('Quantity', width = 130, anchor = CENTER)
+        viewTree.column('Units', width = 60, anchor = CENTER)
+        viewTree.column('Sales Price', width=130, anchor=CENTER)
+        viewTree.column('Total', width=130, anchor=CENTER)
 
 
 
@@ -1249,7 +1355,7 @@ class Window(Tk):
         viewTree.heading('Units', text='Units', anchor=CENTER)
         viewTree.heading('Sales Price', text='Price per unit', anchor=CENTER)
         viewTree.heading('Total', text='Total', anchor=CENTER)
-        viewTree.grid(row = 0,column = 0, pady=10,)
+        viewTree.grid(row = 0,column = 0,)
         
 
         #for scroll bar
@@ -1277,15 +1383,20 @@ class Window(Tk):
         amountLabel = font.Font(family = 'Helvetica', size = 22, weight = 'bold')
         amountTotal = font.Font(family='Helvetica', size=22, weight='bold') 
 
-        clearBilling = Button(self.billingButtonFrame, text="Clear Billing", bg="#f54949",cursor ='X_cursor',
+        clear_Billing = Button(self.billingButtonFrame, text="Clear Billing", bg="#f54949",cursor ='X_cursor',
                               width=10,  font=('Helvetica', 12, 'bold'), command=clearBilling)
-        clearBilling.grid(column=0, row=5, sticky="n",padx=10, pady=20, ipadx=8)
+        clear_Billing.grid(column=0, row=5, sticky="n",padx=10, pady=20, ipadx=8)
 
         applyDiscountToProduct = Button(self.billingButtonFrame, text="Apply Discounts", bg='#648EF1', fg='#FFFFFF', cursor='hand2',
                                         width=10,  font=('Helvetica', 12, 'bold'), command =applyDiscountProcess)
         applyDiscountToProduct.grid(column=0, row=6, sticky="n", padx=10, pady=20, ipadx=8)
 
 
+        self.var1 =IntVar()
+        checkbox = Checkbutton(self.amountFrame, text='Add VAT',width=8,height=1,font=('default',10),variable=self.var1, onvalue=1, offvalue=0, command=addvatprocess)
+        checkbox.grid(column=6)
+
+        templabel = Label(self.amountFrame,text='',font=('default',13),width=10,height = 1,bg='white')
        
         #total amount
         self.totalAmountLabel = Label(
@@ -2108,8 +2219,10 @@ class AuthUser(Tk):
         self.title("Login")
         self.iconbitmap('./res/dsk.ico')
         self.geometry('600x600')
+
         self.minsize(500,400)
         self.maxsize(550,450)
+        
 
         displayFrame = Frame(self, bg='#ffffff')
         displayFrame.pack( fill='both')
@@ -2228,6 +2341,6 @@ class AuthUser(Tk):
         
 authUser = AuthUser()
 authUser.mainloop()
+
 # window = Window()
 # window.mainloop()
-
