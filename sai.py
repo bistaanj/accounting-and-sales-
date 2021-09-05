@@ -165,11 +165,6 @@ class Window(Tk):
         quitbtn.grid(column=0, row=6, pady=20)
 
 
-    
-
-
-
-
     def backupAndRecovery(self):
         self.displayFrame.destroy()
         self.displayFrame = Frame(self.inventory, bg='#FFFFFF')
@@ -765,14 +760,16 @@ class Window(Tk):
                         self.billingAmountLabel.config(text=self.billingTotalAmount)
                         viewProductsInBill()
                         self.billing_method = 1
-                        templabel.grid(row= 1,column=6)
+                        #templabel.grid(row= 1,column=6)
                         self.billtypelabel.config(text='ESTIMATE BILLING')
-                        checkbox.grid_forget()
+                        self.billingVatableAmountLabel.grid_forget()
+                        self.VatableAmountLabel.grid_forget()
                 else:
                     self.billing_method = 1
                     self.billtypelabel.config(text='ESTIMATE BILLING')
-                    checkbox.grid_forget()
-                    templabel.grid(row= 1,column=6)
+                    #templabel.grid(row= 1,column=6)
+                    self.billingVatableAmountLabel.grid_forget()
+                    self.VatableAmountLabel.grid_forget()
                     
 
                     
@@ -789,19 +786,20 @@ class Window(Tk):
                         viewProductsInBill()
                         self.billing_method = 0
                         self.billtypelabel.config(text='VAT BILLING')
-                        checkbox.grid(row = 1,column=6)
-                        checkbox.deselect()
-                        templabel.grid_forget()
+                        self.billingVatableAmountLabel.grid(row=1, column=1, sticky="n",  pady=0)
+                        self.VatableAmountLabel.grid(row=1, column=0, sticky="n",  pady=0)
+                        self.billingVatableAmountLabel.config(text = 0)
 
-                        
+                        #templabel.grid_forget()                     
                 else:
                     self.billing_method = 0
                     self.billtypelabel.config(text='VAT BILLING')
-                    checkbox.grid(row=1,column=6)
-                    checkbox.deselect()                
-                    templabel.grid_forget()
-            else:
-                checkbox.deselect()
+                    self.billingVatableAmountLabel.grid(row=1, column=1, sticky="n",  pady=0)
+                    self.VatableAmountLabel.grid(row=1, column=0, sticky="n",  pady=0)
+                    self.billingVatableAmountLabel.config(text = 0)
+                    
+                
+                    #templabel.grid_forget()
                 
 
 
@@ -920,17 +918,19 @@ class Window(Tk):
                     print(self.productsInBill)
                     billDict['Products']={}
                     billDict['Products']=new_dict
-                    billDict['Grand Total'] = int(self.billingTotalAmount)
-
-                    # collection = db.sales
                     if self.billing_method == 0:
-                        if (self.var1.get() == 1):
-                            billDict['Grand Total'] = int(int(self.billingTotalAmount)+0.13*int(self.billingTotalAmount))
+                        billDict['Vatable'] = int(self.billingTotalAmount)
+                        billDict['Grand Total'] = int(int(self.billingTotalAmount)+0.13*int(self.billingTotalAmount))
                         collection = database['sales']
                         print("bill saved to vat bill")
                     else:
+                        billDict['Grand Total'] = int(self.billingTotalAmount)
                         collection = database['estimate_sale']
                         print("bill saved to estimate data set")
+                    
+
+                    # collection = db.sales
+                    
 
 
 
@@ -1037,6 +1037,10 @@ class Window(Tk):
                             ))
                 self.billingTotalAmount += int(self.productsInBill[values]['Product Total'])
                 self.billingAmountLabel.config(text=self.billingTotalAmount)
+
+                if self.billing_method ==0:
+                    self.billingVatableAmountLabel.config(text = int(self.billingTotalAmount))
+                    self.billingAmountLabel.config(text = int(self.billingTotalAmount+0.13*self.billingTotalAmount))
                 
                 count += 1
             print('Products in Bill')
@@ -1073,6 +1077,7 @@ class Window(Tk):
                             self.productsInBill[productToBill['Product Name']]['Product Total'] = productTotal
                             viewProductsInBill()
                             top.destroy()
+
 
 
                 # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
@@ -1123,6 +1128,7 @@ class Window(Tk):
 
                 okBtn = Button(top, text="Sell", padx=5,pady=10, width = 8,font=('Georgia', 10,'bold'), command=displayToBillView)
                 okBtn.grid(row=3, column=0)
+                
             except TypeError:
                 self.warnUser("Product Selection Required")
                 # top.destroy()
@@ -1281,16 +1287,6 @@ class Window(Tk):
         
         #Billing GUI starts here
 
-        def addvatprocess():
-            if (self.var1.get() == 1):
-                print('bill with vat')
-                billwithVAT = int(self.billingTotalAmount + 0.13*self.billingTotalAmount)
-                print(billwithVAT)
-                self.billingAmountLabel.config(text=billwithVAT)
-            elif (self.var1.get() == 0):
-                print("Uncheck VAT")
-                self.billingAmountLabel.config(text=self.billingTotalAmount)
-
 
         #for billing name
         self.billtypelabel = Label(self.billingtypeFrame, text="VAT BILLING",
@@ -1333,7 +1329,7 @@ class Window(Tk):
         # treeStyle.layout('mystyle.Treeview',[('mystyle.Treeview.treearea',{'sticky':'nswe'})])
        
        #treeview 
-        viewTree = ttk.Treeview(self.billingFrame, height = 12, style="mystyle.Treeview")
+        viewTree = ttk.Treeview(self.billingFrame, height = 10, style="mystyle.Treeview")
         #Define Columns
         viewTree['columns']= ('Product Name','Quantity','Units', 'Sales Price','Total')
         viewTree.column('#0', width = 40, minwidth = 20, anchor = CENTER)
@@ -1389,21 +1385,24 @@ class Window(Tk):
                                         width=10,  font=('Helvetica', 12, 'bold'), command =applyDiscountProcess)
         applyDiscountToProduct.grid(column=0, row=6, sticky="n", padx=10, pady=20, ipadx=8)
 
+        #for vatable amount
+        self.VatableAmountLabel = Label(
+            self.amountFrame, width=10, text='Vatable        :', bg='#4A2727', font=amountLabel, fg='#FAF712')
+        self.VatableAmountLabel.grid(row = 1, column = 0,  pady =0, sticky = 'n')
 
-        self.var1 =IntVar()
-        checkbox = Checkbutton(self.amountFrame, text='Add VAT',width=8,height=1,font=('default',10),variable=self.var1, onvalue=1, offvalue=0, command=addvatprocess)
-        checkbox.grid(column=6)
-
-        templabel = Label(self.amountFrame,text='',font=('default',13),width=10,height = 1,bg='white')
+        self.billingVatableAmountLabel = Label(
+            self.amountFrame, width=12, text="", bg="#4A2727", font=amountTotal, fg='#FAF712')
+        self.billingVatableAmountLabel.grid(row=1, column=1, sticky="n",  pady=0)
+        self.billingVatableAmountLabel.config(text=self.billingTotalAmount)
        
         #total amount
         self.totalAmountLabel = Label(
-            self.amountFrame, width=10, text='Total :', bg='#4A2727', font=amountLabel, fg='#FAF712')
-        self.totalAmountLabel.grid(row = 2, column = 0,  pady =0, sticky = 'n')
+            self.amountFrame, width=10, text='Grand Total :', bg='#4A2727', font=amountLabel, fg='#FAF712')
+        self.totalAmountLabel.grid(row = 2, column = 0,  pady =2, sticky = 'n')
 
         self.billingAmountLabel = Label(
             self.amountFrame, width=12, text="", bg="#4A2727", font=amountTotal, fg='#FAF712')
-        self.billingAmountLabel.grid(row=2, column=1, sticky="n",  pady=0)
+        self.billingAmountLabel.grid(row=2, column=1, sticky="n",  pady=2)
         self.billingAmountLabel.config(text=self.billingTotalAmount)
 
         #print receipt
@@ -2141,5 +2140,5 @@ class AuthUser(Tk):
 authUser = AuthUser()
 authUser.mainloop()
 
-# window = Window()
-# window.mainloop()
+#window = Window()
+#window.mainloop()
