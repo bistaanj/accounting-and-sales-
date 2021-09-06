@@ -749,11 +749,11 @@ class Window(Tk):
         if 1:
             self.billing_method = 0
 
-        def estimate_billing():
+        def order():
             if self.billing_method == 0:
                 viewProductsInBill()
                 if (self.billingTotalAmount != 0):
-                    validate = messagebox.askokcancel("Billing on Process","Do you want to swiitch to Estimate Billing ? ")
+                    validate = messagebox.askokcancel("Billing on Process","Do you want to swiitch to Order ? ")
                     if (validate):
                         self.productsInBill = {}
                         self.billingTotalAmount = 0
@@ -761,12 +761,12 @@ class Window(Tk):
                         viewProductsInBill()
                         self.billing_method = 1
                         #templabel.grid(row= 1,column=6)
-                        self.billtypelabel.config(text='ESTIMATE BILLING')
+                        self.billtypelabel.config(text='Order')
                         self.billingVatableAmountLabel.grid_forget()
                         self.VatableAmountLabel.grid_forget()
                 else:
                     self.billing_method = 1
-                    self.billtypelabel.config(text='ESTIMATE BILLING')
+                    self.billtypelabel.config(text='Order')
                     #templabel.grid(row= 1,column=6)
                     self.billingVatableAmountLabel.grid_forget()
                     self.VatableAmountLabel.grid_forget()
@@ -826,7 +826,7 @@ class Window(Tk):
         self.btn_addProduct = ttk.Button(self.buttonFrame, text = "VAT Billing",style ='TButton', command = vat_billing)
         self.btn_addProduct.grid(column = 0 , row = 1, pady = 10)
 
-        self.btn_update = ttk.Button(self.buttonFrame, text="Estimate Billing", style='TButton', command=estimate_billing)
+        self.btn_update = ttk.Button(self.buttonFrame, text="Order", style='TButton', command=order)
         self.btn_update.grid(column=0, row=2, pady=5)
 
 
@@ -925,8 +925,8 @@ class Window(Tk):
                         print("bill saved to vat bill")
                     else:
                         billDict['Grand Total'] = int(self.billingTotalAmount)
-                        collection = database['estimate_sale']
-                        print("bill saved to estimate data set")
+                        collection = database['order']
+                        print("bill saved to order data set")
                     
 
                     # collection = db.sales
@@ -1374,8 +1374,8 @@ class Window(Tk):
                                      font=('Times New Roman', 15), bg='#648EF1', fg='#FFFFFF', border=0, cursor = 'hand2')
         saveBillButton.grid(column=0, row=4, sticky="n", padx=10, pady=10, ipadx=8)
 
-        amountLabel = font.Font(family = 'Helvetica', size = 22, weight = 'bold')
-        amountTotal = font.Font(family='Helvetica', size=22, weight='bold') 
+        #amountLabel = font.Font(family = 'Helvetica', size = 22, weight = 'bold')
+        #amountTotal = font.Font(family='Helvetica', size=22, weight='bold') 
 
         clear_Billing = Button(self.billingButtonFrame, text="Clear Billing", bg="#f54949",cursor ='X_cursor',
                               width=10,  font=('Helvetica', 12, 'bold'), command=clearBilling)
@@ -1387,21 +1387,21 @@ class Window(Tk):
 
         #for vatable amount
         self.VatableAmountLabel = Label(
-            self.amountFrame, width=10, text='Vatable        :', bg='#4A2727', font=amountLabel, fg='#FAF712')
+            self.amountFrame, width=10, text='Vatable        :', bg='#4A2727',font=('Helvetica',22,'bold'), fg='#FAF712')
         self.VatableAmountLabel.grid(row = 1, column = 0,  pady =0, sticky = 'n')
 
         self.billingVatableAmountLabel = Label(
-            self.amountFrame, width=12, text="", bg="#4A2727", font=amountTotal, fg='#FAF712')
+            self.amountFrame, width=12, text="", bg="#4A2727",font=('Helvetica',22,'bold'), fg='#FAF712')
         self.billingVatableAmountLabel.grid(row=1, column=1, sticky="n",  pady=0)
         self.billingVatableAmountLabel.config(text=self.billingTotalAmount)
        
         #total amount
         self.totalAmountLabel = Label(
-            self.amountFrame, width=10, text='Grand Total :', bg='#4A2727', font=amountLabel, fg='#FAF712')
+            self.amountFrame, width=10, text='Grand Total :',font=('Helvetica',22,'bold'), bg='#4A2727', fg='#FAF712')
         self.totalAmountLabel.grid(row = 2, column = 0,  pady =2, sticky = 'n')
 
         self.billingAmountLabel = Label(
-            self.amountFrame, width=12, text="", bg="#4A2727", font=amountTotal, fg='#FAF712')
+            self.amountFrame, width=12, text="", bg="#4A2727", font=('Helvetica',22,'bold'), fg='#FAF712')
         self.billingAmountLabel.grid(row=2, column=1, sticky="n",  pady=2)
         self.billingAmountLabel.config(text=self.billingTotalAmount)
 
