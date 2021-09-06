@@ -15,7 +15,7 @@ from PIL import ImageTk, Image
 from reportlab.pdfgen import canvas
 import webbrowser as wb
 import subprocess
-from win32api import GetSystemMetrics, WinExec
+# from win32api import GetSystemMetrics, WinExec
 
 
 
@@ -31,8 +31,8 @@ class Window(Tk):
         self.title("Inventory and sales")
         self.iconbitmap('./res/dsk.ico')
         self.geometry('1366x768+0+0')
-        print("Width =", GetSystemMetrics(0))
-        print("Height =", GetSystemMetrics(1))
+        # print("Width =", GetSystemMetrics(0))
+        # print("Height =", GetSystemMetrics(1))
         
         # self.maxsize(w,h)
         self.minsize(850,530)
@@ -1579,7 +1579,6 @@ class Window(Tk):
                 for vlue in (data['Products']):
                     print(vlue)
                     if "?" in vlue:
-                        print('inside  if statement')
                         processed_name=vlue.replace('?','.')
                     else:
                         print('inside else statement')
@@ -2051,7 +2050,43 @@ class Window(Tk):
         
         def customerHistory():
 
-            def searchCustomer():
+            def displayBill():
+                billIndex = billList.index(ANCHOR)
+                print(billIndex)
+                connection = pymongo.MongoClient("localhost", 27017)
+                database = connection['saiRecords']
+                collection = database['sales']
+                billId = self.view_productId[billIndex]
+                data = collection.find_one({'_id': ObjectId(billId)})
+                count = 0
+
+                dateLabel.config(text=data['Date'] )
+                customerNameLabel.config(text=data['Customer Name'])
+                billTotalLabel.config(text=data['Grand Total'])
+                timeLabel.config(text=data['Time'])
+
+
+
+                for rows in view_viewTree.get_children():
+                    view_viewTree.delete(rows)
+
+                for vlue in (data['Products']):
+                    print(vlue)
+                    if "?" in vlue:
+                        print('inside  if statement')
+                        processed_name = vlue.replace('?', '.')
+                    else:
+                        print('inside else statement')
+                        processed_name = vlue
+                    print(data['Products'][vlue]['iid'])
+                    print()
+                    view_viewTree.insert(parent='', index=END,
+                                         iid=(data['Products'][vlue]['iid']), text=(count+1), values=(processed_name,
+                                                                                                      data['Products'][vlue]['Quantity'],
+                                                                                                      data['Products'][vlue]['Sales Price'],
+                                                                                                      data['Products'][vlue]['Product Total']))
+                
+            def searchCustomer(event=''):
                 name = ent_name.get()
                 number = ent_phone.get()
                 connection = pymongo.MongoClient("localhost", 27017)
@@ -2060,14 +2095,16 @@ class Window(Tk):
                 billList.delete(0, END)
 
                 name_list = []
+                self.view_productId = []
                 totalPurchase = 0
                 result = collection.find({'Customer Name':{'$regex': name, '$options': 'i' } , 'Contact Number': number})
                 connection.close()
                 for x in result:
                         totalPurchase+=x['Grand Total']
                         name_list.append(
-                            x['Customer Name'] +  '------' + x['Contact Number'] + '---' + 'Type')
-                        # self.view_productId.append(x['_id'])
+                            x['Customer Name'] +  '------' + x['Date'] + '---' + 'Type')
+                        self.view_productId.append(x['_id'])
+                        
 
                 billList.insert(0, *name_list)
                 salesTotal.config(text = totalPurchase)
@@ -2087,6 +2124,7 @@ class Window(Tk):
             ent_phone = Entry(self.customerDisplay_top,
                               font=("Helvetica", 15, 'bold'))
             ent_phone.grid(row=1, column=1)
+            ent_phone.bind('<KeyRelease>', searchCustomer)
 
             btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 17,'bold'))
             btn_search.grid(row=0, column= 2, rowspan=2, padx= 10)
@@ -2109,8 +2147,8 @@ class Window(Tk):
             viewScrollbar.config(command=billList.yview)
             viewScrollbar.grid(row=1, ipadx=5, column=5, sticky='ns')
 
-            btn_dsp = Button(self.customerDisplay_dwn, text = 'Display', font=('Helvetica',15,'bold'))
-            btn_dsp.grid(row=2, column= 3)
+            btn_dsp = Button(self.customerDisplay_dwn, command = displayBill,  text = 'Display', font=('Helvetica',15,'bold'))
+            btn_dsp.grid(row=2, column= 1)
 
             #GUI for Right frame
 
@@ -2158,13 +2196,13 @@ class Window(Tk):
                           font=('Comic Snas MS', 12, 'bold'))
         timeLabel.grid(row=2, column=1, padx=10)
 
-        helloatLabel = Label(
-            self.customerBillDisplay, bg = '#ffffff', text='Contact Number', font=('Hevetica', 12))
-        helloatLabel.grid(row=4, column=0)
+        # helloatLabel = Label(
+        #     self.customerBillDisplay, bg = '#ffffff', text='Contact Number', font=('Hevetica', 12))
+        # helloatLabel.grid(row=4, column=0)
 
-        helloat = Label(self.customerBillDisplay, bg='#ffffff', text=' ----------- ',
-                        font=('Comic Sans MS', 10, 'bold'))
-        helloat.grid(row=4, column=1)
+        # helloat = Label(self.customerBillDisplay, bg='#ffffff', text=' ----------- ',
+        #                 font=('Comic Sans MS', 10, 'bold'))
+        # helloat.grid(row=4, column=1)
 
         #Bill Total Labels
         billTotal = Label(self.customerBillDisplay, bg='#ffffff', text='Bill Total ',
@@ -2339,8 +2377,8 @@ class AuthUser(Tk):
 
 
         
-authUser = AuthUser()
-authUser.mainloop()
+# authUser = AuthUser()
+# authUser.mainloop()
 
-# window = Window()
-# window.mainloop()
+window = Window()
+window.mainloop()
