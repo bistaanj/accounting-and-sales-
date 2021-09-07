@@ -62,6 +62,9 @@ class Window(Tk):
 
         self.settingsTab = ttk.Frame(tab_control)
         tab_control.add(self.settingsTab, text="App Settings")
+
+        self.customerTab = ttk.Frame(tab_control)
+        tab_control.add(self.customerTab, text="Customer Details")
  
 
         #Packs the Created Tabs in the Frame
@@ -78,6 +81,9 @@ class Window(Tk):
 
         #Creates Frame for Settings Tab
         self.navigationFrame_settings(self.settingsTab)
+
+        #Creates Frame for Customer Details
+        self.navigationFrame_customerDetails(self.customerTab)
 
 
 
@@ -1639,7 +1645,7 @@ class Window(Tk):
                     result = collection.find({key: {'$regex': searchValue, '$options': searchFilter}})
                     connection.close()
                     for x in result:
-                        example.append(x['Customer Name'] + ' ------  ' + x['Date'])
+                        example.append(x['Customer Name'] + ' ------  ' + x['Date'] + '------' +  x['Contact Number'])
                         self.view_productId.append(x['_id'])
                         
                     itemlistbox_view.insert(0, *example)
@@ -1749,6 +1755,10 @@ class Window(Tk):
         Treescrollbar.config(command=view_viewTree.yview )
         Treescrollbar.pack(side='left' , fill= 'y')
 
+        def searchSale():
+
+            pass
+
         def customerCopy():
             billIndex = itemlistbox_view.index(ANCHOR)
             billId = self.view_productId[billIndex]
@@ -1849,6 +1859,9 @@ class Window(Tk):
 
         prntBill = Button(self.buttonFrame, text = "Print Bill", command=customerCopy, width = 15,font = ('Helvetica', 15,'bold'))
         prntBill.pack(side = "top", pady = 10)
+
+       
+
 
         # sendBill = Button(self.buttonFrame, text = "Send Bill")
         # sendBill.pack(pady= 10 )
@@ -2009,6 +2022,198 @@ class Window(Tk):
             except TypeError:
                 pass
         displayContents()
+    
+    def navigationFrame_customerDetails(self, tab):
+        buttonBg = "#284F9B"
+        self.buttonFrame = Frame(tab, bg=buttonBg)
+        self.buttonFrame.pack(fill=Y, side="left")
+
+        self.belowFrame = Frame(tab, bg="#d1eded")
+        self.belowFrame.pack(fill=X, side="bottom")
+
+        # self.customerDisplay.destroy()
+        #Frame for left 
+        self.customerDisplay = Frame(tab, bg='#FFFFFF')
+        self.customerDisplay.pack(fill="both", side="left")
+
+        #Frame for right
+        self.customerBillDisplay = Frame(tab, bg='#FFFFFF')
+        self.customerBillDisplay.pack(fill="both", side="left")
+
+        #Top Frame inside Left Frame
+        self.customerDisplay_top = Frame(self.customerDisplay, bg = '#ffffff')
+        self.customerDisplay_top.pack(fill = 'both', padx= 20)
+
+        #Bottom Frame inside Left Frame
+        self.customerDisplay_dwn = Frame(self.customerDisplay, bg='#ffffff')
+        self.customerDisplay_dwn.pack(fill='both', padx=20, pady = 10)
+
+        self.statusLabel = Label(self.belowFrame, text="�Anuj Bista 2020")
+        self.statusLabel.pack()
+
+        
+        def customerHistory():
+
+            def searchCustomer():
+                name = ent_name.get()
+                number = ent_phone.get()
+                connection = pymongo.MongoClient("localhost", 27017)
+                database = connection['saiRecords']
+                collection = database['sales']
+                billList.delete(0, END)
+
+                name_list = []
+                totalPurchase = 0
+                result = collection.find({'Customer Name':{'$regex': name, '$options': 'i' } , 'Contact Number': number})
+                connection.close()
+                for x in result:
+                        totalPurchase+=x['Grand Total']
+                        name_list.append(
+                            x['Customer Name'] +  '------' + x['Contact Number'] + '---' + 'Type')
+                        # self.view_productId.append(x['_id'])
+
+                billList.insert(0, *name_list)
+                salesTotal.config(text = totalPurchase)
+
+            
+                
+            
+            lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', 17, 'bold'))
+            lbl_name.grid(row = 0, column = 0, pady=20)
+
+            ent_name = Entry(self.customerDisplay_top, font=("Helvetica", 15, 'bold'))
+            ent_name.grid(row=0,column=1)
+
+            lbl_phone = Label(self.customerDisplay_top, text="Contact Number",bg ='white', font=('Hevetica', 17, 'bold'))
+            lbl_phone.grid(row=1, column=0)
+
+            ent_phone = Entry(self.customerDisplay_top,
+                              font=("Helvetica", 15, 'bold'))
+            ent_phone.grid(row=1, column=1)
+
+            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 17,'bold'))
+            btn_search.grid(row=0, column= 2, rowspan=2, padx= 10)
+
+            salesTotalLabel = Label(self.customerDisplay_top, bg='#ffffff', text='Total Purchase',
+                                    fg='#164ECF', font=('Helvetica', 15, 'bold'))
+            salesTotalLabel.grid(row=2, column=0, pady=10)
+
+            salesTotal = Label(self.customerDisplay_top, text='------ /-',
+                           bg='#F2F81D', fg='#164ECF', font=('Helvetica', 15, 'bold'))
+            salesTotal.grid(row=2, column=1, pady=10)
+
+            lbl_BillDetails = Label(self.customerDisplay_dwn, text='Bill Records', font=('Comic Sans MS', 10, 'bold'))
+            lbl_BillDetails.grid(row=0, column=0, columnspan=3 )
+
+            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=20, width = 50, font=('Helvetica', 12, 'bold'))
+            billList.grid(row=1, column=0, pady=20)
+
+            viewScrollbar = Scrollbar(self.customerDisplay_dwn, orient=VERTICAL)
+            viewScrollbar.config(command=billList.yview)
+            viewScrollbar.grid(row=1, ipadx=5, column=5, sticky='ns')
+
+            btn_dsp = Button(self.customerDisplay_dwn, text = 'Display', font=('Helvetica',15,'bold'))
+            btn_dsp.grid(row=2, column= 3)
+
+            #GUI for Right frame
+
+            
+
+
+        s_btn = ttk.Style()
+        s_btn.configure('TButton', height=3, width=20, border=0,
+                        background=buttonBg,
+                        font=("Helvetica", 14, 'bold'))
+        s_btn.map('TButton',
+                  foreground=[('disabled', 'yellow'),
+                              ('pressed', 'red'),
+                              ('active', '#5A63F5')],
+                  background=[('disabled', 'magenta'),
+                              ('pressed', '!focus', 'cyan'),
+                              ('active', 'green')],
+
+                  )
+        lbl = Label(self.customerBillDisplay, text="Bill Details", bg = '#ffffff', font=(
+            'Comic Snas MS ', 15, 'bold', 'underline'))
+        lbl.grid(row=0, column=0, columnspan=4)
+        #date label
+        Viewdatelabel = Label(
+            self.customerBillDisplay, bg='#ffffff', text='Date : ', font=('Helvetica', 12))
+        Viewdatelabel.grid(row=1, column=0)
+
+        dateLabel = Label(self.customerBillDisplay, text='--/--/----',
+                          font=('Comic Sans MS', 15, 'bold'))
+        dateLabel.grid(row=1, column=1)
+
+        #custumer name label
+        Viewcustumername = Label(
+            self.customerBillDisplay, bg='#ffffff', text='Customer Name: ', font=('Hevetica', 12))
+        Viewcustumername.grid(row=3, column=0)
+
+        customerNameLabel = Label(
+            self.customerBillDisplay, bg='#ffffff', text='---------', font=('Comic Sans MS', 12, 'bold'))
+        customerNameLabel.grid(row=3, column=1)
+
+        ViewTime = Label(self.customerBillDisplay, bg = '#ffffff', text='Time:', font=('Hevetica', 12))
+        ViewTime.grid(row=2, column=0)
+
+        timeLabel = Label(self.customerBillDisplay, bg='#ffffff', text='--:-- --',
+                          font=('Comic Snas MS', 12, 'bold'))
+        timeLabel.grid(row=2, column=1, padx=10)
+
+        helloatLabel = Label(
+            self.customerBillDisplay, bg = '#ffffff', text='Contact Number', font=('Hevetica', 12))
+        helloatLabel.grid(row=4, column=0)
+
+        helloat = Label(self.customerBillDisplay, bg='#ffffff', text=' ----------- ',
+                        font=('Comic Sans MS', 10, 'bold'))
+        helloat.grid(row=4, column=1)
+
+        #Bill Total Labels
+        billTotal = Label(self.customerBillDisplay, bg='#ffffff', text='Bill Total ',
+                          font=('Helvetica', 15, 'bold'))
+        billTotal.grid(row=5, column=0, padx=20)
+
+        billTotalLabel = Label(self.customerBillDisplay,  text='------ /-',
+                               bg='#F2F81D', fg='#164ECF', font=('Helvetica', 15, 'bold'))
+        billTotalLabel.grid(row=5, column=1, pady = 10)
+
+        
+
+        billFrame = Frame(self.customerBillDisplay)
+        billFrame.grid(row = 7, column = 0, columnspan=3)
+
+        view_viewTree = ttk.Treeview(
+            billFrame, height=10, style="mystyle.Treeview")
+
+        #Define Columns
+        view_viewTree['columns'] = (
+            'Product Name',  'Quantity', 'Sales Price', 'Product Total')
+        view_viewTree.column('#0', width=60, minwidth=25, anchor=CENTER)
+        view_viewTree.column('Product Name', width=200, anchor=W)
+        view_viewTree.column('Sales Price', width=100, anchor=CENTER)
+        view_viewTree.column('Quantity', width=120, anchor=CENTER)
+        view_viewTree.column('Product Total', width=150, anchor=CENTER)
+
+        #Create Headings
+        view_viewTree.heading('#0', text='S.N', anchor=CENTER)
+        view_viewTree.heading('Product Name', text='Product Name', anchor=W)
+        view_viewTree.heading('Sales Price', text='Sales Price', anchor=CENTER)
+        view_viewTree.heading('Quantity', text='Quantity', anchor=CENTER)
+        view_viewTree.heading(
+            'Product Total', text='Product Total', anchor=CENTER)
+        view_viewTree.pack(side='left', padx=5)
+        Treescrollbar = Scrollbar(billFrame, orient=VERTICAL)
+        Treescrollbar.config(command=view_viewTree.yview)
+        Treescrollbar.pack(side='left', fill='y')
+
+        ##Gui for Left Navigation Button
+
+        self.btn_details = ttk.Button(
+            self.buttonFrame, text="Customer History", style='TButton', command=customerHistory)
+        self.btn_details.grid(column=0, row=1, pady=10)
+
+        customerHistory()
 
 
 class AuthUser(Tk):
