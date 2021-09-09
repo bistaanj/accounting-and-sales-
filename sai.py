@@ -2053,12 +2053,20 @@ class Window(Tk):
         
         def customerHistory():
 
+            
+
             def displayBill():
                 billIndex = billList.index(ANCHOR)
+                print("Getting The bill type")
+                billType=(self.name_list[billIndex])
                 print(billIndex)
+                if 'Sales' in billType:
+                    col = 'sales'
+                else:
+                    col = 'order'
                 connection = pymongo.MongoClient("localhost", 27017)
                 database = connection['saiRecords']
-                collection = database['sales']
+                collection = database[col]
                 billId = self.view_productId[billIndex]
                 data = collection.find_one({'_id': ObjectId(billId)})
                 count = 0
@@ -2095,21 +2103,34 @@ class Window(Tk):
                 connection = pymongo.MongoClient("localhost", 27017)
                 database = connection['saiRecords']
                 collection = database['sales']
+                print('Deleting the list in listbox.....')
                 billList.delete(0, END)
 
-                name_list = []
+                self.name_list = []
                 self.view_productId = []
                 totalPurchase = 0
                 result = collection.find({'Customer Name':{'$regex': name, '$options': 'i' } , 'Contact Number': number})
-                connection.close()
+                
                 for x in result:
                         totalPurchase+=x['Grand Total']
-                        name_list.append(
-                            x['Customer Name'] +  '------' + x['Date'] + '---' + 'Type')
+                        self.name_list.append(
+                            x['Customer Name'] +  '------' + x['Date'] + '---' + 'Sales')
                         self.view_productId.append(x['_id'])
+                collection = database['order']
+                result = collection.find(
+                    {'Customer Name': {'$regex': name, '$options': 'i'}, 'Contact Number': number})
+                connection.close()
+                for x in result:
+                    totalPurchase += x['Grand Total']
+                    self.name_list.append(
+                        x['Customer Name'] + '------' + x['Date'] + '---' + 'Order')
+                    self.view_productId.append(x['_id'])
                         
-
-                billList.insert(0, *name_list)
+                print('In the name list \n XXXXXXXX')
+                for x in self.name_list:
+                    print(x)
+                print('\n XXXXXXXXX')
+                billList.insert(0, *self.name_list)
                 salesTotal.config(text = totalPurchase)
 
             
