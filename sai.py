@@ -1083,7 +1083,6 @@ class Window(Tk):
                             self.productsInBill[productToBill['Product Name']]['Product Total'] = productTotal
                             viewProductsInBill()
                             top.destroy()
-                            self.can_visit = True
 
 
                 # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
