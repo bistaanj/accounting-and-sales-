@@ -2172,7 +2172,7 @@ class Window(Tk):
             viewScrollbar.grid(row=1, ipadx=5, column=5, sticky='ns')
 
             btn_dsp = Button(self.customerDisplay_dwn, command = displayBill,  text = 'Display', font=('Helvetica',15,'bold'))
-            btn_dsp.grid(row=2, column= 1)
+            btn_dsp.grid(row=2, column= 0)
 
             #GUI for Right frame
 
