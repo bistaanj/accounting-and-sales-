@@ -2136,42 +2136,42 @@ class Window(Tk):
             
                 
             
-            lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', 17, 'bold'))
+            lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', 14, 'bold'))
             lbl_name.grid(row = 0, column = 0, pady=20)
 
-            ent_name = Entry(self.customerDisplay_top, font=("Helvetica", 15, 'bold'))
+            ent_name = Entry(self.customerDisplay_top, font=("Helvetica", 12, 'bold'))
             ent_name.grid(row=0,column=1)
 
-            lbl_phone = Label(self.customerDisplay_top, text="Contact Number",bg ='white', font=('Hevetica', 17, 'bold'))
+            lbl_phone = Label(self.customerDisplay_top, text="Contact Number",bg ='white', font=('Hevetica', 14, 'bold'))
             lbl_phone.grid(row=1, column=0)
 
             ent_phone = Entry(self.customerDisplay_top,
-                              font=("Helvetica", 15, 'bold'))
+                              font=("Helvetica", 12, 'bold'))
             ent_phone.grid(row=1, column=1)
             ent_phone.bind('<KeyRelease>', searchCustomer)
 
-            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 17,'bold'))
+            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 14,'bold'))
             btn_search.grid(row=0, column= 2, rowspan=2, padx= 10)
 
             salesTotalLabel = Label(self.customerDisplay_top, bg='#ffffff', text='Total Purchase',
-                                    fg='#164ECF', font=('Helvetica', 15, 'bold'))
+                                    fg='#164ECF', font=('Helvetica', 12, 'bold'))
             salesTotalLabel.grid(row=2, column=0, pady=10)
 
             salesTotal = Label(self.customerDisplay_top, text='------ /-',
-                           bg='#F2F81D', fg='#164ECF', font=('Helvetica', 15, 'bold'))
+                           bg='#F2F81D', fg='#164ECF', font=('Helvetica', 12, 'bold'))
             salesTotal.grid(row=2, column=1, pady=10)
 
-            lbl_BillDetails = Label(self.customerDisplay_dwn, text='Bill Records', font=('Comic Sans MS', 10, 'bold'))
+            lbl_BillDetails = Label(self.customerDisplay_dwn, text='Bill Records', font=('Comic Sans MS', 7, 'bold'))
             lbl_BillDetails.grid(row=0, column=0, columnspan=3 )
 
-            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=20, width = 50, font=('Helvetica', 12, 'bold'))
+            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', height=14, width = 30, font=('Helvetica', 12, 'bold'))
             billList.grid(row=1, column=0, pady=20)
 
             viewScrollbar = Scrollbar(self.customerDisplay_dwn, orient=VERTICAL)
             viewScrollbar.config(command=billList.yview)
             viewScrollbar.grid(row=1, ipadx=5, column=5, sticky='ns')
 
-            btn_dsp = Button(self.customerDisplay_dwn, command = displayBill,  text = 'Display', font=('Helvetica',15,'bold'))
+            btn_dsp = Button(self.customerDisplay_dwn, command = displayBill,  text = 'Display', font=('Helvetica',12,'bold'))
             btn_dsp.grid(row=2, column= 0)
 
             #GUI for Right frame
@@ -2182,7 +2182,7 @@ class Window(Tk):
         s_btn = ttk.Style()
         s_btn.configure('TButton', height=3, width=20, border=0,
                         background=buttonBg,
-                        font=("Helvetica", 14, 'bold'))
+                        font=("Helvetica", 12, 'bold'))
         s_btn.map('TButton',
                   foreground=[('disabled', 'yellow'),
                               ('pressed', 'red'),
@@ -2401,8 +2401,8 @@ class AuthUser(Tk):
 
 
         
-authUser = AuthUser()
-authUser.mainloop()
+# authUser = AuthUser()
+# authUser.mainloop()
 
-# window = Window()
-# window.mainloop()
+window = Window()
+window.mainloop()
