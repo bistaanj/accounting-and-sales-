@@ -876,6 +876,9 @@ class Window(Tk):
                     self.productsInBill = {}
                     self.billingTotalAmount = 0
                     self.billingAmountLabel.config(text=self.billingTotalAmount)
+                    self.billingVatableAmountLabel.config(text = 0)
+                    
+                    
                     viewProductsInBill()
             except ValueError:
                 messagebox.showinfo("Invalid Request", "Billing process not initited yet.")
@@ -1052,17 +1055,14 @@ class Window(Tk):
             print('Products in Bill')
             print(self.productsInBill)
 
-
-
-
-        #New Add Product Funtion to add products in bill
+       #New Add Product Funtion to add products in bill
         def billingProcess():
-            try:
+            try:                  
                 def displayToBillView(event=''):
                     
                     requiredQuantity = float(askQuantityEntry.get())
                     top.destroy()
-                
+
                     # messagebox.showerror('Invalid Request', 'Quantity must be a number')
 
                     if (float(productToBill['Quantity']) < requiredQuantity or requiredQuantity < 1):
@@ -1083,7 +1083,7 @@ class Window(Tk):
                             self.productsInBill[productToBill['Product Name']]['Product Total'] = productTotal
                             viewProductsInBill()
                             top.destroy()
-
+                            self.can_visit = True
 
 
                 # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
@@ -1103,8 +1103,7 @@ class Window(Tk):
                 if (productToBill['Quantity']==0):
                     raise ValueError
 
-                # connection.close()
-
+                # connection.close()                    
                 top = Toplevel()
                 top.iconbitmap('./res/dsk.ico')
                 top.geometry("+%d+%d" % (400, 400))
@@ -1133,14 +1132,13 @@ class Window(Tk):
                 askQuantityEntry.bind('<Return>', displayToBillView)
 
                 okBtn = Button(top, text="Sell", padx=5,pady=10, width = 8,font=('Georgia', 10,'bold'), command=displayToBillView)
-                okBtn.grid(row=3, column=0)
-                
+                okBtn.grid(row=3, column=0)                
             except TypeError:
                 self.warnUser("Product Selection Required")
                 # top.destroy()
             except ValueError:
                 messagebox.showerror('Invalid Request', 'The selected product seems Out of Stock. Try adding the product in the inventory')
-
+        
         def billingEditProcess():
             def applyEdits(event=''):
 
@@ -1289,6 +1287,8 @@ class Window(Tk):
 
         def callback(event):
             billingProcess()
+            
+                
                 
         
         #Billing GUI starts here
@@ -2342,8 +2342,8 @@ class AuthUser(Tk):
 
 
         
-authUser = AuthUser()
-authUser.mainloop()
+#authUser = AuthUser()
+#authUser.mainloop()
 
-#window = Window()
-#window.mainloop()
+window = Window()
+window.mainloop()
