@@ -154,13 +154,17 @@ class Window(Tk):
             self.buttonFrame, text="View Inventory", style='TButton', command=self.viewInventory)
         self.btn_viewInventory.grid(column=0, row=3, pady=5)
 
+        self.btn_viewInventory = ttk.Button(
+            self.buttonFrame, text="View Orders", style='TButton', command=self.viewOrders)
+        self.btn_viewInventory.grid(column=0, row=4, pady=5)
+
         
         backupBtn = ttk.Button(
             self.buttonFrame, text="Back-up and Recovery", style='TButton', command=self.backupAndRecovery)
-        backupBtn.grid(column=0, row=4, pady=5)
+        backupBtn.grid(column=0, row=5, pady=5)
 
         backupBtn = ttk.Button(self.buttonFrame, text="Day End", style='TButton', command=self.dayEnd)
-        backupBtn.grid(column=0, row=5, pady=5)
+        backupBtn.grid(column=0, row=6, pady=5)
 
         def endSession():
             ans = messagebox.askyesno("Quit"," Any unsaved billing process will not be Saved. Are you sure ?")
@@ -625,7 +629,8 @@ class Window(Tk):
         phaseoutBtn = Button(self.btnFrame, text='Phase Out Product', command=phaseOutProducts)
         phaseoutBtn.grid(column=3, row=0, padx=10, pady=10, sticky="w")
 
-
+    def viewOrders(self):
+        pass
     # Displays the items in the inventory
     def viewInventory(self):
         self.displayFrame.destroy()
