@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from datetime import datetime
 import json
+import win32api
 # from firebase import firebase
 import pymongo
 from pymongo import MongoClient
@@ -31,6 +32,7 @@ class Window(Tk):
         self.title("Inventory and sales")
         self.iconbitmap('./res/dsk.ico')
         self.geometry('1366x768+0+0')
+
         # print("Width =", GetSystemMetrics(0))
         # print("Height =", GetSystemMetrics(1))
         
@@ -189,6 +191,7 @@ class Window(Tk):
             validate = messagebox.askyesno('Backup Request', "Do you want to initiate backup process?")
             if (validate):
                 top = Toplevel()
+                top.grab_set()
                 lbl = Label(top, text = " Backing up Database. Do not close the program ")
                 lbl.pack()
                 top.geometry("+%d+%d" % (400, 300))
@@ -261,8 +264,6 @@ class Window(Tk):
             
         
         
-
-
     #creates widget inside Inventory Label Frame. Tab-> Inventory
     def addNewRecord(self):
         self.getDateTime()
@@ -375,6 +376,7 @@ class Window(Tk):
 
         def displayUpdatePopup(displayText,cmd):
             self.UpdatePopUp = Toplevel()
+            self.UpdatePopUp.grab_set()
             self.UpdatePopUp.iconbitmap('./res/dsk.ico')
             self.UpdatePopUp.title("Update Values")
             
@@ -881,6 +883,9 @@ class Window(Tk):
                     self.productsInBill = {}
                     self.billingTotalAmount = 0
                     self.billingAmountLabel.config(text=self.billingTotalAmount)
+                    self.billingVatableAmountLabel.config(text = 0)
+                    
+                    
                     viewProductsInBill()
             except ValueError:
                 messagebox.showinfo("Invalid Request", "Billing process not initited yet.")
@@ -892,6 +897,7 @@ class Window(Tk):
                 try:
                     if ((askEntry.get()) == ""):
                         raise ValueError
+
                     
                     # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
                     # db = client.get_database('saiRecords')
@@ -985,18 +991,18 @@ class Window(Tk):
                         except ValueError:
                             phnNumEntry.delete(-1,'end')   
 
-                        
                     top = Toplevel()
+                    top.grab_set()
                     top.iconbitmap('./res/dsk.ico')
                     top.title("Enter Name")
                     top.geometry("+%d+%d" % ( 500, 500))
                     askLable = Label(top, text = 'Customer Name : ', font = ('Helvetica', 15, 'bold') )
                     askLable.grid(row = 0, column = 0, padx = 5, pady = 5)
-
+                    
                     askEntry = Entry(top, width=30, font=('Comic Sans MS', 15, 'bold'))
                     askEntry.grid(row = 0, column = 1, padx = 5, pady = 5)
                     askEntry.bind('<Return>',saveBilltoDbs)
-                    askEntry.focus()
+                    askEntry.focus_set()
                     phnNum = Label(top, text = 'Contact Number : ', font = ('Helvetica', 15, 'bold') )
                     phnNum.grid(row = 1, column = 0, padx = 5, pady = 5)
                     phnNumEntry = Entry(top, width=30, font=('Comic Sans MS', 15, 'bold'))
@@ -1004,6 +1010,7 @@ class Window(Tk):
                     phnNumEntry.bind('<KeyRelease>',validateContact)
                     btn = Button(top, text ="Enter", width = 10, command = saveBilltoDbs)
                     btn.grid(row = 2, column = 1, padx = 5, pady = 5)
+                    
 
 
 
@@ -1049,6 +1056,8 @@ class Window(Tk):
                 self.billingTotalAmount += int(self.productsInBill[values]['Product Total'])
                 self.billingAmountLabel.config(text=self.billingTotalAmount)
 
+                self.billingAmountLabel.focus()
+
                 if self.billing_method ==0:
                     self.billingVatableAmountLabel.config(text = int(self.billingTotalAmount))
                     self.billingAmountLabel.config(text = int(self.billingTotalAmount+0.13*self.billingTotalAmount))
@@ -1057,17 +1066,14 @@ class Window(Tk):
             print('Products in Bill')
             print(self.productsInBill)
 
-
-
-
-        #New Add Product Funtion to add products in bill
+       #New Add Product Funtion to add products in bill
         def billingProcess():
-            try:
+            try:                  
                 def displayToBillView(event=''):
                     
                     requiredQuantity = float(askQuantityEntry.get())
                     top.destroy()
-                
+
                     # messagebox.showerror('Invalid Request', 'Quantity must be a number')
 
                     if (float(productToBill['Quantity']) < requiredQuantity or requiredQuantity < 1):
@@ -1089,6 +1095,7 @@ class Window(Tk):
                             viewProductsInBill()
                             top.destroy()
 
+                            
 
 
                 # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
@@ -1108,9 +1115,9 @@ class Window(Tk):
                 if (productToBill['Quantity']==0):
                     raise ValueError
 
-                # connection.close()
-
+                # connection.close()                    
                 top = Toplevel()
+                top.grab_set()
                 top.iconbitmap('./res/dsk.ico')
                 top.geometry("+%d+%d" % (400, 400))
 
@@ -1128,7 +1135,6 @@ class Window(Tk):
                 salesPriceDsp.grid(row = 1, column=1)
 
                 
-
                 askQuantityLabel = Label(top, text="Enter Quantity", padx=5, pady=5, font=('Helvetica', 15, 'bold'))
                 askQuantityLabel.grid(row=2, column=0)
 
@@ -1139,13 +1145,12 @@ class Window(Tk):
 
                 okBtn = Button(top, text="Sell", padx=5,pady=10, width = 8,font=('Georgia', 10,'bold'), command=displayToBillView)
                 okBtn.grid(row=3, column=0)
-                
             except TypeError:
                 self.warnUser("Product Selection Required")
                 # top.destroy()
             except ValueError:
                 messagebox.showerror('Invalid Request', 'The selected product seems Out of Stock. Try adding the product in the inventory')
-
+        
         def billingEditProcess():
             def applyEdits(event=''):
 
@@ -1179,6 +1184,7 @@ class Window(Tk):
                 messagebox.showwarning("Warning", "Product Selection Required")
             else:
                 top = Toplevel()
+                top.grab_set()
                 top.geometry("+%d+%d" % (400, 400))
                 top.iconbitmap('./res/dsk.ico')
                 getProduct = (viewTree.item(iidEdit, 'values'))[0]
@@ -1257,6 +1263,7 @@ class Window(Tk):
                 messagebox.showwarning("Warning", "Product Selection Required")
             else:
                 top = Toplevel()
+                top.grab_set()
                 top.iconbitmap('./res/dsk.ico')
                 top.geometry("+%d+%d" % (300, 300))
                 discountSchemeLabel = Label(top, text="Discount Scheme", font=('Helvetica', 15, 'bold'))
@@ -1292,12 +1299,11 @@ class Window(Tk):
             except IndexError:
                 self.warnUser("Product Selection Required")
 
-        def callback(event):
-            billingProcess()
-                
         
-        #Billing GUI starts here
-
+        def callback(event = ''):
+            state_left = win32api.GetKeyState(0x01)
+            if state_left<0:
+                billingProcess()
 
         #for billing name
         self.billtypelabel = Label(self.billingtypeFrame, text="VAT BILLING",
@@ -1921,6 +1927,7 @@ class Window(Tk):
         #Displays pop-Up to get new Values
         def displayTop(displayText,cmd):
             self.UpdatePopUp = Toplevel()
+            self.UpdatePopUp.grab_set()
             self.UpdatePopUp.title("Update Values")
             
             self.UpdatePopUp.geometry("+%d+%d" % (400, 300))
@@ -2406,8 +2413,10 @@ class AuthUser(Tk):
 
 
         
-# authUser = AuthUser()
-# authUser.mainloop()
 
-window = Window()
-window.mainloop()
+authUser = AuthUser()
+authUser.mainloop()
+
+
+#window = Window()
+#window.mainloop()
