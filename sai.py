@@ -632,7 +632,26 @@ class Window(Tk):
         phaseoutBtn.grid(column=3, row=0, padx=10, pady=10, sticky="w")
 
     def viewOrders(self):
-        pass
+
+        self.displayFrame.destroy()
+        self.displayFrame = Frame(self.inventory)
+        self.displayFrame.pack(fill="both", side="left")
+
+        topFrame = Frame(self.displayFrame)
+        topFrame.pack(side = 'top')
+
+        PtypeCombo = ttk.Combobox(topFrame, background='#CED7D7', values=['By Customer', 'By Product'],font=('Comic Sans MS',10,'bold'),state = 'readonly')
+        PtypeCombo.current(0)
+        PtypeCombo.grid(column = 0, row = 0, padx = 5, pady = 10, sticky = "w")
+
+        searchBox = Entry(topFrame, font=('Hevitica', 13,'bold'), width=30)
+        searchBox.grid(column=1, row=0, padx = 10, pady=10)
+
+        btn_search = Button(topFrame, text='Search', bg = '#3399ff', fg = '#ffffff', border = 0,font=('Comic Sans MS', 13,'bold'))
+        btn_search.grid(row=0, column=2, padx = 10, pady = 10)
+
+
+        
     # Displays the items in the inventory
     def viewInventory(self):
         self.displayFrame.destroy()
@@ -1667,11 +1686,13 @@ class Window(Tk):
                 
             
         viewcombobox_search = ttk.Combobox(
-            self.searchLabelFrame, textvariable=4, width=12, font = ('Comic Sans MS', 15))
+            self.searchLabelFrame, textvariable=4, width=12, font = ('Comic Sans MS', 15), state = 'readonly')
         viewcombobox_search['values'] = (
             'Date',
             'Customer Name',
         )
+        viewcombobox_search.current(0)
+        
 
         viewcombobox_search.pack(side='left', padx=5)
         viewcombobox_search.bind('<<ComboboxSelected>>',setSearchTips)
@@ -2414,9 +2435,9 @@ class AuthUser(Tk):
 
         
 
-authUser = AuthUser()
-authUser.mainloop()
+# authUser = AuthUser()
+# authUser.mainloop()
 
 
-#window = Window()
-#window.mainloop()
+window = Window()
+window.mainloop()
