@@ -1291,8 +1291,8 @@ class Window(Tk):
                 self.billingAmountLabel.config(text=self.billingTotalAmount)
                 # self.productTotalLabel.config(text=self.billingTotalAmount)
                 if self.billing_method ==0:
-                        self.billingVatableAmountLabel.config(text = int(self.billingTotalAmount))
-                        self.billingAmountLabel.config(text = int(self.billingTotalAmount+0.13*self.billingTotalAmount)) 
+                    self.billingVatableAmountLabel.config(text = int(self.billingTotalAmount))
+                    self.billingAmountLabel.config(text = int(self.billingTotalAmount+0.13*self.billingTotalAmount)) 
             except IndexError:
                 self.warnUser("Product Selection Required")
 
