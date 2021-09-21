@@ -213,7 +213,7 @@ class Window(Tk):
         backup_btn = ttk.Button(self.displayFrame, text='Recover Database', command=restoreDatabase)
         backup_btn.pack(padx=50, pady=20, anchor='e')
         tips = Label(self.displayFrame,
-                     text='(Use this option to recover database)')
+        text='(Use this option to recover database)')
         tips.pack(padx=20)
 
 
@@ -1238,6 +1238,10 @@ class Window(Tk):
                         viewTree.set(iidEdit, column='Total',value=newTotal)
                         self.billingAmountLabel.config(text=self.billingTotalAmount)
                         
+                    if self.billing_method ==0:
+                        self.billingVatableAmountLabel.config(text = int(self.billingTotalAmount))
+                        self.billingAmountLabel.config(text = int(self.billingTotalAmount+0.13*self.billingTotalAmount))
+     
                     top.destroy()
                     messagebox.showinfo("Transaction Complete","Discount Applied")
 
