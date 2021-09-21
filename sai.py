@@ -16,7 +16,7 @@ from PIL import ImageTk, Image
 from reportlab.pdfgen import canvas
 import webbrowser as wb
 import subprocess
-# from win32api import GetSystemMetrics, WinExec
+from win32api import GetSystemMetrics, WinExec
 
 
 
@@ -32,10 +32,6 @@ class Window(Tk):
         self.title("Inventory and sales")
         self.iconbitmap('./res/dsk.ico')
         self.geometry('1366x768+0+0')
-
-        # print("Width =", GetSystemMetrics(0))
-        # print("Height =", GetSystemMetrics(1))
-        
         # self.maxsize(w,h)
         self.minsize(850,530)
         # self.maxsize(850,530)
@@ -221,7 +217,7 @@ class Window(Tk):
         backup_btn = ttk.Button(self.displayFrame, text='Recover Database', command=restoreDatabase)
         backup_btn.pack(padx=50, pady=20, anchor='e')
         tips = Label(self.displayFrame,
-                     text='(Use this option to recover database)')
+        text='(Use this option to recover database)')
         tips.pack(padx=20)
 
 
@@ -1076,7 +1072,7 @@ class Window(Tk):
                 self.billingAmountLabel.config(text=self.billingTotalAmount)
 
                 self.billingAmountLabel.focus()
-
+                
                 if self.billing_method ==0:
                     self.billingVatableAmountLabel.config(text = int(self.billingTotalAmount))
                     self.billingAmountLabel.config(text = int(self.billingTotalAmount+0.13*self.billingTotalAmount))
@@ -1115,7 +1111,6 @@ class Window(Tk):
                             top.destroy()
 
                             
-
 
                 # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
                 # db = client.get_database('saiRecords')
@@ -1164,6 +1159,7 @@ class Window(Tk):
 
                 okBtn = Button(top, text="Sell", padx=5,pady=10, width = 8,font=('Georgia', 10,'bold'), command=displayToBillView)
                 okBtn.grid(row=3, column=0)
+
             except TypeError:
                 self.warnUser("Product Selection Required")
                 # top.destroy()
@@ -1266,6 +1262,10 @@ class Window(Tk):
                         viewTree.set(iidEdit, column='Total',value=newTotal)
                         self.billingAmountLabel.config(text=self.billingTotalAmount)
                         
+                    if self.billing_method ==0:
+                        self.billingVatableAmountLabel.config(text = int(self.billingTotalAmount))
+                        self.billingAmountLabel.config(text = int(self.billingTotalAmount+0.13*self.billingTotalAmount))
+     
                     top.destroy()
                     messagebox.showinfo("Transaction Complete","Discount Applied")
 
@@ -1323,6 +1323,9 @@ class Window(Tk):
             state_left = win32api.GetKeyState(0x01)
             if state_left<0:
                 billingProcess()
+
+        #Billing GUI starts here
+
 
         #for billing name
         self.billtypelabel = Label(self.billingtypeFrame, text="VAT BILLING",
@@ -1612,6 +1615,7 @@ class Window(Tk):
                 for vlue in (data['Products']):
                     print(vlue)
                     if "?" in vlue:
+                        print('inside  if statement')
                         processed_name=vlue.replace('?','.')
                     else:
                         print('inside else statement')
@@ -2086,126 +2090,66 @@ class Window(Tk):
         
         def customerHistory():
 
-            
-
-            def displayBill():
-                billIndex = billList.index(ANCHOR)
-                print("Getting The bill type")
-                billType=(self.name_list[billIndex])
-                print(billIndex)
-                if 'Sales' in billType:
-                    col = 'sales'
-                else:
-                    col = 'order'
-                connection = pymongo.MongoClient("localhost", 27017)
-                database = connection['saiRecords']
-                collection = database[col]
-                billId = self.view_productId[billIndex]
-                data = collection.find_one({'_id': ObjectId(billId)})
-                count = 0
-
-                dateLabel.config(text=data['Date'] )
-                customerNameLabel.config(text=data['Customer Name'])
-                billTotalLabel.config(text=data['Grand Total'])
-                timeLabel.config(text=data['Time'])
-
-
-
-                for rows in view_viewTree.get_children():
-                    view_viewTree.delete(rows)
-
-                for vlue in (data['Products']):
-                    print(vlue)
-                    if "?" in vlue:
-                        print('inside  if statement')
-                        processed_name = vlue.replace('?', '.')
-                    else:
-                        print('inside else statement')
-                        processed_name = vlue
-                    print(data['Products'][vlue]['iid'])
-                    print()
-                    view_viewTree.insert(parent='', index=END,
-                                         iid=(data['Products'][vlue]['iid']), text=(count+1), values=(processed_name,
-                                                                                                      data['Products'][vlue]['Quantity'],
-                                                                                                      data['Products'][vlue]['Sales Price'],
-                                                                                                      data['Products'][vlue]['Product Total']))
-                
-            def searchCustomer(event=''):
+            def searchCustomer():
                 name = ent_name.get()
                 number = ent_phone.get()
                 connection = pymongo.MongoClient("localhost", 27017)
                 database = connection['saiRecords']
                 collection = database['sales']
-                print('Deleting the list in listbox.....')
                 billList.delete(0, END)
 
-                self.name_list = []
-                self.view_productId = []
+                name_list = []
                 totalPurchase = 0
                 result = collection.find({'Customer Name':{'$regex': name, '$options': 'i' } , 'Contact Number': number})
-                
-                for x in result:
-                        totalPurchase+=x['Grand Total']
-                        self.name_list.append(
-                            x['Customer Name'] +  '------' + x['Date'] + '---' + 'Sales')
-                        self.view_productId.append(x['_id'])
-                collection = database['order']
-                result = collection.find(
-                    {'Customer Name': {'$regex': name, '$options': 'i'}, 'Contact Number': number})
                 connection.close()
                 for x in result:
-                    totalPurchase += x['Grand Total']
-                    self.name_list.append(
-                        x['Customer Name'] + '------' + x['Date'] + '---' + 'Order')
-                    self.view_productId.append(x['_id'])
-                        
-                print('In the name list \n XXXXXXXX')
-                for x in self.name_list:
-                    print(x)
-                print('\n XXXXXXXXX')
-                billList.insert(0, *self.name_list)
+                        totalPurchase+=x['Grand Total']
+                        name_list.append(
+                            x['Customer Name'] +  '------' + x['Contact Number'] + '---' + 'Type')
+                        # self.view_productId.append(x['_id'])
+
+                billList.insert(0, *name_list)
                 salesTotal.config(text = totalPurchase)
 
             
                 
             
-            lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', 14, 'bold'))
+            lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', 17, 'bold'))
             lbl_name.grid(row = 0, column = 0, pady=20)
 
-            ent_name = Entry(self.customerDisplay_top, font=("Helvetica", 12, 'bold'))
+            ent_name = Entry(self.customerDisplay_top, font=("Helvetica", 15, 'bold'))
             ent_name.grid(row=0,column=1)
 
-            lbl_phone = Label(self.customerDisplay_top, text="Contact Number",bg ='white', font=('Hevetica', 14, 'bold'))
+            lbl_phone = Label(self.customerDisplay_top, text="Contact Number",bg ='white', font=('Hevetica', 17, 'bold'))
             lbl_phone.grid(row=1, column=0)
 
             ent_phone = Entry(self.customerDisplay_top,
-                              font=("Helvetica", 12, 'bold'))
+                              font=("Helvetica", 15, 'bold'))
             ent_phone.grid(row=1, column=1)
-            ent_phone.bind('<KeyRelease>', searchCustomer)
 
-            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 14,'bold'))
+            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 17,'bold'))
             btn_search.grid(row=0, column= 2, rowspan=2, padx= 10)
 
             salesTotalLabel = Label(self.customerDisplay_top, bg='#ffffff', text='Total Purchase',
-                                    fg='#164ECF', font=('Helvetica', 12, 'bold'))
+                                    fg='#164ECF', font=('Helvetica', 15, 'bold'))
             salesTotalLabel.grid(row=2, column=0, pady=10)
 
             salesTotal = Label(self.customerDisplay_top, text='------ /-',
-                           bg='#F2F81D', fg='#164ECF', font=('Helvetica', 12, 'bold'))
+                           bg='#F2F81D', fg='#164ECF', font=('Helvetica', 15, 'bold'))
             salesTotal.grid(row=2, column=1, pady=10)
 
-            lbl_BillDetails = Label(self.customerDisplay_dwn, text='Bill Records', font=('Comic Sans MS', 7, 'bold'))
+            lbl_BillDetails = Label(self.customerDisplay_dwn, text='Bill Records', font=('Comic Sans MS', 10, 'bold'))
             lbl_BillDetails.grid(row=0, column=0, columnspan=3 )
 
-            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', height=14, width = 30, font=('Helvetica', 12, 'bold'))
+            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=20, width = 50, font=('Helvetica', 12, 'bold'))
             billList.grid(row=1, column=0, pady=20)
 
             viewScrollbar = Scrollbar(self.customerDisplay_dwn, orient=VERTICAL)
             viewScrollbar.config(command=billList.yview)
             viewScrollbar.grid(row=1, ipadx=5, column=5, sticky='ns')
 
-            btn_dsp = Button(self.customerDisplay_dwn, command = displayBill,  text = 'Display', font=('Helvetica',12,'bold'))
-            btn_dsp.grid(row=2, column= 0)
+            btn_dsp = Button(self.customerDisplay_dwn, text = 'Display', font=('Helvetica',15,'bold'))
+            btn_dsp.grid(row=2, column= 3)
 
             #GUI for Right frame
 
@@ -2215,7 +2159,7 @@ class Window(Tk):
         s_btn = ttk.Style()
         s_btn.configure('TButton', height=3, width=20, border=0,
                         background=buttonBg,
-                        font=("Helvetica", 12, 'bold'))
+                        font=("Helvetica", 14, 'bold'))
         s_btn.map('TButton',
                   foreground=[('disabled', 'yellow'),
                               ('pressed', 'red'),
@@ -2253,13 +2197,13 @@ class Window(Tk):
                           font=('Comic Snas MS', 12, 'bold'))
         timeLabel.grid(row=2, column=1, padx=10)
 
-        # helloatLabel = Label(
-        #     self.customerBillDisplay, bg = '#ffffff', text='Contact Number', font=('Hevetica', 12))
-        # helloatLabel.grid(row=4, column=0)
+        helloatLabel = Label(
+            self.customerBillDisplay, bg = '#ffffff', text='Contact Number', font=('Hevetica', 12))
+        helloatLabel.grid(row=4, column=0)
 
-        # helloat = Label(self.customerBillDisplay, bg='#ffffff', text=' ----------- ',
-        #                 font=('Comic Sans MS', 10, 'bold'))
-        # helloat.grid(row=4, column=1)
+        helloat = Label(self.customerBillDisplay, bg='#ffffff', text=' ----------- ',
+                        font=('Comic Sans MS', 10, 'bold'))
+        helloat.grid(row=4, column=1)
 
         #Bill Total Labels
         billTotal = Label(self.customerBillDisplay, bg='#ffffff', text='Bill Total ',
@@ -2414,7 +2358,7 @@ class AuthUser(Tk):
             time = time
             validate = bool(0)
             validate = messagebox.askyesno(
-                'Conformation Required', 'D you want to send your password to the registered email address? ')
+                'Conformation Required', 'Do you want to send your password to the registered email address? ')
             if(validate):
                 receiver_email = self.accessCred['receiver_email']
                 password = self.accessCred['sender_password']
@@ -2434,10 +2378,8 @@ class AuthUser(Tk):
 
 
         
-
-# authUser = AuthUser()
-# authUser.mainloop()
-
+#authUser = AuthUser()
+#authUser.mainloop()
 
 window = Window()
 window.mainloop()
