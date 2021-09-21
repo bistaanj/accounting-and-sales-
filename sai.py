@@ -648,7 +648,7 @@ class Window(Tk):
         searchBox.grid(column=1, row=0, padx = 10, pady=10)
 
         btn_search = Button(topFrame, text='Search', bg = '#3399ff', fg = '#ffffff', border = 0,font=('Comic Sans MS', 13,'bold'))
-        btn_search.grid(row=0, column=2, padx = 10, pady = 10)
+        btn_search.grid(row=0, column=2, padx = 11, pady = 10)
 
 
         
