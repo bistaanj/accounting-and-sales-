@@ -152,13 +152,17 @@ class Window(Tk):
             self.buttonFrame, text="View Inventory", style='TButton', command=self.viewInventory)
         self.btn_viewInventory.grid(column=0, row=3, pady=5)
 
+        self.btn_viewInventory = ttk.Button(
+            self.buttonFrame, text="View Orders", style='TButton', command=self.viewOrders)
+        self.btn_viewInventory.grid(column=0, row=4, pady=5)
+
         
         backupBtn = ttk.Button(
             self.buttonFrame, text="Back-up and Recovery", style='TButton', command=self.backupAndRecovery)
-        backupBtn.grid(column=0, row=4, pady=5)
+        backupBtn.grid(column=0, row=5, pady=5)
 
         backupBtn = ttk.Button(self.buttonFrame, text="Day End", style='TButton', command=self.dayEnd)
-        backupBtn.grid(column=0, row=5, pady=5)
+        backupBtn.grid(column=0, row=6, pady=5)
 
         def endSession():
             ans = messagebox.askyesno("Quit"," Any unsaved billing process will not be Saved. Are you sure ?")
@@ -623,7 +627,27 @@ class Window(Tk):
         phaseoutBtn = Button(self.btnFrame, text='Phase Out Product', command=phaseOutProducts)
         phaseoutBtn.grid(column=3, row=0, padx=10, pady=10, sticky="w")
 
+    def viewOrders(self):
 
+        self.displayFrame.destroy()
+        self.displayFrame = Frame(self.inventory)
+        self.displayFrame.pack(fill="both", side="left")
+
+        topFrame = Frame(self.displayFrame)
+        topFrame.pack(side = 'top')
+
+        PtypeCombo = ttk.Combobox(topFrame, background='#CED7D7', values=['By Customer', 'By Product'],font=('Comic Sans MS',10,'bold'),state = 'readonly')
+        PtypeCombo.current(0)
+        PtypeCombo.grid(column = 0, row = 0, padx = 5, pady = 10, sticky = "w")
+
+        searchBox = Entry(topFrame, font=('Hevitica', 13,'bold'), width=30)
+        searchBox.grid(column=1, row=0, padx = 10, pady=10)
+
+        btn_search = Button(topFrame, text='Search', bg = '#3399ff', fg = '#ffffff', border = 0,font=('Comic Sans MS', 13,'bold'))
+        btn_search.grid(row=0, column=2, padx = 10, pady = 10)
+
+
+        
     # Displays the items in the inventory
     def viewInventory(self):
         self.displayFrame.destroy()
@@ -1668,11 +1692,13 @@ class Window(Tk):
                 
             
         viewcombobox_search = ttk.Combobox(
-            self.searchLabelFrame, textvariable=4, width=12, font = ('Comic Sans MS', 15))
+            self.searchLabelFrame, textvariable=4, width=12, font = ('Comic Sans MS', 15), state = 'readonly')
         viewcombobox_search['values'] = (
             'Date',
             'Customer Name',
         )
+        viewcombobox_search.current(0)
+        
 
         viewcombobox_search.pack(side='left', padx=5)
         viewcombobox_search.bind('<<ComboboxSelected>>',setSearchTips)
