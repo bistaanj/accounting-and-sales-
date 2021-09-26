@@ -588,7 +588,7 @@ class Window(Tk):
         #Define Columns
         viewTree['columns'] = ('Product Name', 'Cost Price' ,'Sales Price', 'Quantity','Units' , 'Location')
         viewTree.column('#0', width=60, minwidth=10, anchor=CENTER)
-        viewTree.column('Product Name', width=380, anchor=W)
+        viewTree.column('Product Name', width=350, anchor=W)
         viewTree.column('Cost Price', width=138, anchor=CENTER)
         viewTree.column('Sales Price', width=138, anchor=CENTER)
         viewTree.column('Quantity', width=130, anchor=CENTER)
@@ -925,11 +925,13 @@ class Window(Tk):
                     for product in self.productsInBill:
                         print(product)
                         orgValue = int((collection.find_one({'Product Name': product}))['Quantity'])
+                        orgValue_sold = int((collection.find_one({'Product Name': product}))['Sold'])
+                        orgValue_order = int((collection.find_one({'Product Name': product}))['Order'])
                         newValue = orgValue-int(self.productsInBill[product]['Quantity'])
                         print(newValue)
                         collection.find_one_and_update({'Product Name': product},
                         {'$set':{
-                            'Quantity': (orgValue-int(self.productsInBill[product]['Quantity']))
+                            'Quantity': (orgValue-int(self.productsInBill[product]['Quantity'])),
                         }})
                     dateTime = self.getDateTime()
                     billDict = {}
@@ -953,18 +955,24 @@ class Window(Tk):
                     if self.billing_method == 0:
                         billDict['Vatable'] = int(self.billingTotalAmount)
                         billDict['Grand Total'] = int(int(self.billingTotalAmount)+0.13*int(self.billingTotalAmount))
+
+                        collection = database['inventory']
+                        collection.find_one_and_update({'Product Name': product},
+                        {'$set':{
+                            'Sold': (orgValue_sold+int(self.productsInBill[product]['Quantity'])),
+                        }})
                         collection = database['sales']
                         print("bill saved to vat bill")
                     else:
                         billDict['Grand Total'] = int(self.billingTotalAmount)
+                        collection = database['inventory']
+                        collection.find_one_and_update({'Product Name': product},
+                        {'$set':{
+                            'Order': (orgValue_order+int(self.productsInBill[product]['Quantity'])),
+                        }})
                         collection = database['order']
                         print("bill saved to order data set")
-                    
-
                     # collection = db.sales
-                    
-
-
 
                     collection.insert_one(billDict)
                     #Logic to Add value to daily Sales
@@ -1542,6 +1550,9 @@ class Window(Tk):
                 self.rawData['Quantity'] = float(self.rawData['Quantity'])
                 self.rawData['Sales Price'] = float(self.rawData['Sales Price'])
                 self.rawData['Cost Price'] = float(self.rawData['Cost Price'])
+                self.rawData['Order'] = 0
+                self.rawData['Sold'] = 0
+
                 collection.insert_one(self.rawData)
                 print("Data Posting Completed")
                 # connection.close()
@@ -2080,11 +2091,11 @@ class Window(Tk):
 
         #Top Frame inside Left Frame
         self.customerDisplay_top = Frame(self.customerDisplay, bg = '#ffffff')
-        self.customerDisplay_top.pack(fill = 'both', padx= 20)
+        self.customerDisplay_top.pack(fill = 'both', padx= 10)
 
         #Bottom Frame inside Left Frame
         self.customerDisplay_dwn = Frame(self.customerDisplay, bg='#ffffff')
-        self.customerDisplay_dwn.pack(fill='both', padx=20, pady = 10)
+        self.customerDisplay_dwn.pack(fill='both', padx=10, pady = 10)
 
         self.statusLabel = Label(self.belowFrame, text="�Anuj Bista 2020")
         self.statusLabel.pack()
@@ -2116,42 +2127,42 @@ class Window(Tk):
             
                 
             
-            lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', 17, 'bold'))
+            lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', 14, 'bold'))
             lbl_name.grid(row = 0, column = 0, pady=20)
 
             ent_name = Entry(self.customerDisplay_top, font=("Helvetica", 15, 'bold'))
             ent_name.grid(row=0,column=1)
 
-            lbl_phone = Label(self.customerDisplay_top, text="Contact Number",bg ='white', font=('Hevetica', 17, 'bold'))
+            lbl_phone = Label(self.customerDisplay_top, text="Contact Number",bg ='white', font=('Hevetica', 14, 'bold'))
             lbl_phone.grid(row=1, column=0)
 
             ent_phone = Entry(self.customerDisplay_top,
                               font=("Helvetica", 15, 'bold'))
             ent_phone.grid(row=1, column=1)
 
-            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 17,'bold'))
+            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 14,'bold'))
             btn_search.grid(row=0, column= 2, rowspan=2, padx= 10)
 
             salesTotalLabel = Label(self.customerDisplay_top, bg='#ffffff', text='Total Purchase',
-                                    fg='#164ECF', font=('Helvetica', 15, 'bold'))
+                                    fg='#164ECF', font=('Helvetica', 14, 'bold'))
             salesTotalLabel.grid(row=2, column=0, pady=10)
 
             salesTotal = Label(self.customerDisplay_top, text='------ /-',
-                           bg='#F2F81D', fg='#164ECF', font=('Helvetica', 15, 'bold'))
+                           bg='#F2F81D', fg='#164ECF', font=('Helvetica', 14, 'bold'))
             salesTotal.grid(row=2, column=1, pady=10)
 
             lbl_BillDetails = Label(self.customerDisplay_dwn, text='Bill Records', font=('Comic Sans MS', 10, 'bold'))
             lbl_BillDetails.grid(row=0, column=0, columnspan=3 )
 
-            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=20, width = 50, font=('Helvetica', 12, 'bold'))
+            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=14, width = 50, font=('Helvetica', 12, 'bold'))
             billList.grid(row=1, column=0, pady=20)
 
             viewScrollbar = Scrollbar(self.customerDisplay_dwn, orient=VERTICAL)
             viewScrollbar.config(command=billList.yview)
-            viewScrollbar.grid(row=1, ipadx=5, column=5, sticky='ns')
+            viewScrollbar.grid(row=1, ipadx=1, column=1, sticky='ns')
 
             btn_dsp = Button(self.customerDisplay_dwn, text = 'Display', font=('Helvetica',15,'bold'))
-            btn_dsp.grid(row=2, column= 3)
+            btn_dsp.grid(row=2, column= 0)
 
             #GUI for Right frame
 
@@ -2219,7 +2230,7 @@ class Window(Tk):
         
 
         billFrame = Frame(self.customerBillDisplay)
-        billFrame.grid(row = 7, column = 0, columnspan=3)
+        billFrame.grid(row = 7, column = 0, columnspan=4)
 
         view_viewTree = ttk.Treeview(
             billFrame, height=10, style="mystyle.Treeview")
