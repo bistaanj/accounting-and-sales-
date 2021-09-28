@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from datetime import datetime
 import json
+from typing import Collection
 import win32api
 # from firebase import firebase
 import pymongo
@@ -2103,6 +2104,48 @@ class Window(Tk):
         
         def customerHistory():
 
+            def displayBill():
+                index = billList.index(ANCHOR)
+                print(index)
+                print(self.billpointer[index])
+                connection = pymongo.MongoClient("localhost", 27017)
+                database = connection['saiRecords']
+                if 'Sales' in self.name_list[index]:
+                    Collection= database['sales']
+                else:
+                    Collection= database['order']
+                bill=Collection.find_one({'_id':self.billpointer[index]})
+                print(bill)
+                dateLabel.config(text=bill['Date'])
+                timeLabel.config(text=bill['Time'])
+                customerNameLabel.config(text=bill['Customer Name'])
+                helloat.config(text=bill['Contact Number'])
+                billTotalLabel.config(text=bill['Grand Total'])
+
+                for vlue in (bill['Products']):
+                    print(vlue)
+                    if "?" in vlue:
+                        print('inside  if statement')
+                        processed_name=vlue.replace('?','.')
+                    else:
+                        print('inside else statement')
+                        processed_name=vlue
+
+                count=0
+                for rows in view_viewTree.get_children():
+                    view_viewTree.delete(rows)
+
+                view_viewTree.insert(parent='', index=END,
+                                         iid=(bill['Products'][vlue]['iid']), text=(count+1), values=( processed_name ,
+                                         bill['Products'][vlue]['Quantity'],
+                                         bill['Products'][vlue]['Sales Price'],
+                                         bill['Products'][vlue]['Product Total']))
+
+
+                
+
+                
+
             def searchCustomer():
                 name = ent_name.get()
                 number = ent_phone.get()
@@ -2111,17 +2154,27 @@ class Window(Tk):
                 collection = database['sales']
                 billList.delete(0, END)
 
-                name_list = []
+                self.name_list = []
+                self.billpointer= []
                 totalPurchase = 0
                 result = collection.find({'Customer Name':{'$regex': name, '$options': 'i' } , 'Contact Number': number})
-                connection.close()
+                
+                print("List of Object ID")
                 for x in result:
                         totalPurchase+=x['Grand Total']
-                        name_list.append(
-                            x['Customer Name'] +  '------' + x['Contact Number'] + '---' + 'Type')
+                        self.name_list.append(
+                            x['Customer Name'] +  '------' + x['Contact Number'] + '---' + 'Sales')
+                        self.billpointer.append(x['_id'])
                         # self.view_productId.append(x['_id'])
+                collection = database['order']
+                result = collection.find({'Customer Name':{'$regex': name, '$options': 'i' } , 'Contact Number': number})
+                for x in result:
+                    totalPurchase+=x['Grand Total']
+                    self.name_list.append(
+                        x['Customer Name'] +  '------' + x['Contact Number'] + '---' + 'Order')
+                    self.billpointer.append(x['_id'])
 
-                billList.insert(0, *name_list)
+                billList.insert(0, *self.name_list)
                 salesTotal.config(text = totalPurchase)
 
             
@@ -2140,28 +2193,28 @@ class Window(Tk):
                               font=("Helvetica", 15, 'bold'))
             ent_phone.grid(row=1, column=1)
 
-            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 14,'bold'))
-            btn_search.grid(row=0, column= 2, rowspan=2, padx= 10)
+            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 12,'bold'))
+            btn_search.grid(row=2, column= 1, padx= 10)
 
             salesTotalLabel = Label(self.customerDisplay_top, bg='#ffffff', text='Total Purchase',
                                     fg='#164ECF', font=('Helvetica', 14, 'bold'))
-            salesTotalLabel.grid(row=2, column=0, pady=10)
+            salesTotalLabel.grid(row=3, column=0, pady=10)
 
             salesTotal = Label(self.customerDisplay_top, text='------ /-',
                            bg='#F2F81D', fg='#164ECF', font=('Helvetica', 14, 'bold'))
-            salesTotal.grid(row=2, column=1, pady=10)
+            salesTotal.grid(row=3, column=1, pady=10)
 
             lbl_BillDetails = Label(self.customerDisplay_dwn, text='Bill Records', font=('Comic Sans MS', 10, 'bold'))
             lbl_BillDetails.grid(row=0, column=0, columnspan=3 )
 
-            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=14, width = 50, font=('Helvetica', 12, 'bold'))
+            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=14, width = 38, font=('Helvetica', 12, 'bold'))
             billList.grid(row=1, column=0, pady=20)
 
             viewScrollbar = Scrollbar(self.customerDisplay_dwn, orient=VERTICAL)
             viewScrollbar.config(command=billList.yview)
             viewScrollbar.grid(row=1, ipadx=1, column=1, sticky='ns')
 
-            btn_dsp = Button(self.customerDisplay_dwn, text = 'Display', font=('Helvetica',15,'bold'))
+            btn_dsp = Button(self.customerDisplay_dwn, text = 'Display', command=displayBill, font=('Helvetica',15,'bold'))
             btn_dsp.grid(row=2, column= 0)
 
             #GUI for Right frame
