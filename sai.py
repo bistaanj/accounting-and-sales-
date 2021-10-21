@@ -629,25 +629,108 @@ class Window(Tk):
         phaseoutBtn.grid(column=3, row=0, padx=10, pady=10, sticky="w")
 
     def viewOrders(self):
-
         self.displayFrame.destroy()
         self.displayFrame = Frame(self.inventory)
-        self.displayFrame.pack(fill="both", side="left")
+        self.displayFrame.pack(fill="both")
 
         topFrame = Frame(self.displayFrame)
-        topFrame.pack(side = 'top')
+        topFrame.pack()
 
-        PtypeCombo = ttk.Combobox(topFrame, background='#CED7D7', values=['By Customer', 'By Product'],font=('Comic Sans MS',10,'bold'),state = 'readonly')
+        orderDetailsFrame = Frame(self.displayFrame)
+        orderDetailsFrame.pack()
+
+        def displayOrderSearch(event=''):
+            example = []
+            self.view_productId = []
+            searchValue = searchBox.get()
+            key = PtypeCombo.get()
+            try:
+                itemlistbox.delete(0, END)
+                if (key == ""):
+                    raise ValueError
+                else:
+                    #For Local database Storage
+                    connection = pymongo.MongoClient("localhost", 27017)
+                    database = connection['saiRecords']
+                    collection = database['order']
+                    if (key == 'By Customer'):
+                        viewTree.heading('Customer Name', text='Customer Name', anchor=CENTER)
+                        customerNameOrProductName.config(text="Customer Name: ")
+                        searchFilter = 'i'
+                        result = collection.find({'Customer Name': {'$regex': searchValue, '$options': searchFilter}})  
+                        for x in result:
+                            example.append(x['Customer Name'] + ' -- ' + x['Date'] + ' -- ' +  x['Contact Number'])
+                            self.view_productId.append(x['_id'])
+                        
+                    else:
+                        viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
+                        customerNameOrProductName.config(text="Product Name: ")
+                        final = []
+                        result= collection.find({})
+                        for i in result:
+                            s1 = i["Products"]
+                            for j in s1:                                
+                                final.append({
+                                                "Product Name":j,
+                                                "Custumer Name": i["Customer Name"],
+                                                "Quantity": s1[j]['Quantity'],
+                                                "Sales Price":s1[j]['Sales Price'],
+                                                "Units": s1[j]["Units"],
+                                                "Product Total": s1[j]["Product Total"]       
+                                            })
+                                if searchValue.upper() in str(j.upper()):
+                                    example.append(j + ' -- ' + str(s1[j]['Quantity']))  
+                    itemlistbox.insert(0, *example)
+
+                    # if (len(self.view_productId) < 1):
+                    #     messagebox.showinfo("Search Request", "No Record Found")
+                    
+            except ValueError:
+                messagebox.showerror("Invalid Request", "Set Search Filter")
+           
+        PtypeCombo = ttk.Combobox(topFrame, background='#CED7D7',width=10, values=['By Customer', 'By Product'],font=('Comic Sans MS',10,'bold'),state = 'readonly')
         PtypeCombo.current(0)
         PtypeCombo.grid(column = 0, row = 0, padx = 5, pady = 10, sticky = "w")
 
-        searchBox = Entry(topFrame, font=('Hevitica', 13,'bold'), width=30)
+        searchBox = Entry(topFrame, font=('Hevitica', 13,'bold'), width=20)
         searchBox.grid(column=1, row=0, padx = 10, pady=10)
+        searchBox.bind('<KeyRelease>', displayOrderSearch)
+        searchBox.bind('<Return>')
 
-        btn_search = Button(topFrame, text='Search', bg = '#3399ff', fg = '#ffffff', border = 0,font=('Comic Sans MS', 13,'bold'))
+        btn_search = Button(topFrame, text='Search', bg = '#3399ff', fg = '#ffffff', border = 0,font=('Comic Sans MS', 13,'bold'),command=displayOrderSearch)
         btn_search.grid(row=0, column=2, padx = 11, pady = 10)
 
+        itemlistbox = Listbox(topFrame, width=40, height=4, bg="#e8eddf", font =('Comic Snas MS', 15 ))
+        itemlistbox.grid(row=1,column = 0,columnspan=3,padx=5)
 
+        scrollbar = Scrollbar(topFrame, orient=VERTICAL)
+        scrollbar.config(command=self.itemlistbox.yview)
+        scrollbar.grid(row=1,ipadx=10,column=3,sticky='ns')
+
+        customerNameOrProductName = Label(orderDetailsFrame,text='Customer Name: ')
+        customerNameOrProductName.pack()
+        viewTree = ttk.Treeview(orderDetailsFrame,  style="mystyle.Treeview", height=5)
+
+        #Define Columns
+        viewTree['columns'] = ('Customer Name',
+                               'Sales Price', 'Quantity', 'Units', 'Total Price')
+        viewTree.column('#0', width=40, minwidth=10, anchor=CENTER)
+        viewTree.column('Customer Name', width=130, anchor=CENTER)
+        viewTree.column('Sales Price', width=120, anchor=CENTER)
+        viewTree.column('Quantity', width=100, anchor=CENTER)
+        viewTree.column('Units', width=90, anchor=CENTER)
+        viewTree.column('Total Price', width=130, anchor=CENTER)
+
+        #Create Headings
+        viewTree.heading('#0', text='S.N', anchor=CENTER)
+        viewTree.heading('Customer Name', text='Customer Name', anchor=CENTER)
+        viewTree.heading('Sales Price', text='Sales Price', anchor=CENTER)
+        viewTree.heading('Quantity', text='Quantity', anchor=CENTER)
+        viewTree.heading('Units', text='Units', anchor=CENTER)
+        viewTree.heading('Total Price', text='Total Price', anchor=CENTER)
+        viewTree.pack(fill = 'both',expand = 1, padx = 20,pady = 20)
+        self.viewTree = viewTree
+        
         
     # Displays the items in the inventory
     def viewInventory(self):
@@ -934,6 +1017,18 @@ class Window(Tk):
                         {'$set':{
                             'Quantity': (orgValue-int(self.productsInBill[product]['Quantity'])),
                         }})
+                        if self.billing_method == 0:
+                            collection = database['inventory']
+                            collection.find_one_and_update({'Product Name': product},
+                            {'$set':{
+                                'Sold': (orgValue_sold+int(self.productsInBill[product]['Quantity'])),
+                            }})
+                        else:
+                            collection = database['inventory']
+                            collection.find_one_and_update({'Product Name': product},
+                            {'$set':{
+                                'Order': (orgValue_order+int(self.productsInBill[product]['Quantity'])),
+                            }})
                     dateTime = self.getDateTime()
                     billDict = {}
                     billDict['Date'] = dateTime[0]
@@ -956,33 +1051,18 @@ class Window(Tk):
                     if self.billing_method == 0:
                         billDict['Vatable'] = int(self.billingTotalAmount)
                         billDict['Grand Total'] = int(int(self.billingTotalAmount)+0.13*int(self.billingTotalAmount))
-
-                        collection = database['inventory']
-                        collection.find_one_and_update({'Product Name': product},
-                        {'$set':{
-                            'Sold': (orgValue_sold+int(self.productsInBill[product]['Quantity'])),
-                        }})
                         collection = database['sales']
                         print("bill saved to vat bill")
                     else:
                         billDict['Grand Total'] = int(self.billingTotalAmount)
-                        collection = database['inventory']
-                        collection.find_one_and_update({'Product Name': product},
-                        {'$set':{
-                            'Order': (orgValue_order+int(self.productsInBill[product]['Quantity'])),
-                        }})
                         collection = database['order']
                         print("bill saved to order data set")
                     # collection = db.sales
 
                     collection.insert_one(billDict)
                     #Logic to Add value to daily Sales
-
                     # collection = db.dailySalesData
                     collection = database['dailySalesData']
-
-
-
                     dte = dateTime[0]
                     newValue = self.billingTotalAmount
                     if (collection.count_documents({'_id': dte}) > 0):
