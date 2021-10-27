@@ -2163,7 +2163,7 @@ class Window(Tk):
                 for x in result:
                         totalPurchase+=x['Grand Total']
                         self.name_list.append(
-                            x['Customer Name'] +  '------' + x['Contact Number'] + '---' + 'Sales')
+                            x['Customer Name'] +  '------' + x['Date'] + '---' + 'Sales')
                         self.billpointer.append(x['_id'])
                         # self.view_productId.append(x['_id'])
                 collection = database['order']
@@ -2171,7 +2171,7 @@ class Window(Tk):
                 for x in result:
                     totalPurchase+=x['Grand Total']
                     self.name_list.append(
-                        x['Customer Name'] +  '------' + x['Contact Number'] + '---' + 'Order')
+                        x['Customer Name'] +  '------' + x['Date'] + '---' + 'Order')
                     self.billpointer.append(x['_id'])
 
                 billList.insert(0, *self.name_list)
