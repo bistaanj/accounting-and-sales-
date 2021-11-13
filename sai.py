@@ -2202,6 +2202,11 @@ class Window(Tk):
                 helloat.config(text=bill['Contact Number'])
                 billTotalLabel.config(text=bill['Grand Total'])
 
+                count=0
+                for rows in view_viewTree.get_children():
+                    view_viewTree.delete(rows)
+
+
                 for vlue in (bill['Products']):
                     print(vlue)
                     if "?" in vlue:
@@ -2210,12 +2215,7 @@ class Window(Tk):
                     else:
                         print('inside else statement')
                         processed_name=vlue
-
-                count=0
-                for rows in view_viewTree.get_children():
-                    view_viewTree.delete(rows)
-
-                view_viewTree.insert(parent='', index=END,
+                        view_viewTree.insert(parent='', index=END,
                                          iid=(bill['Products'][vlue]['iid']), text=(count+1), values=( processed_name ,
                                          bill['Products'][vlue]['Quantity'],
                                          bill['Products'][vlue]['Sales Price'],
