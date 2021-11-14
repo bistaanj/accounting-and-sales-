@@ -34,7 +34,7 @@ class Window(Tk):
         self.iconbitmap('./res/dsk.ico')
         self.geometry('1366x768+0+0')
         # self.maxsize(w,h)
-        self.minsize(850,530)
+        self.minsize(1366,768)
         # self.maxsize(850,530)
         self.state('zoomed')
 
@@ -654,8 +654,8 @@ class Window(Tk):
                     database = connection['saiRecords']
                     collection = database['order']
                     if (key == 'By Customer'):
-                        viewTree.heading('Customer Name', text='Customer Name', anchor=CENTER)
-                        customerNameOrProductName.config(text="Customer Name: ")
+                        viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
+                        customerNameOrProductName.config(text="Product Name: ")
                         searchFilter = 'i'
                         result = collection.find({'Customer Name': {'$regex': searchValue, '$options': searchFilter}})  
                         for x in result:
@@ -663,23 +663,24 @@ class Window(Tk):
                             self.view_productId.append(x['_id'])
                         
                     else:
-                        viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
-                        customerNameOrProductName.config(text="Product Name: ")
-                        final = []
+                        viewTree.heading('Customer Name', text='Customer Name', anchor=CENTER)
+                        customerNameOrProductName.config(text="Customer Name: ")
+                        requiredId = []
                         result= collection.find({})
-                        for i in result:
-                            s1 = i["Products"]
-                            for j in s1:                                
-                                final.append({
-                                                "Product Name":j,
-                                                "Custumer Name": i["Customer Name"],
-                                                "Quantity": s1[j]['Quantity'],
-                                                "Sales Price":s1[j]['Sales Price'],
-                                                "Units": s1[j]["Units"],
-                                                "Product Total": s1[j]["Product Total"]       
-                                            })
-                                if searchValue.upper() in str(j.upper()):
-                                    example.append(j + ' -- ' + str(s1[j]['Quantity']))  
+                        
+                    #     for i in result:
+                    #         s1 = i["Products"]
+                    #         for j in s1:                                
+                    #             final.append({
+                    #                             "Product Name":j,
+                    #                             "Custumer Name": i["Customer Name"],
+                    #                             "Quantity": s1[j]['Quantity'],
+                    #                             "Sales Price":s1[j]['Sales Price'],
+                    #                             "Units": s1[j]["Units"],
+                    #                             "Product Total": s1[j]["Product Total"]       
+                    #                         })
+                    #             if searchValue.upper() in str(j.upper()):
+                    #                 example.append(j + ' -- ' + str(s1[j]['Quantity']))  
                     itemlistbox.insert(0, *example)
 
                     # if (len(self.view_productId) < 1):
