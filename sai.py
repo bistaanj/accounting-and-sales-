@@ -19,14 +19,14 @@ import webbrowser as wb
 import subprocess
 from win32api import GetSystemMetrics, WinExec
 
-
-
-
-
+width = GetSystemMetrics(0)
+height = GetSystemMetrics(1)
+WR = width/1366
+HR = height/768
+FR = (width*height)/(1366*768)
 
 # Main Class
 class Window(Tk):
-
     #The __init__ function
     def __init__(self):
         super(Window,self).__init__()
@@ -41,9 +41,7 @@ class Window(Tk):
         # Creates Notebook
         tab_control = ttk.Notebook(self)
         notebookstyle = ttk.Style()
-        notebookstyle.configure('TNotebook.Tab', font=(
-            'URW Gothic L', '15', 'bold'), padding=[10, 10])
-
+        notebookstyle.configure('TNotebook.Tab',font=('URW Gothic L', int(FR*15), 'bold'), padding=[10, 10])
         self.billingTotalAmount = 0
         self.productsInBill = {}
 
@@ -91,7 +89,7 @@ class Window(Tk):
         self.displayFrame.pack(fill = "both", side = "left")
 
         #Style Section for the widgets
-        self.myFont = font.Font(family='Helvetica', size=20, weight='bold')
+        self.myFont = font.Font(family='Helvetica', size=int(FR*20), weight='bold')
 
         #Displays Inventory Page Initiallt
         self.addNewRecord()
@@ -126,13 +124,10 @@ class Window(Tk):
         self.belowFrame = Frame(tab, bg="#d1eded")
         self.belowFrame.pack(fill=X, side="bottom")
 
-        self.statusLabel = Label(self.belowFrame, text= "�Anuj Bista 2020")
-        self.statusLabel.pack()
-
         s_btn = ttk.Style()
-        s_btn.configure('TButton', height=3, width=20,border=0,
+        s_btn.configure('TButton', height = int(HR*3), width = int(WR*20),border=0,
          background=buttonBg,
-         font=("Helvetica",14,'bold'))
+         font=("Helvetica",int(FR*14),'bold'))
         s_btn.map('TButton',
               foreground=[('disabled', 'yellow'),
                           ('pressed', 'red'),
@@ -275,79 +270,79 @@ class Window(Tk):
         self.displayFrame.pack(fill = "both", side = "left")
         bgColor = '#FFFFFF'
         self.displayLabel = LabelFrame(self.displayFrame, text="Product Details",
-         bg=bgColor, font=('Helvetica',30,'bold','underline'),fg ="#5A63F5", border=0, labelanchor = 'n' )
+         bg=bgColor, font=('Helvetica',int(FR*30),'bold','underline'),fg ="#5A63F5", border=0, labelanchor = 'n' )
         self.displayLabel.pack(fill = "both", side = "top",pady = 20)
 
         s=ttk.Style()
-        s.configure('TLabel', font=('Helvetica', 18, 'bold'),background=bgColor, foreground='#BF0909')
+        s.configure('TLabel', font=('Helvetica', int(FR*18), 'bold'),background=bgColor, foreground='#BF0909')
         productNameLabel = ttk.Label(self.displayLabel, text="Product Name", style ='TLabel' )
         productNameLabel.grid(column = 0, row = 1, padx = 15, sticky = 'w')
 
-        productNameEntry = Entry(self.displayLabel, width=50, border=0, bg='#CED7D7', font=('Helvetica',15,'bold'))
+        productNameEntry = Entry(self.displayLabel, width = int(WR*50), border=0, bg='#CED7D7', font=('Helvetica',int(FR*15),'bold'))
         productNameEntry.grid(column = 1, row = 1, padx = 10, pady = 10, sticky = "w", columnspan= 3 )
 
         quantityLabel = ttk.Label(self.displayLabel, text="Quantity", style='TLabel')
         quantityLabel.grid(column = 0, row = 2, padx = 10, pady = 10, sticky = "w")
 
-        quantityEntry = Entry(self.displayLabel, width=10, font=('Helvetica',15,'bold'),
+        quantityEntry = Entry(self.displayLabel, width = int(WR*10), font=('Helvetica',int(FR*15),'bold'),
                               border=0, bg='#CED7D7')
         quantityEntry.grid( column = 1, row = 2,padx = 10, pady = 10, sticky = "w")
 
         pType = ttk.Label(self.displayLabel, text = 'Units',style='TLabel')
         pType.grid(column=2, row=2, padx=5, pady=10)
 
-        PtypeCombo = ttk.Combobox(self.displayLabel, background='#CED7D7', values=['Pcs','Pkts','Liters', 'Bundle','Kgs','Meter','Other'],font=('Comic Sans MS',10,'bold'))
+        PtypeCombo = ttk.Combobox(self.displayLabel, background='#CED7D7', values=['Pcs','Pkts','Liters', 'Bundle','Kgs','Meter','Other'],font=('Comic Sans MS',int(FR*10),'bold'))
         PtypeCombo.grid(column = 3, row = 2, padx = 5, pady = 10, sticky = "w")
 
         productCostLabel = ttk.Label(
             self.displayLabel, text="Cost Price", style='TLabel')
         productCostLabel.grid(column = 0, row = 4,  padx = 10, pady = 10, sticky = "w")
 
-        productCostEntry = Entry(self.displayLabel, width=20, border=0, bg='#CED7D7', font=('Helvetica', 15, 'bold'))
+        productCostEntry = Entry(self.displayLabel, width = int(WR*20), border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
         productCostEntry.grid(column = 1, row = 4,  padx = 10, pady = 10, sticky = "w")
 
         productSalesLabel = ttk.Label(
             self.displayLabel, text="Sales Price", style='TLabel')
         productSalesLabel.grid(column = 0, row = 5,  padx = 10, pady = 10, sticky = "w")
 
-        productCostEntry = Entry(self.displayLabel, width=20, border=0, bg='#CED7D7', font=('Helvetica', 15, 'bold'))
+        productCostEntry = Entry(self.displayLabel, width = int(WR*20), border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
         productCostEntry.grid(column = 1, row = 5,  padx = 10, pady = 10, sticky = "w")
 
         locationLabel = ttk.Label(
             self.displayLabel, text='Location', style='TLabel')
         locationLabel.grid(column=0, row=6, padx=10, pady=10, sticky="w")
 
-        locationEntry = Entry(self.displayLabel, width=20,border=0, bg='#CED7D7', font=('Helvetica', 15, 'bold'))
+        locationEntry = Entry(self.displayLabel, width = int(WR*20),border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
         locationEntry.grid(column=1, row=6, padx=10, pady=10, sticky="w")
 
         productDescriptionLabel = ttk.Label(self.displayLabel, text="Purchased From", style='TLabel')
         productDescriptionLabel.grid(column = 0, row = 7,  padx = 10, pady = 10, sticky = "w")
 
-        productDescription = Entry(self.displayLabel, border = 0,width=50,bg='#CED7D7', font=('Helvetica',15,'bold'))
+        productDescription = Entry(self.displayLabel, border = 0,width = int(WR*50),bg='#CED7D7', font=('Helvetica',int(FR*15),'bold'))
         productDescription.grid(column=1, row=7, padx=10, pady=10, sticky="w")
 
 
         self.submit_record_btn = Button(self.displayLabel, cursor = "hand2", text = "Record", command = self.createRecord,
-                                        font=('Times New Roman', 20), bg='#648EF1', fg='#FFFFFF', border=0)
+                                        font=('Times New Roman', int(FR*20)), bg='#648EF1', fg='#FFFFFF', border=0)
         self.submit_record_btn.grid(column = 0, row = 8, padx = 10, pady = 20, sticky = "se")
         
-        tips = Label(self.displayLabel, text = "*record validations:-",font =('Times New Roman',10,'underline'), fg = 'red', bg ='white')
+        tips = Label(self.displayLabel, text = "*record validations:-",font =('Times New Roman',int(FR*10),'underline'), fg = 'red', bg ='white')
         tips.grid(column=0,row=9, padx=5, pady=10, sticky="w")
 
         tips = Label(self.displayLabel, text="- check for the product in inventory before recording",
-                     font=('Times New Roman', 10), fg='red', bg='white')
+                     font=('Times New Roman', int(FR*10)), fg='red', bg='white')
         tips.grid(column=0, row=10, padx=5, pady=0, sticky="w",columnspan = 2)
 
         tips = Label(self.displayLabel, text="- recording of similar product will pop error msg",
-                     font=('Times New Roman', 10), fg='red', bg='white')
+                     font=('Times New Roman', int(FR*10)), fg='red', bg='white')
         tips.grid(column=0, row=11, padx=5, pady=0, sticky="w", columnspan=2)
 
         tips = Label(self.displayLabel, text="- ensure all fields are filled before recording",
-                     font=('Times New Roman', 10), fg='red', bg='white')
+                     font=('Times New Roman', int(FR*10)), fg='red', bg='white')
         tips.grid(column=0, row=12, padx=5, pady=0, sticky="w", columnspan = 2)
 
         tips = Label(self.displayLabel, text="- 'Quantity' and 'Sales Price' must be a number",
-                     font=('Times New Roman', 10), fg='red', bg='white')
+                     font=('Times New Roman', int(FR*10)), fg='red', bg='white')
         tips.grid(column=0, row=13, padx=5, pady=0, sticky="w", columnspan=2)
 
 
@@ -566,7 +561,7 @@ class Window(Tk):
                 messagebox.showerror(
                     "Invalid Request", "Product Selection required")
 
-        self.searchEntry = Entry(self.searchFrame, width=40, bg='#4F83FC', fg='#FFFFFF',border=0, font=('Comic Sans MS', 15))
+        self.searchEntry = Entry(self.searchFrame, width = int(WR*40), bg='#4F83FC', fg='#FFFFFF',border=0, font=('Comic Sans MS', int(FR*15)))
         self.searchEntry.grid(column=1, row=1, padx=10, pady=10, sticky="w")
         self.searchEntry.insert(0,'search for...')
         self.searchEntry.bind('<FocusIn>', clearPlaceHolder)
@@ -574,27 +569,27 @@ class Window(Tk):
         self.searchEntry.bind('<Return>',displaySearchResult)
 
         searchBtn=Button(self.searchFrame, text = "GO", command = displaySearchResult,
-        font=('Times New Roman', 18,'bold','underline'), bg='#4F83FC', fg = '#FFFFFF',border = 0, cursor = "hand2")
+        font=('Times New Roman', int(FR*18),'bold','underline'), bg='#4F83FC', fg = '#FFFFFF',border = 0, cursor = "hand2")
         searchBtn.grid(column=2, row=1, padx=10, pady=10, sticky="w")
         
 
         self.rsltFrame = Frame(self.displayFrame, bg = 'white')
         self.rsltFrame.pack() #fill = 'both', side = 'left', anchor = S
 
-        lb = Label(self.rsltFrame, text = 'Search Result', font = ('Helvetica',15,'bold','underline'), bg = 'white')
+        lb = Label(self.rsltFrame, text = 'Search Result', font = ('Helvetica',int(FR*15),'bold','underline'), bg = 'white')
         lb.pack(pady = 20)
         #Table view starts from here
-        viewTree = ttk.Treeview(self.rsltFrame,height = 8, style="mystyle.Treeview")
+        viewTree = ttk.Treeview(self.rsltFrame,height = int(HR*8), style="mystyle.Treeview")
 
         #Define Columns
         viewTree['columns'] = ('Product Name', 'Cost Price' ,'Sales Price', 'Quantity','Units' , 'Location')
-        viewTree.column('#0', width=60, minwidth=10, anchor=CENTER)
-        viewTree.column('Product Name', width=350, anchor=W)
-        viewTree.column('Cost Price', width=138, anchor=CENTER)
-        viewTree.column('Sales Price', width=138, anchor=CENTER)
-        viewTree.column('Quantity', width=130, anchor=CENTER)
-        viewTree.column('Units', width=110, anchor=CENTER)
-        viewTree.column('Location', width=150, anchor=CENTER)
+        viewTree.column('#0', width = int(WR*60), minwidth=10, anchor=CENTER)
+        viewTree.column('Product Name', width = int(WR*350), anchor=W)
+        viewTree.column('Cost Price', width = int(WR*138), anchor=CENTER)
+        viewTree.column('Sales Price', width = int(WR*138), anchor=CENTER)
+        viewTree.column('Quantity', width = int(WR*130), anchor=CENTER)
+        viewTree.column('Units', width = int(WR*110), anchor=CENTER)
+        viewTree.column('Location', width = int(WR*150), anchor=CENTER)
         
         #Create Headings
         viewTree.heading('#0', text='S.N', anchor=CENTER)
@@ -638,6 +633,11 @@ class Window(Tk):
 
         orderDetailsFrame = Frame(self.displayFrame)
         orderDetailsFrame.pack()
+        def validateContact(e):
+            try:
+                value=int(customerPhoneEntry.get())
+            except ValueError:
+                customerPhoneEntry.delete(-1,'end') 
 
         def displayOrderSearch(event=''):
             example = []
@@ -645,7 +645,6 @@ class Window(Tk):
             searchValue = searchBox.get()
             key = PtypeCombo.get()
             try:
-                itemlistbox.delete(0, END)
                 if (key == ""):
                     raise ValueError
                 else:
@@ -654,7 +653,13 @@ class Window(Tk):
                     database = connection['saiRecords']
                     collection = database['order']
                     if (key == 'By Customer'):
-                        viewTree.heading('Customer Name', text='Customer Name', anchor=CENTER)
+                        customerNameLabel.grid(column =1,row =0)
+                        customerNameEntry.grid(column=2,row=0)
+                        customerPhoneLabel.grid(column =1,row =1)
+                        customerPhoneEntry.grid(column=2,row=1)
+                        customerPhoneEntry.bind('<KeyRelease>',validateContact)
+                        searchBox.grid_forget()
+                        viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
                         customerNameOrProductName.config(text="Customer Name: ")
                         searchFilter = 'i'
                         result = collection.find({'Customer Name': {'$regex': searchValue, '$options': searchFilter}})  
@@ -663,7 +668,14 @@ class Window(Tk):
                             self.view_productId.append(x['_id'])
                         
                     else:
-                        viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
+                        customerNameEntry.grid_forget()
+                        customerNameLabel.grid_forget()
+                        customerPhoneEntry.grid_forget()
+                        customerPhoneLabel.grid_forget()
+                        searchBox.grid(column=1, row=0, padx = 10, pady=10,columnspan=3)
+                        searchBox.bind('<KeyRelease>', displayOrderSearch)
+                        searchBox.bind('<Return>')
+                        viewTree.heading('Customer Name', text='Customer Name', anchor=CENTER)
                         customerNameOrProductName.config(text="Product Name: ")
                         final = []
                         result= collection.find({})
@@ -680,7 +692,6 @@ class Window(Tk):
                                             })
                                 if searchValue.upper() in str(j.upper()):
                                     example.append(j + ' -- ' + str(s1[j]['Quantity']))  
-                    itemlistbox.insert(0, *example)
 
                     # if (len(self.view_productId) < 1):
                     #     messagebox.showinfo("Search Request", "No Record Found")
@@ -688,38 +699,54 @@ class Window(Tk):
             except ValueError:
                 messagebox.showerror("Invalid Request", "Set Search Filter")
            
-        PtypeCombo = ttk.Combobox(topFrame, background='#CED7D7',width=10, values=['By Customer', 'By Product'],font=('Comic Sans MS',10,'bold'),state = 'readonly')
+        
+        PtypeCombo = ttk.Combobox(topFrame, background='#CED7D7',width = int(WR*10), values=['By Customer', 'By Product'],font=('Comic Sans MS',int(FR*10),'bold'),state = 'readonly')
         PtypeCombo.current(0)
         PtypeCombo.grid(column = 0, row = 0, padx = 5, pady = 10, sticky = "w")
+        PtypeCombo.bind('<<ComboboxSelected>>', displayOrderSearch)
 
-        searchBox = Entry(topFrame, font=('Hevitica', 13,'bold'), width=20)
-        searchBox.grid(column=1, row=0, padx = 10, pady=10)
-        searchBox.bind('<KeyRelease>', displayOrderSearch)
-        searchBox.bind('<Return>')
 
-        btn_search = Button(topFrame, text='Search', bg = '#3399ff', fg = '#ffffff', border = 0,font=('Comic Sans MS', 13,'bold'),command=displayOrderSearch)
-        btn_search.grid(row=0, column=2, padx = 11, pady = 10)
+        searchBox = Entry(topFrame, font=('Hevitica', int(FR*13),'bold'), width=int(WR*20))
+        searchBox.grid_forget()
 
-        itemlistbox = Listbox(topFrame, width=40, height=4, bg="#e8eddf", font =('Comic Snas MS', 15 ))
-        itemlistbox.grid(row=1,column = 0,columnspan=3,padx=5)
+        customerNameLabel = Label(topFrame,text="Name: ", font=('Comic Sans MS', int(FR*12)))
+        customerNameLabel.grid(column =1,row =0)
+        
+        customerNameEntry = Entry(topFrame, font=('Hevitica', int(FR*11),'bold'), width= int(WR*15))
+        customerNameEntry.grid(column=2,row=0)
 
-        scrollbar = Scrollbar(topFrame, orient=VERTICAL)
-        scrollbar.config(command=self.itemlistbox.yview)
-        scrollbar.grid(row=1,ipadx=10,column=3,sticky='ns')
+        customerPhoneLabel = Label(topFrame,text="Mobile Number: ", font=('Comic Sans MS', int(FR*12)))
+        customerPhoneLabel.grid(column =1,row =1)
 
-        customerNameOrProductName = Label(orderDetailsFrame,text='Customer Name: ')
+        customerPhoneEntry = Entry(topFrame, font=('Hevitica', int(FR*11),'bold'), width= int(WR*15))
+        customerPhoneEntry.grid(column=2,row=1)
+        customerPhoneEntry.bind('<KeyRelease>',validateContact)
+
+        btn_search = Button(topFrame, text='Search', bg = '#3399ff', fg = '#ffffff', border = 0,font=('Comic Sans MS', int(FR*13),'bold'),command=displayOrderSearch)
+        btn_search.grid(row=0, column=4, padx = 11, pady = 10,rowspan=2)
+
+        # itemlistbox = Listbox(topFrame, width = int(WR*40), height = int(HR*4), bg="#e8eddf", font =('Comic Snas MS', int(FR*15) ))
+        # itemlistbox.grid(row=1,column = 0,columnspan=3,padx=5)
+
+        # scrollbar = Scrollbar(topFrame, orient=VERTICAL)
+        # scrollbar.config(command=self.itemlistbox.yview)
+        # scrollbar.grid(row=1,ipadx=10,column=3,sticky='ns')
+        
+        customerNameOrProductName = Label(orderDetailsFrame,text='Customer Name: ',font=('Comic Sans MS', int(FR*13)))
         customerNameOrProductName.pack()
-        viewTree = ttk.Treeview(orderDetailsFrame,  style="mystyle.Treeview", height=5)
+        customerNameOrProductName.pack_forget()
+        
+        viewTree = ttk.Treeview(orderDetailsFrame,  style="mystyle.Treeview", height=10)
 
         #Define Columns
         viewTree['columns'] = ('Customer Name',
                                'Sales Price', 'Quantity', 'Units', 'Total Price')
-        viewTree.column('#0', width=40, minwidth=10, anchor=CENTER)
-        viewTree.column('Customer Name', width=130, anchor=CENTER)
-        viewTree.column('Sales Price', width=120, anchor=CENTER)
-        viewTree.column('Quantity', width=100, anchor=CENTER)
-        viewTree.column('Units', width=90, anchor=CENTER)
-        viewTree.column('Total Price', width=130, anchor=CENTER)
+        viewTree.column('#0', width = int(WR*40), minwidth=10, anchor=CENTER)
+        viewTree.column('Customer Name', width = int(WR*130), anchor=CENTER)
+        viewTree.column('Sales Price', width = int(WR*120), anchor=CENTER)
+        viewTree.column('Quantity', width = int(WR*100), anchor=CENTER)
+        viewTree.column('Units', width = int(WR*90), anchor=CENTER)
+        viewTree.column('Total Price', width = int(WR*130), anchor=CENTER)
 
         #Create Headings
         viewTree.heading('#0', text='S.N', anchor=CENTER)
@@ -789,7 +816,7 @@ class Window(Tk):
                     print("Exited For Loop")
             print("Exited If ELse Statement")
 
-        self.searchEntry = Entry(searchFrame, width=40, bg='#4F83FC', fg='#FFFFFF',border=0, font=('Comic Sans MS', 20))
+        self.searchEntry = Entry(searchFrame, width = int(WR*40), bg='#4F83FC', fg='#FFFFFF',border=0, font=('Comic Sans MS', int(FR*20)))
         self.searchEntry.grid(column=1, row=1, padx=10, pady=10, sticky="w")
         self.searchEntry.insert(0,'search for...')
         self.searchEntry.bind('<FocusIn>', clearPlaceHolder)
@@ -797,7 +824,7 @@ class Window(Tk):
         self.searchEntry.bind('<Return>',displaySearchResult)
 
         searchBtn=Button(searchFrame, text = "GO", command = displaySearchResult,
-        font=('Times New Roman', 18,'bold','underline'), bg='#4F83FC', fg = '#FFFFFF',border = 0, cursor = "hand2")
+        font=('Times New Roman', int(FR*18),'bold','underline'), bg='#4F83FC', fg = '#FFFFFF',border = 0, cursor = "hand2")
         searchBtn.grid(column=2, row=1, padx=10, pady=10, sticky="w")
 
         
@@ -806,14 +833,14 @@ class Window(Tk):
         #Define Columns
         viewTree['columns'] = ('Product Name', 'Cost Price',
                                'Sales Price', 'Quantity', 'Units', 'Location','Purchased From')
-        viewTree.column('#0', width=60, minwidth=10, anchor=CENTER)
-        viewTree.column('Product Name', width=200, anchor=W)
-        viewTree.column('Cost Price', width=138, anchor=CENTER)
-        viewTree.column('Sales Price', width=138, anchor=CENTER)
-        viewTree.column('Quantity', width=130, anchor=CENTER)
-        viewTree.column('Units', width=110, anchor=CENTER)
-        viewTree.column('Location', width=150, anchor=CENTER)
-        viewTree.column('Purchased From', width=150, anchor=CENTER)
+        viewTree.column('#0', width = int(WR*60), minwidth=10, anchor=CENTER)
+        viewTree.column('Product Name', width = int(WR*200), anchor=W)
+        viewTree.column('Cost Price', width = int(WR*138), anchor=CENTER)
+        viewTree.column('Sales Price', width = int(WR*138), anchor=CENTER)
+        viewTree.column('Quantity', width = int(WR*130), anchor=CENTER)
+        viewTree.column('Units', width = int(WR*110), anchor=CENTER)
+        viewTree.column('Location', width = int(WR*150), anchor=CENTER)
+        viewTree.column('Purchased From', width = int(WR*150), anchor=CENTER)
 
         #Create Headings
         viewTree.heading('#0', text='S.N', anchor=CENTER)
@@ -922,9 +949,9 @@ class Window(Tk):
         self.buttonFrame.pack(side = LEFT,fill= Y)
 
         s_btn = ttk.Style()
-        s_btn.configure('TButton', height=3, width=20,border=0,
+        s_btn.configure('TButton', height = int(HR*3), width = int(WR*20),border=0,
         background=buttonBg,
-        font=("Helvetica",14,'bold'))
+        font=("Helvetica",int(FR*14),'bold'))
         s_btn.map('TButton',
               foreground=[('disabled', 'yellow'),
                           ('pressed', 'red'),
@@ -1089,7 +1116,6 @@ class Window(Tk):
                 if(proceedBilling == 1):
 
                     def validateContact(e):
-                        
                         try:
                             value=int(phnNumEntry.get())
                         except ValueError:
@@ -1100,19 +1126,19 @@ class Window(Tk):
                     top.iconbitmap('./res/dsk.ico')
                     top.title("Enter Name")
                     top.geometry("+%d+%d" % ( 500, 500))
-                    askLable = Label(top, text = 'Customer Name : ', font = ('Helvetica', 15, 'bold') )
+                    askLable = Label(top, text = 'Customer Name : ', font = ('Helvetica', int(FR*15), 'bold') )
                     askLable.grid(row = 0, column = 0, padx = 5, pady = 5)
                     
-                    askEntry = Entry(top, width=30, font=('Comic Sans MS', 15, 'bold'))
+                    askEntry = Entry(top, width = int(WR*30), font=('Comic Sans MS', int(FR*15), 'bold'))
                     askEntry.grid(row = 0, column = 1, padx = 5, pady = 5)
                     askEntry.bind('<Return>',saveBilltoDbs)
                     askEntry.focus_set()
-                    phnNum = Label(top, text = 'Contact Number : ', font = ('Helvetica', 15, 'bold') )
+                    phnNum = Label(top, text = 'Contact Number : ', font = ('Helvetica', int(FR*15), 'bold') )
                     phnNum.grid(row = 1, column = 0, padx = 5, pady = 5)
-                    phnNumEntry = Entry(top, width=30, font=('Comic Sans MS', 15, 'bold'))
+                    phnNumEntry = Entry(top, width = int(WR*30), font=('Comic Sans MS', int(FR*15), 'bold'))
                     phnNumEntry.grid(row = 1, column = 1, padx = 5, pady = 5)
                     phnNumEntry.bind('<KeyRelease>',validateContact)
-                    btn = Button(top, text ="Enter", width = 10, command = saveBilltoDbs)
+                    btn = Button(top, text ="Enter", width = int(WR*10), command = saveBilltoDbs)
                     btn.grid(row = 2, column = 1, padx = 5, pady = 5)
                     
 
@@ -1225,28 +1251,27 @@ class Window(Tk):
                 top.geometry("+%d+%d" % (400, 400))
 
                 availableQuantity = Label(
-                    top, text="Available Quantity", padx=5, pady=5, font=('Helvetica', 15, 'bold'))
+                    top, text="Available Quantity", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
                 availableQuantity.grid(row=0, column=0)
-                displayAvailableQuantity = Label(top, text=(str(productToBill['Quantity'])+" "+ str(productToBill['Units'])), padx=5, pady=5, font=('Comic Sans MS', 15, 'bold'))
+                displayAvailableQuantity = Label(top, text=(str(productToBill['Quantity'])+" "+ str(productToBill['Units'])), padx=5, pady=5, font=('Comic Sans MS', int(FR*15), 'bold'))
                 displayAvailableQuantity.grid(row=0, column=1)
 
-                salesPriceLbl = Label(top, text="Sales Price", padx=5, pady=5, font=('Helvetica', 15, 'bold'))
+                salesPriceLbl = Label(top, text="Sales Price", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
                 salesPriceLbl.grid(row = 1, column= 0)
 
-                salesPriceDsp = Label(top, text=productToBill['Sales Price'], padx=5, pady=5, font=(
-                    'Helvetica', 15, 'bold'))
+                salesPriceDsp = Label(top, text=productToBill['Sales Price'], padx=5, pady=5,font=('Helvetica', 15, 'bold'))
                 salesPriceDsp.grid(row = 1, column=1)
 
                 
-                askQuantityLabel = Label(top, text="Enter Quantity", padx=5, pady=5, font=('Helvetica', 15, 'bold'))
+                askQuantityLabel = Label(top, text="Enter Quantity", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
                 askQuantityLabel.grid(row=2, column=0)
 
-                askQuantityEntry = Entry(top, width=10, font=('Comic Sans MS', 15, 'bold'))
+                askQuantityEntry = Entry(top, width = int(WR*10), font=('Comic Sans MS', int(FR*15), 'bold'))
                 askQuantityEntry.grid(row=2, column=1)
                 askQuantityEntry.focus()
                 askQuantityEntry.bind('<Return>', displayToBillView)
 
-                okBtn = Button(top, text="Sell", padx=5,pady=10, width = 8,font=('Georgia', 10,'bold'), command=displayToBillView)
+                okBtn = Button(top, text="Sell", padx=5,pady=10, width = int(WR*8),font=('Georgia', int(FR*10),'bold'), command=displayToBillView)
                 okBtn.grid(row=3, column=0)
 
             except TypeError:
@@ -1297,22 +1322,22 @@ class Window(Tk):
                                            'Quantity': 1, '_id': 0})
                 avalQuantity = float(rslt['Quantity'])
                 availableQuantity = Label(
-                    top, text="Available Quantity", padx=5, pady=5, font=('Helvetica', 15, 'bold'))
+                    top, text="Available Quantity", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
                 availableQuantity.grid(row=0, column=0)
                 displayAvailableQuantity = Label(
-                    top, text=avalQuantity, padx=5, pady=5, font=('Comic Sans MS', 15, 'bold'))
+                    top, text=avalQuantity, padx=5, pady=5, font=('Comic Sans MS', int(FR*15), 'bold'))
                 displayAvailableQuantity.grid(row=0, column=1)
 
-                quantityLabel = Label(top, text="Enter New Quantity", padx=5, pady=5, font=('Helvetica', 15, 'bold'))
+                quantityLabel = Label(top, text="Enter New Quantity", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
                 quantityLabel.grid(row=1, column=0)
 
 
-                quantityEntry = Entry(top, width=10,  font=('Comic Sans MS', 15, 'bold'))
+                quantityEntry = Entry(top, width = int(WR*10),  font=('Comic Sans MS', int(FR*15), 'bold'))
                 quantityEntry.grid(row=1, column=1)
                 quantityEntry.focus()
                 quantityEntry.bind('<Return>', applyEdits)
 
-                editbtn = Button(top, text="Change", command=applyEdits, font=('Georgia',10,'bold'))
+                editbtn = Button(top, text="Change", command=applyEdits, font=('Georgia',int(FR*10),'bold'))
                 editbtn.grid(row=2, column=0, pady =12)
 
         #Bill Product's Quantity Edit Function
@@ -1373,22 +1398,22 @@ class Window(Tk):
                 top.grab_set()
                 top.iconbitmap('./res/dsk.ico')
                 top.geometry("+%d+%d" % (300, 300))
-                discountSchemeLabel = Label(top, text="Discount Scheme", font=('Helvetica', 15, 'bold'))
+                discountSchemeLabel = Label(top, text="Discount Scheme", font=('Helvetica', int(FR*15), 'bold'))
                 discountSchemeLabel.grid(row=0, column=0, padx=5, pady=10,)
 
-                schemeType =ttk.Combobox(top, width = 15, values=['Sales Price','Product Total'],font=('Comic Sans MS', 15, 'bold'))
+                schemeType =ttk.Combobox(top, width = int(WR*15), values=['Sales Price','Product Total'],font=('Comic Sans MS', int(FR*15), 'bold'))
                 schemeType.grid(row=0, column=1, padx=5, pady=10,)
                 schemeType.current(0)
                 
                 
-                quantityLabel = Label(top, text="Enter New Value",  font=('Helvetica', 15, 'bold'))
+                quantityLabel = Label(top, text="Enter New Value",  font=('Helvetica', int(FR*15), 'bold'))
                 quantityLabel.grid(row=2, column=0,padx=5, pady=10,)
 
-                discountedValue = Entry(top, width=15,  font=('Comic Sans MS', 15, 'bold'))
+                discountedValue = Entry(top, width = int(WR*15),  font=('Comic Sans MS', int(FR*15), 'bold'))
                 discountedValue.grid(row=2, column=1, padx=5, pady=10,)
                 discountedValue.bind('<Return>', applyDiscounts)
 
-                editbtn = Button(top, text="Apply Discount", command=applyDiscounts,font=('Georgia', 15, 'bold'))
+                editbtn = Button(top, text="Apply Discount", command=applyDiscounts,font=('Georgia', int(FR*15), 'bold'))
                 editbtn.grid(row=3, column=0, pady = 10)
 
         # Removes the product from the Billing Tab's Billing View Tree Table
@@ -1420,25 +1445,24 @@ class Window(Tk):
 
         #for billing name
         self.billtypelabel = Label(self.billingtypeFrame, text="VAT BILLING",
-         bg='#FFFFFF', font=('Helvetica',30,'bold','underline'),fg ="#5A63F5", border=0 )
+         bg='#FFFFFF', font=('Helvetica',int(FR*30),'bold','underline'),fg ="#5A63F5", border=0 )
         self.billtypelabel.pack(fill ="both",side="top")
 
-        self.searchlabel = Label(self.billingSearchFrame, text=" Name", font=('Helvetica', 12,'bold'),bg='white')
+        self.searchlabel = Label(self.billingSearchFrame, text=" Name", font=('Helvetica', int(FR*12),'bold'),bg='white')
         self.searchlabel.grid(column=0,row=1, padx = 15)
         #for search bar
-        self.billingSearchEntry = Entry(self.billingSearchFrame,width=35,font=('Helvetica', 20,'bold'), bg='#f7eeee')
+        self.billingSearchEntry = Entry(self.billingSearchFrame,width = int(WR*35),font=('Helvetica', int(FR*20),'bold'), bg='#f7eeee')
         self.billingSearchEntry.grid(column = 1 , row = 1, padx = 15)
         self.billingSearchEntry.bind('<KeyRelease>',displayProductOptions)
        
 
         #add button button
-        self.searchButton = Button(self.billingSearchFrame, text="Add Product", font=(
-            'Helvetica', 14, 'bold'), width="10", bg="#6aeb7b", command=billingProcess)
+        self.searchButton = Button(self.billingSearchFrame, text="Add Product", font = ('Helvetica', int(FR*14), 'bold'), width = int(WR*10), bg="#6aeb7b", command=billingProcess)
         self.searchButton.grid(column = 5, row = 1)
 
         #for listbox
         self.itemlistbox = Listbox(
-            self.billingSearchFrame, width=80, height=5, bg="#e8eddf")
+            self.billingSearchFrame, width = int(WR*80), height = int(HR*5), bg="#e8eddf")
         self.itemlistbox.grid(column=1,row=2,columnspan=4,pady=0)
         self.itemlistbox.bind("<<ListboxSelect>>", callback)
         
@@ -1452,22 +1476,22 @@ class Window(Tk):
        
         #treeview Styling 
         vtStyle = ttk.Style()
-        vtStyle.configure('Treeview.Heading', font=('Comic Sans MS', 12, 'bold'))
+        vtStyle.configure('Treeview.Heading', font=('Comic Sans MS', int(FR*12), 'bold'))
         treeStyle=ttk.Style()
 
-        treeStyle.configure("mystyle.Treeview", highlightthickness=1, bd = 0,rowheight=25, font=('Georgia', 13))
+        treeStyle.configure("mystyle.Treeview", highlightthickness=1, bd = 0,rowheight = int(HR*25), font=('Georgia', int(FR*13)))
         # treeStyle.layout('mystyle.Treeview',[('mystyle.Treeview.treearea',{'sticky':'nswe'})])
        
        #treeview 
-        viewTree = ttk.Treeview(self.billingFrame, height = 10, style="mystyle.Treeview")
+        viewTree = ttk.Treeview(self.billingFrame, height = int(HR*10), style="mystyle.Treeview")
         #Define Columns
         viewTree['columns']= ('Product Name','Quantity','Units', 'Sales Price','Total')
-        viewTree.column('#0', width = 40, minwidth = 20, anchor = CENTER)
-        viewTree.column('Product Name', width =300, anchor = 'w')
-        viewTree.column('Quantity', width = 130, anchor = CENTER)
-        viewTree.column('Units', width = 60, anchor = CENTER)
-        viewTree.column('Sales Price', width=130, anchor=CENTER)
-        viewTree.column('Total', width=130, anchor=CENTER)
+        viewTree.column('#0', width = int(WR*40), minwidth = 20, anchor = CENTER)
+        viewTree.column('Product Name', width = int(WR*300), anchor = 'w')
+        viewTree.column('Quantity', width = int(WR*130), anchor = CENTER)
+        viewTree.column('Units', width = int(WR*60), anchor = CENTER)
+        viewTree.column('Sales Price', width = int(WR*130), anchor=CENTER)
+        viewTree.column('Total', width = int(WR*130), anchor=CENTER)
 
 
 
@@ -1489,49 +1513,49 @@ class Window(Tk):
 
         #Edit Button
         self.editbutton = Button(
-            self.billingButtonFrame, text="Edit", bg="#91cf92", command=billingEditProcess, width=10, font=('Comic Sans MS',12))
+            self.billingButtonFrame, text="Edit", bg="#91cf92", command=billingEditProcess, width = int(WR*10), font=('Comic Sans MS',int(FR*12)))
         self.editbutton.grid(column=0,row=2,ipadx=8,padx=10, pady = 10)
 
 
         #Delete buttons
-        self.additem = Button(self.billingButtonFrame, text="Delete",cursor ='X_cursor',font=('Comic Sans MS',12),bg="#f54949", width=10, command=removeSelectedRow)
+        self.additem = Button(self.billingButtonFrame, text="Delete",cursor ='X_cursor',font=('Comic Sans MS',int(FR*12)),bg="#f54949", width = int(WR*10), command=removeSelectedRow)
         self.additem.grid(column=0, row=3, sticky="n",padx=10, pady=10, ipadx=8)
 
 
         #Save Bill and complete Transaction
         saveBillButton = Button(self.billingButtonFrame, text="Save Bill",
-                                     width=10,  height=2, command=completeBilling,
-                                     font=('Times New Roman', 15), bg='#648EF1', fg='#FFFFFF', border=0, cursor = 'hand2')
+                                     width = int(WR*10),  height = int(HR*2), command=completeBilling,
+                                     font=('Times New Roman', int(FR*15)), bg='#648EF1', fg='#FFFFFF', border=0, cursor = 'hand2')
         saveBillButton.grid(column=0, row=4, sticky="n", padx=10, pady=10, ipadx=8)
 
-        #amountLabel = font.Font(family = 'Helvetica', size = 22, weight = 'bold')
-        #amountTotal = font.Font(family='Helvetica', size=22, weight='bold') 
+        #amountLabel = font.Font(family = 'Helvetica', size = int(FR*22), weight = 'bold')
+        #amountTotal = font.Font(family='Helvetica', size=int(FR*22), weight='bold') 
 
         clear_Billing = Button(self.billingButtonFrame, text="Clear Billing", bg="#f54949",cursor ='X_cursor',
-                              width=10,  font=('Helvetica', 12, 'bold'), command=clearBilling)
+                              width = int(WR*10),  font=('Helvetica', int(FR*12), 'bold'), command=clearBilling)
         clear_Billing.grid(column=0, row=5, sticky="n",padx=10, pady=20, ipadx=8)
 
         applyDiscountToProduct = Button(self.billingButtonFrame, text="Apply Discounts", bg='#648EF1', fg='#FFFFFF', cursor='hand2',
-                                        width=10,  font=('Helvetica', 12, 'bold'), command =applyDiscountProcess)
+                                        width = int(WR*10),  font=('Helvetica', int(FR*12), 'bold'), command =applyDiscountProcess)
         applyDiscountToProduct.grid(column=0, row=6, sticky="n", padx=10, pady=20, ipadx=8)
 
         #for vatable amount
         self.VatableAmountLabel = Label(
-            self.amountFrame, width=10, text='Vatable        :', bg='#4A2727',font=('Helvetica',22,'bold'), fg='#FAF712')
+            self.amountFrame, width = int(WR*10), text='Vatable        :', bg='#4A2727',font=('Helvetica',int(FR*22),'bold'), fg='#FAF712')
         self.VatableAmountLabel.grid(row = 1, column = 0,  pady =0, sticky = 'n')
 
         self.billingVatableAmountLabel = Label(
-            self.amountFrame, width=12, text="", bg="#4A2727",font=('Helvetica',22,'bold'), fg='#FAF712')
+            self.amountFrame, width = int(WR*12), text="", bg="#4A2727",font=('Helvetica',int(FR*22),'bold'), fg='#FAF712')
         self.billingVatableAmountLabel.grid(row=1, column=1, sticky="n",  pady=0)
         self.billingVatableAmountLabel.config(text=self.billingTotalAmount)
        
         #total amount
         self.totalAmountLabel = Label(
-            self.amountFrame, width=10, text='Grand Total :',font=('Helvetica',22,'bold'), bg='#4A2727', fg='#FAF712')
+            self.amountFrame, width = int(WR*10), text='Grand Total :',font=('Helvetica',int(FR*22),'bold'), bg='#4A2727', fg='#FAF712')
         self.totalAmountLabel.grid(row = 2, column = 0,  pady =2, sticky = 'n')
 
         self.billingAmountLabel = Label(
-            self.amountFrame, width=12, text="", bg="#4A2727", font=('Helvetica',22,'bold'), fg='#FAF712')
+            self.amountFrame, width = int(WR*12), text="", bg="#4A2727", font=('Helvetica',int(FR*22),'bold'), fg='#FAF712')
         self.billingAmountLabel.grid(row=2, column=1, sticky="n",  pady=2)
         self.billingAmountLabel.config(text=self.billingTotalAmount)
 
@@ -1654,9 +1678,6 @@ class Window(Tk):
         self.belowFrame = Frame(tab, bg="#d1eded")
         self.belowFrame.pack(fill=X, side="bottom")
 
-        self.statusLabel = Label(self.belowFrame, text= "�Anuj Bista")
-        self.statusLabel.pack()
-
         self.billdisplayFrame = Frame(self.displayFrame)
         self.billdisplayFrame.pack(side = 'left', padx = 10, pady = 10)
 
@@ -1673,9 +1694,9 @@ class Window(Tk):
         listboxFrame = Frame (self.billdisplayFrame)
         listboxFrame.pack(pady = 10, padx = 5)
 
-        self.labelsearchby = Label(searchhelpFrame, text="Search By", font=('Comic Sans MS', 15, 'bold'))
+        self.labelsearchby = Label(searchhelpFrame, text="Search By", font=('Comic Sans MS', int(FR*15), 'bold'))
         self.labelsearchby.grid(padx = 5)
-        helpLabel = Label(self.searchLabelFrame, text='(Set Search filter)', font =('Comic Snas MS', 12 ))
+        helpLabel = Label(self.searchLabelFrame, text='(Set Search filter)', font =('Comic Snas MS', int(FR*12) ))
         helpLabel.pack(side='bottom')
         
         def printBill():
@@ -1784,7 +1805,7 @@ class Window(Tk):
                 
             
         viewcombobox_search = ttk.Combobox(
-            self.searchLabelFrame, textvariable=4, width=12, font = ('Comic Sans MS', 15), state = 'readonly')
+            self.searchLabelFrame, textvariable=4, width = int(WR*12), font = ('Comic Sans MS', int(FR*15)), state = 'readonly')
         viewcombobox_search['values'] = (
             'Date',
             'Customer Name',
@@ -1796,7 +1817,7 @@ class Window(Tk):
         viewcombobox_search.bind('<<ComboboxSelected>>',setSearchTips)
 
         #for search bar
-        billSearchEntry = Entry(self.searchLabelFrame, width=38, font =('Comic Snas MS', 20 ))
+        billSearchEntry = Entry(self.searchLabelFrame, width = int(WR*38), font =('Comic Snas MS', int(FR*20) ))
         billSearchEntry.pack(side='left')
         billSearchEntry.bind('<KeyRelease>', displayBillSearch)
         billSearchEntry.bind('<Return>', )
@@ -1804,12 +1825,12 @@ class Window(Tk):
 
         #search button button
         # viewSearch_btn = Button(self.searchLabelFrame, text="Search",
-        #                         width="10", bg="#6aeb7b", command=displayBillSearch)
+        #                         width = int(WR*10), bg="#6aeb7b", command=displayBillSearch)
         # viewSearch_btn.pack(side='left')
 
         
         #for listbox
-        itemlistbox_view = Listbox(listboxFrame, width=60, height=4, bg="#e8eddf", font =('Comic Snas MS', 15 ))
+        itemlistbox_view = Listbox(listboxFrame, width = int(WR*60), height = int(HR*4), bg="#e8eddf", font =('Comic Snas MS', int(FR*15) ))
         itemlistbox_view.grid(column=0, row=0, columnspan=1)
         
 
@@ -1822,55 +1843,55 @@ class Window(Tk):
         informationFrame.pack(pady = 5)
         #bill details label 
 
-        lbl = Label(informationFrame, text = "Bill Details", font = ('Comic Snas MS ', 15, 'bold', 'underline'))
+        lbl = Label(informationFrame, text = "Bill Details", font = ('Comic Snas MS ', int(FR*15), 'bold', 'underline'))
         lbl.grid(row = 0, column = 0, columnspan = 4)
         #date label
-        Viewdatelabel = Label(informationFrame, text='Date : ', font = ('Helvetica', 12))
+        Viewdatelabel = Label(informationFrame, text='Date : ', font = ('Helvetica', int(FR*12)))
         Viewdatelabel.grid(row=1, column=0)
         
-        dateLabel = Label(informationFrame, text='--/--/----', font=('Comic Sans MS', 15, 'bold'))
+        dateLabel = Label(informationFrame, text='--/--/----', font=('Comic Sans MS', int(FR*15), 'bold'))
         dateLabel.grid(row=1, column=1)
 
         #custumer name label
         Viewcustumername = Label(
-            informationFrame, text='Customer Name: ', font=('Hevetica', 12))
+            informationFrame, text='Customer Name: ', font=('Hevetica', int(FR*12)))
         Viewcustumername.grid(row=1, column=2)
 
         customerNameLabel = Label(
-            informationFrame, text='---------', font=('Comic Sans MS', 12, 'bold'))
+            informationFrame, text='---------', font=('Comic Sans MS', int(FR*12), 'bold'))
         customerNameLabel.grid(row=1, column=3)
 
-        ViewTime = Label(informationFrame, text='Time:', font=('Hevetica', 12))
+        ViewTime = Label(informationFrame, text='Time:', font=('Hevetica', int(FR*12)))
         ViewTime.grid(row=2, column=0)
 
-        timeLabel = Label(informationFrame, text='--:-- --',font=('Comic Snas MS', 12, 'bold'))
+        timeLabel = Label(informationFrame, text='--:-- --',font=('Comic Snas MS', int(FR*12), 'bold'))
         timeLabel.grid(row=2, column=1, padx = 10)
 
-        helloatLabel = Label(informationFrame, text = 'Contact Number', font=('Hevetica', 12))
+        helloatLabel = Label(informationFrame, text = 'Contact Number', font=('Hevetica', int(FR*12)))
         helloatLabel.grid(row = 1, column = 4)
 
-        helloat = Label (informationFrame, text = ' ----------- ', font = ('Comic Sans MS', 10, 'bold'))
+        helloat = Label (informationFrame, text = ' ----------- ', font = ('Comic Sans MS', int(FR*10), 'bold'))
         helloat.grid(row= 1, column=5)
 
         #Bill Total Labels 
-        billTotal = Label(informationFrame, text='Bill Total ', font = ('Helvetica',15,'bold'))
+        billTotal = Label(informationFrame, text='Bill Total ', font = ('Helvetica',int(FR*15),'bold'))
         billTotal.grid(row=2, column=2,padx = 20)
 
-        billTotalLabel = Label(informationFrame, text='------ /-', bg='#F2F81D', fg='#164ECF', font=('Helvetica', 15, 'bold'))
+        billTotalLabel = Label(informationFrame, text='------ /-', bg='#F2F81D', fg='#164ECF', font=('Helvetica', int(FR*15), 'bold'))
         billTotalLabel.grid(row = 2, column = 3)
 
         billFrame = Frame(self.billdisplayFrame)
         billFrame.pack()
 
-        view_viewTree = ttk.Treeview(billFrame,height = 10, style="mystyle.Treeview")
+        view_viewTree = ttk.Treeview(billFrame,height = int(HR*10), style="mystyle.Treeview")
 
         #Define Columns
         view_viewTree['columns'] = ('Product Name',  'Quantity','Sales Price','Product Total')
-        view_viewTree.column('#0', width=60, minwidth=25, anchor=CENTER)
-        view_viewTree.column('Product Name', width=425, anchor=W)
-        view_viewTree.column('Sales Price', width=150, anchor=CENTER)
-        view_viewTree.column('Quantity', width=150, anchor=CENTER)
-        view_viewTree.column('Product Total', width=150, anchor=CENTER)
+        view_viewTree.column('#0', width = int(WR*60), minwidth=25, anchor=CENTER)
+        view_viewTree.column('Product Name', width = int(WR*425), anchor=W)
+        view_viewTree.column('Sales Price', width = int(WR*150), anchor=CENTER)
+        view_viewTree.column('Quantity', width = int(WR*150), anchor=CENTER)
+        view_viewTree.column('Product Total', width = int(WR*150), anchor=CENTER)
 
 
         #Create Headings
@@ -1910,7 +1931,7 @@ class Window(Tk):
             # Creating Canvas
             c = canvas.Canvas("bill.pdf", pagesize=(595,800), bottomup=0)
             # logo=('./res/logo.jpg')
-            # c.drawImage(logo,10,10,height = 20,width=20)
+            # c.drawImage(logo,10,10,height = int(HR*20),width=20)
             c.setFont("Helvetica-Bold", 20)
             c.drawCentredString(298, 60, "Regmi Electricals Center")
             c.setFont("Helvetica-Bold", 15)
@@ -1983,10 +2004,10 @@ class Window(Tk):
 
         #Button Frame GUI 
 
-        dspbill = Button(self.buttonFrame,text="Display Bill", command=printBill, font = ('Helvetica', 15,'bold'))
+        dspbill = Button(self.buttonFrame,text="Display Bill", command=printBill, font = ('Helvetica', int(FR*15),'bold'))
         dspbill.pack(side="top",pady = 10)
 
-        prntBill = Button(self.buttonFrame, text = "Print Bill", command=customerCopy, width = 15,font = ('Helvetica', 15,'bold'))
+        prntBill = Button(self.buttonFrame, text = "Print Bill", command=customerCopy, width = int(WR*15),font = ('Helvetica', int(FR*15),'bold'))
         prntBill.pack(side = "top", pady = 10)
 
        
@@ -2094,16 +2115,16 @@ class Window(Tk):
                 sysData=collection.find_one({'_id': 'settingsData'})
                 print(sysData)
                 connection.close()
-                receiverLabel = Label(self.displayFrame, text = " Send mail using :", font = ('Helvetica', 10,'bold'))
+                receiverLabel = Label(self.displayFrame, text = " Send mail using :", font = ('Helvetica', int(FR*10),'bold'))
                 receiverLabel.grid(row=0, column=0, padx=10, pady=10, sticky='w')
                 
                 infoLabel = Label(self.displayFrame, text=" (Set this email address send backup)")
                 infoLabel.grid(row=1, column=0, columnspan=2,padx=10, pady=0, sticky='w')
 
-                self.sender_emaildata = Label(self.displayFrame, text=sysData['sender_email'], font=('Helvetica', 10, 'bold'))
+                self.sender_emaildata = Label(self.displayFrame, text=sysData['sender_email'], font=('Helvetica', int(FR*10), 'bold'))
                 self.sender_emaildata.grid(row = 0, column = 1, padx = 10, pady = 10)
 
-                senderPasswordLabel = Label(self.displayFrame, text = " Sender email password :",font = ('Helvetica', 10,'bold'))
+                senderPasswordLabel = Label(self.displayFrame, text = " Sender email password :",font = ('Helvetica', int(FR*10),'bold'))
                 senderPasswordLabel.grid(
                     row=2, column=0, padx=10, pady=10, sticky='w')
 
@@ -2111,19 +2132,19 @@ class Window(Tk):
                 infoLabel.grid(row=3, column=0, columnspan=2,
                             padx=10, pady=0, sticky='w')
 
-                self.sender_passworddata = Label(self.displayFrame, text='*********', font=('Helvetica', 10, 'bold'))#sysData['sender_password']
+                self.sender_passworddata = Label(self.displayFrame, text='*********', font=('Helvetica', int(FR*10), 'bold'))#sysData['sender_password']
                 self.sender_passworddata.grid(row=2, column=1, padx=10, pady=10)
 
-                receiverLabel = Label(self.displayFrame, text= " Receive mail in: ", font = ('Helvetica', 10, 'bold'))
+                receiverLabel = Label(self.displayFrame, text= " Receive mail in: ", font = ('Helvetica', int(FR*10), 'bold'))
                 receiverLabel.grid(row=4, column=0, padx=10, pady=10, sticky='w')
 
                 infoLabel = Label(self.displayFrame, text=" (Set this email address to receive backup)")
                 infoLabel.grid(row = 5, column = 0,columnspan = 2, padx = 10, pady = 0, sticky='w')
 
-                self.receiver_emaildata = Label(self.displayFrame, text = sysData['sender_email'],font = ('Helvetica', 10,'bold'))
+                self.receiver_emaildata = Label(self.displayFrame, text = sysData['sender_email'],font = ('Helvetica', int(FR*10),'bold'))
                 self.receiver_emaildata.grid(row = 4, column = 1, padx = 10, pady = 10)
                 
-                masterPasswordLabel = Label(self.displayFrame, text = "Master Password :",font = ('Helvetica', 10,'bold'))
+                masterPasswordLabel = Label(self.displayFrame, text = "Master Password :",font = ('Helvetica', int(FR*10),'bold'))
                 masterPasswordLabel.grid(
                     row=6, column=0, padx=10, pady=10, sticky='w')
 
@@ -2131,11 +2152,11 @@ class Window(Tk):
                 infoLabel.grid(row=7, column=0, columnspan=2,
                             padx=10, pady=0, sticky='w')
                 
-                self.master_passworddata = Label(self.displayFrame, text=sysData['master_password'], font=('Helvetica', 10, 'bold'))
+                self.master_passworddata = Label(self.displayFrame, text=sysData['master_password'], font=('Helvetica', int(FR*10), 'bold'))
                 self.master_passworddata.grid(row = 6, column = 1, padx = 10, pady = 10)
 
                 upd_btn=ttk.Style()
-                upd_btn.configure('Update.TButton',width = 10, font=('Times New Roman',10))
+                upd_btn.configure('Update.TButton',width = int(WR*10), font=('Times New Roman',int(FR*10)))
 
                 upd_sendermail = ttk.Button(self.displayFrame, text ="Update", style = 'Update.TButton', command =getNewSender)
                 upd_sendermail.grid(row =0 , column =2 )
@@ -2177,10 +2198,6 @@ class Window(Tk):
         #Bottom Frame inside Left Frame
         self.customerDisplay_dwn = Frame(self.customerDisplay, bg='#ffffff')
         self.customerDisplay_dwn.pack(fill='both', padx=10, pady = 10)
-
-        self.statusLabel = Label(self.belowFrame, text="�Anuj Bista 2020")
-        self.statusLabel.pack()
-
         
         def customerHistory():
 
@@ -2260,41 +2277,41 @@ class Window(Tk):
             
                 
             
-            lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', 14, 'bold'))
+            lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', int(FR*14), 'bold'))
             lbl_name.grid(row = 0, column = 0, pady=20)
 
-            ent_name = Entry(self.customerDisplay_top, font=("Helvetica", 15, 'bold'))
+            ent_name = Entry(self.customerDisplay_top, font=("Helvetica", int(FR*15), 'bold'))
             ent_name.grid(row=0,column=1)
 
-            lbl_phone = Label(self.customerDisplay_top, text="Contact Number",bg ='white', font=('Hevetica', 14, 'bold'))
+            lbl_phone = Label(self.customerDisplay_top, text="Contact Number",bg ='white', font=('Hevetica', int(FR*14), 'bold'))
             lbl_phone.grid(row=1, column=0)
 
             ent_phone = Entry(self.customerDisplay_top,
-                              font=("Helvetica", 15, 'bold'))
+                              font=("Helvetica", int(FR*15), 'bold'))
             ent_phone.grid(row=1, column=1)
 
-            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', 12,'bold'))
+            btn_search = Button(self.customerDisplay_top, text = 'Search', command = searchCustomer, bg = '#3399ff', fg = '#ffffff', border = 0, font = ('Comic San MS', int(FR*12),'bold'))
             btn_search.grid(row=2, column= 1, padx= 10)
 
             salesTotalLabel = Label(self.customerDisplay_top, bg='#ffffff', text='Total Purchase',
-                                    fg='#164ECF', font=('Helvetica', 14, 'bold'))
+                                    fg='#164ECF', font=('Helvetica', int(FR*14), 'bold'))
             salesTotalLabel.grid(row=3, column=0, pady=10)
 
             salesTotal = Label(self.customerDisplay_top, text='------ /-',
-                           bg='#F2F81D', fg='#164ECF', font=('Helvetica', 14, 'bold'))
+                           bg='#F2F81D', fg='#164ECF', font=('Helvetica', int(FR*14), 'bold'))
             salesTotal.grid(row=3, column=1, pady=10)
 
-            lbl_BillDetails = Label(self.customerDisplay_dwn, text='Bill Records', font=('Comic Sans MS', 10, 'bold'))
+            lbl_BillDetails = Label(self.customerDisplay_dwn, text='Bill Records', font=('Comic Sans MS', int(FR*10), 'bold'))
             lbl_BillDetails.grid(row=0, column=0, columnspan=3 )
 
-            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=14, width = 38, font=('Helvetica', 12, 'bold'))
+            billList  = Listbox(self.customerDisplay_dwn, bg = '#ffffff', selectmode='Single', heigh=14, width = int(WR*38), font=('Helvetica', int(FR*12), 'bold'))
             billList.grid(row=1, column=0, pady=20)
 
             viewScrollbar = Scrollbar(self.customerDisplay_dwn, orient=VERTICAL)
             viewScrollbar.config(command=billList.yview)
             viewScrollbar.grid(row=1, ipadx=1, column=1, sticky='ns')
 
-            btn_dsp = Button(self.customerDisplay_dwn, text = 'Display', command=displayBill, font=('Helvetica',15,'bold'))
+            btn_dsp = Button(self.customerDisplay_dwn, text = 'Display', command=displayBill, font=('Helvetica',int(FR*15),'bold'))
             btn_dsp.grid(row=2, column= 0)
 
             #GUI for Right frame
@@ -2303,9 +2320,9 @@ class Window(Tk):
 
 
         s_btn = ttk.Style()
-        s_btn.configure('TButton', height=3, width=20, border=0,
+        s_btn.configure('TButton', height = int(HR*3), width = int(WR*20), border=0,
                         background=buttonBg,
-                        font=("Helvetica", 14, 'bold'))
+                        font=("Helvetica", int(FR*14), 'bold'))
         s_btn.map('TButton',
                   foreground=[('disabled', 'yellow'),
                               ('pressed', 'red'),
@@ -2315,49 +2332,48 @@ class Window(Tk):
                               ('active', 'green')],
 
                   )
-        lbl = Label(self.customerBillDisplay, text="Bill Details", bg = '#ffffff', font=(
-            'Comic Snas MS ', 15, 'bold', 'underline'))
+        lbl = Label(self.customerBillDisplay, text="Bill Details", bg = '#ffffff', font = ('Comic Snas MS ', 15, 'bold', 'underline'))
         lbl.grid(row=0, column=0, columnspan=4)
         #date label
         Viewdatelabel = Label(
-            self.customerBillDisplay, bg='#ffffff', text='Date : ', font=('Helvetica', 12))
+            self.customerBillDisplay, bg='#ffffff', text='Date : ', font=('Helvetica', int(FR*12)))
         Viewdatelabel.grid(row=1, column=0)
 
         dateLabel = Label(self.customerBillDisplay, text='--/--/----',
-                          font=('Comic Sans MS', 15, 'bold'))
+                          font=('Comic Sans MS', int(FR*15), 'bold'))
         dateLabel.grid(row=1, column=1)
 
         #custumer name label
         Viewcustumername = Label(
-            self.customerBillDisplay, bg='#ffffff', text='Customer Name: ', font=('Hevetica', 12))
+            self.customerBillDisplay, bg='#ffffff', text='Customer Name: ', font=('Hevetica', int(FR*12)))
         Viewcustumername.grid(row=3, column=0)
 
         customerNameLabel = Label(
-            self.customerBillDisplay, bg='#ffffff', text='---------', font=('Comic Sans MS', 12, 'bold'))
+            self.customerBillDisplay, bg='#ffffff', text='---------', font=('Comic Sans MS', int(FR*12), 'bold'))
         customerNameLabel.grid(row=3, column=1)
 
-        ViewTime = Label(self.customerBillDisplay, bg = '#ffffff', text='Time:', font=('Hevetica', 12))
+        ViewTime = Label(self.customerBillDisplay, bg = '#ffffff', text='Time:', font=('Hevetica', int(FR*12)))
         ViewTime.grid(row=2, column=0)
 
         timeLabel = Label(self.customerBillDisplay, bg='#ffffff', text='--:-- --',
-                          font=('Comic Snas MS', 12, 'bold'))
+                          font=('Comic Snas MS', int(FR*12), 'bold'))
         timeLabel.grid(row=2, column=1, padx=10)
 
         helloatLabel = Label(
-            self.customerBillDisplay, bg = '#ffffff', text='Contact Number', font=('Hevetica', 12))
+            self.customerBillDisplay, bg = '#ffffff', text='Contact Number', font=('Hevetica', int(FR*12)))
         helloatLabel.grid(row=4, column=0)
 
         helloat = Label(self.customerBillDisplay, bg='#ffffff', text=' ----------- ',
-                        font=('Comic Sans MS', 10, 'bold'))
+                        font=('Comic Sans MS', int(FR*10), 'bold'))
         helloat.grid(row=4, column=1)
 
         #Bill Total Labels
         billTotal = Label(self.customerBillDisplay, bg='#ffffff', text='Bill Total ',
-                          font=('Helvetica', 15, 'bold'))
+                          font=('Helvetica', int(FR*15), 'bold'))
         billTotal.grid(row=5, column=0, padx=20)
 
         billTotalLabel = Label(self.customerBillDisplay,  text='------ /-',
-                               bg='#F2F81D', fg='#164ECF', font=('Helvetica', 15, 'bold'))
+                               bg='#F2F81D', fg='#164ECF', font=('Helvetica', int(FR*15), 'bold'))
         billTotalLabel.grid(row=5, column=1, pady = 10)
 
         
@@ -2366,16 +2382,16 @@ class Window(Tk):
         billFrame.grid(row = 7, column = 0, columnspan=4)
 
         view_viewTree = ttk.Treeview(
-            billFrame, height=10, style="mystyle.Treeview")
+            billFrame, height = int(HR*10), style="mystyle.Treeview")
 
         #Define Columns
         view_viewTree['columns'] = (
             'Product Name',  'Quantity', 'Sales Price', 'Product Total')
-        view_viewTree.column('#0', width=60, minwidth=25, anchor=CENTER)
-        view_viewTree.column('Product Name', width=200, anchor=W)
-        view_viewTree.column('Sales Price', width=100, anchor=CENTER)
-        view_viewTree.column('Quantity', width=120, anchor=CENTER)
-        view_viewTree.column('Product Total', width=150, anchor=CENTER)
+        view_viewTree.column('#0', width = int(WR*60), minwidth=25, anchor=CENTER)
+        view_viewTree.column('Product Name', width = int(WR*200), anchor=W)
+        view_viewTree.column('Sales Price', width = int(WR*100), anchor=CENTER)
+        view_viewTree.column('Quantity', width = int(WR*120), anchor=CENTER)
+        view_viewTree.column('Product Total', width = int(WR*150), anchor=CENTER)
 
         #Create Headings
         view_viewTree.heading('#0', text='S.N', anchor=CENTER)
@@ -2413,7 +2429,7 @@ class AuthUser(Tk):
         displayFrame.pack( fill='both')
 
         companyLabel = Label(displayFrame, text='Regmi Electricals Centre',
-                             fg='#000000',bg = '#ffffff', font=('Helvetica',25,'bold', 'underline'))
+                             fg='#000000',bg = '#ffffff', font=('Helvetica',int(FR*25),'bold', 'underline'))
         companyLabel.pack(padx = 20,pady=5)
 
 
@@ -2423,7 +2439,7 @@ class AuthUser(Tk):
         image = Image.open("./res/logo.jpg")
         test = ImageTk.PhotoImage(image)
 
-        label1 = Label(detailsframe,image=test, width=200, height=200, bg = '#ffffff')
+        label1 = Label(detailsframe,image=test, width = int(WR*200), height = int(HR*200), bg = '#ffffff')
         label1.image = test
         label1.pack()
 
@@ -2437,11 +2453,11 @@ class AuthUser(Tk):
 
         image = Image.open('./res/lck.png')
         test = ImageTk.PhotoImage(image)
-        locklbl = Label(passwordFrame, image=test, height = 50, width = 50, bg = '#ffffff' )
+        locklbl = Label(passwordFrame, image=test, height = int(HR*50), width = int(WR*50), bg = '#ffffff' )
         locklbl.image = test
         locklbl.grid(row = 0, column = 0)
 
-        self.password_entry = Entry(passwordFrame,border = 0,width=15,font=('default',12,), bg = '#f0f3f7')
+        self.password_entry = Entry(passwordFrame,border = 0,width = int(WR*15),font=('default',int(FR*12),), bg = '#f0f3f7')
         self.password_entry.grid(row = 0 , column = 1,padx = 2, pady = 10, sticky = 'w')
         self.password_entry.insert(0,"Enter Password")
         self.password_entry.bind('<FocusIn>', clearPlaceHolder)
@@ -2450,12 +2466,12 @@ class AuthUser(Tk):
 
 
         
-        loginbutton = Button(detailsframe,text='Get Access', border = 0,width=15,bg='#151FC4',fg = '#ffffff',font=('Helvetica',13,'bold'), command = self.checkPass)
+        loginbutton = Button(detailsframe,text='Get Access', border = 0,width = int(WR*15),bg='#151FC4',fg = '#ffffff',font=('Helvetica',int(FR*13),'bold'), command = self.checkPass)
         loginbutton.pack(padx=10, pady = 10)
         loginbutton.bind("<Return>",self.checkPass)
 
         forgotPassword = Button(detailsframe, text='Forgot Password ?', cursor="hand2", border=0,
-                                bg='#ffffff', fg='red', font=('Helvetica', 10, 'underline'), command=self.saendPassword)
+                                bg='#ffffff', fg='red', font=('Helvetica', int(FR*10), 'underline'), command=self.saendPassword)
         forgotPassword.pack(padx=10, pady = 10)
 
         ##For local storage
@@ -2521,8 +2537,6 @@ class AuthUser(Tk):
                 
         except smtplib.socket.gaierror:
             messagebox.showerror("Connection Failed", 'This function requires active internet connection.')
-
-
         
 #authUser = AuthUser()
 #authUser.mainloop()
