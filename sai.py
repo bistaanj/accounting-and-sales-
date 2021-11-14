@@ -653,10 +653,6 @@ class Window(Tk):
                     database = connection['saiRecords']
                     collection = database['order']
                     if (key == 'By Customer'):
-<<<<<<< HEAD
-                        viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
-                        customerNameOrProductName.config(text="Product Name: ")
-=======
                         customerNameLabel.grid(column =1,row =0)
                         customerNameEntry.grid(column=2,row=0)
                         customerPhoneLabel.grid(column =1,row =1)
@@ -665,7 +661,6 @@ class Window(Tk):
                         searchBox.grid_forget()
                         viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
                         customerNameOrProductName.config(text="Customer Name: ")
->>>>>>> 2447d4b5d4e611af496bf09a2df3d8662bbb1617
                         searchFilter = 'i'
                         result = collection.find({'Customer Name': {'$regex': searchValue, '$options': searchFilter}})  
                         for x in result:
@@ -673,27 +668,6 @@ class Window(Tk):
                             self.view_productId.append(x['_id'])
                         
                     else:
-<<<<<<< HEAD
-                        viewTree.heading('Customer Name', text='Customer Name', anchor=CENTER)
-                        customerNameOrProductName.config(text="Customer Name: ")
-                        requiredId = []
-                        result= collection.find({})
-                        
-                    #     for i in result:
-                    #         s1 = i["Products"]
-                    #         for j in s1:                                
-                    #             final.append({
-                    #                             "Product Name":j,
-                    #                             "Custumer Name": i["Customer Name"],
-                    #                             "Quantity": s1[j]['Quantity'],
-                    #                             "Sales Price":s1[j]['Sales Price'],
-                    #                             "Units": s1[j]["Units"],
-                    #                             "Product Total": s1[j]["Product Total"]       
-                    #                         })
-                    #             if searchValue.upper() in str(j.upper()):
-                    #                 example.append(j + ' -- ' + str(s1[j]['Quantity']))  
-                    itemlistbox.insert(0, *example)
-=======
                         customerNameEntry.grid_forget()
                         customerNameLabel.grid_forget()
                         customerPhoneEntry.grid_forget()
@@ -703,25 +677,30 @@ class Window(Tk):
                         searchBox.bind('<Return>')
                         viewTree.heading('Customer Name', text='Customer Name', anchor=CENTER)
                         customerNameOrProductName.config(text="Product Name: ")
-                        final = []
+                        final = {}
                         result= collection.find({})
                         for i in result:
-                            s1 = i["Products"]
-                            for j in s1:                                
-                                final.append({
-                                                "Product Name":j,
-                                                "Custumer Name": i["Customer Name"],
-                                                "Quantity": s1[j]['Quantity'],
-                                                "Sales Price":s1[j]['Sales Price'],
-                                                "Units": s1[j]["Units"],
-                                                "Product Total": s1[j]["Product Total"]       
-                                            })
-                                if searchValue.upper() in str(j.upper()):
-                                    example.append(j + ' -- ' + str(s1[j]['Quantity']))  
->>>>>>> 2447d4b5d4e611af496bf09a2df3d8662bbb1617
+                            a= str((i['Products']))
+                            b=(a.upper())
+                            print(" ")
+                            if searchValue.upper() in b:
+                                process1 = {'cName' :i['Customer Name'], 'product': i['Products'] [searchValue]}
+                                final[i['_id']]=process1
+                        
+                        
+                        for rows in viewTree.get_children():
+                            viewTree.delete(rows)
+                        count = 0
+                        for x in final:
+                            viewTree.insert(parent='', index=END, iid=(final[x]), text=(count+1),
+                             values=(final[x]['cName'],
+                             final[x]['product']['Sales Price'],
+                             final[x]['product']['Quantity'], final[x]['product']['Units'],
+                             final[x]['product']['Product Total']))
+                            count+=1
 
-                    # if (len(self.view_productId) < 1):
-                    #     messagebox.showinfo("Search Request", "No Record Found")
+                            
+                       
                     
             except ValueError:
                 messagebox.showerror("Invalid Request", "Set Search Filter")
