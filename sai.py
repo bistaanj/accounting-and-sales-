@@ -629,10 +629,13 @@ class Window(Tk):
         self.displayFrame.pack(fill="both")
 
         topFrame = Frame(self.displayFrame)
-        topFrame.pack()
+        topFrame.pack(side=TOP,fill=BOTH)
 
         orderDetailsFrame = Frame(self.displayFrame)
         orderDetailsFrame.pack()
+
+        bottomFrame = Frame(self.displayFrame)
+        bottomFrame.pack(side=BOTTOM)
         def validateContact(e):
             try:
                 value=int(customerPhoneEntry.get())
@@ -653,26 +656,27 @@ class Window(Tk):
                     database = connection['saiRecords']
                     collection = database['order']
                     if (key == 'By Customer'):
-                        customerNameLabel.grid(column =1,row =0)
-                        customerNameEntry.grid(column=2,row=0)
-                        customerPhoneLabel.grid(column =1,row =1)
-                        customerPhoneEntry.grid(column=2,row=1)
+                        customerNameLabel.grid(column =1,row =1,pady=5,padx=15)
+                        customerNameEntry.grid(column=2,row=1,pady=5,padx=15)
+                        customerPhoneLabel.grid(column =1,row =2,pady=5,padx=15)
+                        customerPhoneEntry.grid(column=2,row=2,pady=5,padx=15)
                         customerPhoneEntry.bind('<KeyRelease>',validateContact)
                         searchBox.grid_forget()
+                        productNameLabel.grid_forget()
                         viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
                         customerNameOrProductName.config(text="Customer Name: ")
                         searchFilter = 'i'
                         result = collection.find({'Customer Name': {'$regex': searchValue, '$options': searchFilter}})  
                         for x in result:
                             example.append(x['Customer Name'] + ' -- ' + x['Date'] + ' -- ' +  x['Contact Number'])
-                            self.view_productId.append(x['_id'])
-                        
+                            self.view_productId.append(x['_id'])     
                     else:
                         customerNameEntry.grid_forget()
                         customerNameLabel.grid_forget()
                         customerPhoneEntry.grid_forget()
                         customerPhoneLabel.grid_forget()
-                        searchBox.grid(column=1, row=0, padx = 10, pady=10,columnspan=3)
+                        searchBox.grid(column=2, row=1, padx = 10, pady=10)
+                        productNameLabel.grid(column=1,row=1)
                         searchBox.bind('<KeyRelease>', displayOrderSearch)
                         searchBox.bind('<Return>')
                         viewTree.heading('Customer Name', text='Customer Name', anchor=CENTER)
@@ -682,12 +686,9 @@ class Window(Tk):
                         for i in result:
                             a= str((i['Products']))
                             b=(a.upper())
-                            print(" ")
                             if searchValue.upper() in b:
                                 process1 = {'cName' :i['Customer Name'], 'product': i['Products'] [searchValue]}
                                 final[i['_id']]=process1
-                        
-                        
                         for rows in viewTree.get_children():
                             viewTree.delete(rows)
                         count = 0
@@ -697,39 +698,35 @@ class Window(Tk):
                              final[x]['product']['Sales Price'],
                              final[x]['product']['Quantity'], final[x]['product']['Units'],
                              final[x]['product']['Product Total']))
-                            count+=1
-
-                            
-                       
-                    
+                            count+=1   
             except ValueError:
                 messagebox.showerror("Invalid Request", "Set Search Filter")
-           
-        
+
         PtypeCombo = ttk.Combobox(topFrame, background='#CED7D7',width = int(WR*10), values=['By Customer', 'By Product'],font=('Comic Sans MS',int(FR*10),'bold'),state = 'readonly')
         PtypeCombo.current(0)
-        PtypeCombo.grid(column = 0, row = 0, padx = 5, pady = 10, sticky = "w")
+        PtypeCombo.grid(column = 0, row = 0, padx = 15, pady = 10, sticky = "w",columnspan=2)
         PtypeCombo.bind('<<ComboboxSelected>>', displayOrderSearch)
 
-
+        productNameLabel = Label(topFrame,text="Product Name:",font=('Comic Sans MS', int(FR*12)))
+        productNameLabel.grid_forget()
         searchBox = Entry(topFrame, font=('Hevitica', int(FR*13),'bold'), width=int(WR*20))
         searchBox.grid_forget()
 
-        customerNameLabel = Label(topFrame,text="Name: ", font=('Comic Sans MS', int(FR*12)))
-        customerNameLabel.grid(column =1,row =0)
+        customerNameLabel = Label(topFrame,text="Customer Name: ", font=('Comic Sans MS', int(FR*12)))
+        customerNameLabel.grid(column =1,row =1,pady=5,padx=15)
         
-        customerNameEntry = Entry(topFrame, font=('Hevitica', int(FR*11),'bold'), width= int(WR*15))
-        customerNameEntry.grid(column=2,row=0)
+        customerNameEntry = Entry(topFrame, font=('Hevitica', int(FR*11),'bold'), width= int(WR*20))
+        customerNameEntry.grid(column=2,row=1,pady=5,padx=15)
 
         customerPhoneLabel = Label(topFrame,text="Mobile Number: ", font=('Comic Sans MS', int(FR*12)))
-        customerPhoneLabel.grid(column =1,row =1)
+        customerPhoneLabel.grid(column =1,row =2,pady=5,padx=15)
 
-        customerPhoneEntry = Entry(topFrame, font=('Hevitica', int(FR*11),'bold'), width= int(WR*15))
-        customerPhoneEntry.grid(column=2,row=1)
+        customerPhoneEntry = Entry(topFrame, font=('Hevitica', int(FR*11),'bold'), width= int(WR*20))
+        customerPhoneEntry.grid(column=2,row=2,pady=5,padx=15)
         customerPhoneEntry.bind('<KeyRelease>',validateContact)
 
         btn_search = Button(topFrame, text='Search', bg = '#3399ff', fg = '#ffffff', border = 0,font=('Comic Sans MS', int(FR*13),'bold'),command=displayOrderSearch)
-        btn_search.grid(row=0, column=4, padx = 11, pady = 10,rowspan=2)
+        btn_search.grid(row=1, column=3, padx = 25, pady = 10,rowspan=2)
 
         # itemlistbox = Listbox(topFrame, width = int(WR*40), height = int(HR*4), bg="#e8eddf", font =('Comic Snas MS', int(FR*15) ))
         # itemlistbox.grid(row=1,column = 0,columnspan=3,padx=5)
@@ -739,24 +736,23 @@ class Window(Tk):
         # scrollbar.grid(row=1,ipadx=10,column=3,sticky='ns')
         
         customerNameOrProductName = Label(orderDetailsFrame,text='Customer Name: ',font=('Comic Sans MS', int(FR*13)))
-        customerNameOrProductName.pack()
         customerNameOrProductName.pack_forget()
         
-        viewTree = ttk.Treeview(orderDetailsFrame,  style="mystyle.Treeview", height=10)
+        viewTree = ttk.Treeview(orderDetailsFrame,  style="mystyle.Treeview", height=13)
 
         #Define Columns
         viewTree['columns'] = ('Customer Name',
                                'Sales Price', 'Quantity', 'Units', 'Total Price')
         viewTree.column('#0', width = int(WR*40), minwidth=10, anchor=CENTER)
-        viewTree.column('Customer Name', width = int(WR*130), anchor=CENTER)
-        viewTree.column('Sales Price', width = int(WR*120), anchor=CENTER)
-        viewTree.column('Quantity', width = int(WR*100), anchor=CENTER)
-        viewTree.column('Units', width = int(WR*90), anchor=CENTER)
-        viewTree.column('Total Price', width = int(WR*130), anchor=CENTER)
+        viewTree.column('Customer Name', width = int(WR*140), anchor=CENTER)
+        viewTree.column('Sales Price', width = int(WR*130), anchor=CENTER)
+        viewTree.column('Quantity', width = int(WR*110), anchor=CENTER)
+        viewTree.column('Units', width = int(WR*100), anchor=CENTER)
+        viewTree.column('Total Price', width = int(WR*140), anchor=CENTER)
 
         #Create Headings
         viewTree.heading('#0', text='S.N', anchor=CENTER)
-        viewTree.heading('Customer Name', text='Customer Name', anchor=CENTER)
+        viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
         viewTree.heading('Sales Price', text='Sales Price', anchor=CENTER)
         viewTree.heading('Quantity', text='Quantity', anchor=CENTER)
         viewTree.heading('Units', text='Units', anchor=CENTER)
@@ -764,6 +760,8 @@ class Window(Tk):
         viewTree.pack(fill = 'both',expand = 1, padx = 20,pady = 20)
         self.viewTree = viewTree
         
+        checkoutProductButton = Button(bottomFrame,text="Checkout Product",bg = '#3399ff', fg = '#ffffff', border = 0,font=('Comic Sans MS', int(FR*13)))
+        checkoutProductButton.pack()
         
     # Displays the items in the inventory
     def viewInventory(self):
