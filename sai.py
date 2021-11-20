@@ -657,15 +657,16 @@ class Window(Tk):
                         customerNameEntry.grid(column=2,row=0)
                         customerPhoneLabel.grid(column =1,row =1)
                         customerPhoneEntry.grid(column=2,row=1)
+                        contact = customerPhoneEntry.get()
                         customerPhoneEntry.bind('<KeyRelease>',validateContact)
                         searchBox.grid_forget()
                         viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
                         customerNameOrProductName.config(text="Customer Name: ")
                         searchFilter = 'i'
-                        result = collection.find({'Customer Name': {'$regex': searchValue, '$options': searchFilter}})  
+                        result = collection.find({'Contact Number': contact})  
                         for x in result:
-                            example.append(x['Customer Name'] + ' -- ' + x['Date'] + ' -- ' +  x['Contact Number'])
-                            self.view_productId.append(x['_id'])
+                            print(x)
+                            
                         
                     else:
                         customerNameEntry.grid_forget()
@@ -682,9 +683,10 @@ class Window(Tk):
                         for i in result:
                             a= str((i['Products']))
                             b=(a.upper())
-                            print(" ")
+                            print(searchValue.upper())
+                            print(b)
                             if searchValue.upper() in b:
-                                process1 = {'cName' :i['Customer Name'], 'product': i['Products'] [searchValue]}
+                                process1 = {'cName' :i['Customer Name'], 'product': i['Products'][searchValue]}
                                 final[i['_id']]=process1
                         
                         
