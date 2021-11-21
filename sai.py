@@ -62,14 +62,14 @@ class Window(Tk):
 
         self.customerTab = ttk.Frame(tab_control)
         tab_control.add(self.customerTab, text="Customer Details")
- 
+
 
         #Packs the Created Tabs in the Frame
         tab_control.pack(expand = 1, fill = "both")
 
         #Creates Frame for Navigation Button
         self.navigationFrame_inventory(self.inventory)
-        
+
         #Creates Frame for Billing Tab
         self.navigationFrame_billing(self.billingTab)
 
@@ -95,7 +95,7 @@ class Window(Tk):
         self.addNewRecord()
 
 
-    
+
 
 
     ## GUI part Starts here
@@ -116,11 +116,11 @@ class Window(Tk):
 
     def navigationFrame_inventory(self,tab):
 
-        
+
         buttonBg = "#284F9B"
         self.buttonFrame = Frame(tab, bg=buttonBg)
         self.buttonFrame.pack(fill = Y, side = "left" )
-        
+
         self.belowFrame = Frame(tab, bg="#d1eded")
         self.belowFrame.pack(fill=X, side="bottom")
 
@@ -135,7 +135,7 @@ class Window(Tk):
               background=[('disabled', 'magenta'),
                           ('pressed', '!focus', 'cyan'),
                           ('active', 'green')],
-              
+
               )
 
         self.btn_addProduct = ttk.Button(self.buttonFrame, text = "Add New Product",style ='TButton', command = self.addNewRecord)
@@ -152,7 +152,7 @@ class Window(Tk):
             self.buttonFrame, text="View Orders", style='TButton', command=self.viewOrders)
         self.btn_viewInventory.grid(column=0, row=4, pady=5)
 
-        
+
         backupBtn = ttk.Button(
             self.buttonFrame, text="Back-up and Recovery", style='TButton', command=self.backupAndRecovery)
         backupBtn.grid(column=0, row=5, pady=5)
@@ -194,15 +194,15 @@ class Window(Tk):
                 # os.system(command)
                 top.destroy()
                 messagebox.showinfo("Request Completed","Database Backup created Successfully")
-        #Function to Restore database 
+        #Function to Restore database
         def restoreDatabase():
             filename =  filedialog.askdirectory(initialdir = '/d',
             title = "Select backup File")
             command = "mongorestore --db saiRecords --dir " + str(filename)
             subprocess.call(command,shell=True)
-            # os.system(command) 
+            # os.system(command)
             messagebox.showinfo("Restore Complete","Database Restored Successfully")
-            
+
 
 
         backup_btn = ttk.Button(self.displayFrame, text= 'Back-up Database', command=backupDatabase)
@@ -253,9 +253,9 @@ class Window(Tk):
                 server.sendmail(sender_email, receiver_email, message)
         except ValueError:
             messagebox.showerror("Invalid Request","No Sales Made Yet.")
-            
-        
-        
+
+
+
     #creates widget inside Inventory Label Frame. Tab-> Inventory
     def addNewRecord(self):
         self.getDateTime()
@@ -325,7 +325,7 @@ class Window(Tk):
         self.submit_record_btn = Button(self.displayLabel, cursor = "hand2", text = "Record", command = self.createRecord,
                                         font=('Times New Roman', int(FR*20)), bg='#648EF1', fg='#FFFFFF', border=0)
         self.submit_record_btn.grid(column = 0, row = 8, padx = 10, pady = 20, sticky = "se")
-        
+
         tips = Label(self.displayLabel, text = "*record validations:-",font =('Times New Roman',int(FR*10),'underline'), fg = 'red', bg ='white')
         tips.grid(column=0,row=9, padx=5, pady=10, sticky="w")
 
@@ -371,7 +371,7 @@ class Window(Tk):
             self.UpdatePopUp.grab_set()
             self.UpdatePopUp.iconbitmap('./res/dsk.ico')
             self.UpdatePopUp.title("Update Values")
-            
+
             self.UpdatePopUp.geometry("+%d+%d" % (400, 300))
             self.UpdatePopUp.minsize(250,200)
 
@@ -393,11 +393,11 @@ class Window(Tk):
                 grabbedValue = int(self.updateEntry.get())
                 if (grabbedValue == 0):
                     raise ValueError
-                
+
                 # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
                 # db = client.get_database('saiRecords')
                 # collection = db.inventory
-                
+
                 ##For local Storage
                 connection = pymongo.MongoClient("localhost", 27017)
                 database = connection['saiRecords']
@@ -535,7 +535,7 @@ class Window(Tk):
 
         def clearPlaceHolder(event):
             self.searchEntry.delete(0,'end')
-        
+
         def phaseOutProducts():
             try:
                 iid = viewTree.focus()
@@ -571,7 +571,7 @@ class Window(Tk):
         searchBtn=Button(self.searchFrame, text = "GO", command = displaySearchResult,
         font=('Times New Roman', int(FR*18),'bold','underline'), bg='#4F83FC', fg = '#FFFFFF',border = 0, cursor = "hand2")
         searchBtn.grid(column=2, row=1, padx=10, pady=10, sticky="w")
-        
+
 
         self.rsltFrame = Frame(self.displayFrame, bg = 'white')
         self.rsltFrame.pack() #fill = 'both', side = 'left', anchor = S
@@ -590,7 +590,7 @@ class Window(Tk):
         viewTree.column('Quantity', width = int(WR*130), anchor=CENTER)
         viewTree.column('Units', width = int(WR*110), anchor=CENTER)
         viewTree.column('Location', width = int(WR*150), anchor=CENTER)
-        
+
         #Create Headings
         viewTree.heading('#0', text='S.N', anchor=CENTER)
         viewTree.heading('Product Name', text='Product Name', anchor=W)
@@ -599,7 +599,7 @@ class Window(Tk):
         viewTree.heading('Quantity', text='Quantity', anchor=CENTER)
         viewTree.heading('Units', text='Units', anchor=CENTER)
         viewTree.heading('Location', text='Location', anchor=CENTER)
-        
+
         viewTree.pack(padx = 10)
 
         def clearTree():
@@ -640,7 +640,7 @@ class Window(Tk):
             try:
                 value=int(customerPhoneEntry.get())
             except ValueError:
-                customerPhoneEntry.delete(-1,'end') 
+                customerPhoneEntry.delete(-1,'end')
 
         def displayOrderSearch(event=''):
             example = []
@@ -660,17 +660,42 @@ class Window(Tk):
                         customerNameEntry.grid(column=2,row=1,pady=5,padx=15)
                         customerPhoneLabel.grid(column =1,row =2,pady=5,padx=15)
                         customerPhoneEntry.grid(column=2,row=2,pady=5,padx=15)
+                        contact= customerPhoneEntry.get()
                         customerPhoneEntry.bind('<KeyRelease>',validateContact)
                         searchBox.grid_forget()
                         productNameLabel.grid_forget()
                         viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
                         customerNameOrProductName.config(text="Customer Name: ")
                         searchFilter = 'i'
-                        result = collection.find({'Contact Number': contact})  
-                        for x in result:
-                            print(x)
-                            
+                        final = collection.find({'Contact Number': contact})
+                        y = {}
                         
+                        for x in final:
+                            raw = {}
+                            raw = x['Products']
+                            y = {**y, **raw}
+                        
+                        print('The results....')
+                        print(y)
+                        for x in y:
+                            print(y[x])
+                            # print ("y[x]")
+                            # print(y[x])
+                            # print(" y[x]['Products']")
+                            # print(y[x])
+                        
+                        for rows in viewTree.get_children():
+                            viewTree.delete(rows)
+                        count = 0
+                        for x in y:
+                            viewTree.insert(parent='', index=END, iid=y[x]['iid'], text=(count+1),
+                             values=(x,
+                             y[x]['Sales Price'],
+                             y[x]['Quantity'], y[x]['Units'],
+                             y[x]['Product Total']))
+                            count+=1
+
+
                     else:
                         customerNameEntry.grid_forget()
                         customerNameLabel.grid_forget()
@@ -699,7 +724,7 @@ class Window(Tk):
                              final[x]['product']['Sales Price'],
                              final[x]['product']['Quantity'], final[x]['product']['Units'],
                              final[x]['product']['Product Total']))
-                            count+=1   
+                            count+=1
             except ValueError:
                 messagebox.showerror("Invalid Request", "Set Search Filter")
 
@@ -715,7 +740,7 @@ class Window(Tk):
 
         customerNameLabel = Label(topFrame,text="Customer Name: ", font=('Comic Sans MS', int(FR*12)))
         customerNameLabel.grid(column =1,row =1,pady=5,padx=15)
-        
+
         customerNameEntry = Entry(topFrame, font=('Hevitica', int(FR*11),'bold'), width= int(WR*20))
         customerNameEntry.grid(column=2,row=1,pady=5,padx=15)
 
@@ -735,10 +760,10 @@ class Window(Tk):
         # scrollbar = Scrollbar(topFrame, orient=VERTICAL)
         # scrollbar.config(command=self.itemlistbox.yview)
         # scrollbar.grid(row=1,ipadx=10,column=3,sticky='ns')
-        
+
         customerNameOrProductName = Label(orderDetailsFrame,text='Customer Name: ',font=('Comic Sans MS', int(FR*13)))
         customerNameOrProductName.pack_forget()
-        
+
         viewTree = ttk.Treeview(orderDetailsFrame,  style="mystyle.Treeview", height=13)
 
         #Define Columns
@@ -760,10 +785,10 @@ class Window(Tk):
         viewTree.heading('Total Price', text='Total Price', anchor=CENTER)
         viewTree.pack(fill = 'both',expand = 1, padx = 20,pady = 20)
         self.viewTree = viewTree
-        
+
         checkoutProductButton = Button(bottomFrame,text="Checkout Product",bg = '#3399ff', fg = '#ffffff', border = 0,font=('Comic Sans MS', int(FR*13)))
         checkoutProductButton.pack()
-        
+
     # Displays the items in the inventory
     def viewInventory(self):
         self.displayFrame.destroy()
@@ -775,7 +800,7 @@ class Window(Tk):
 
         def clearPlaceHolder(event):
             self.searchEntry.delete(0, 'end')
-        
+
         def clearTree():
             for rows in viewTree.get_children():
                 viewTree.delete(rows)
@@ -832,7 +857,7 @@ class Window(Tk):
         font=('Times New Roman', int(FR*18),'bold','underline'), bg='#4F83FC', fg = '#FFFFFF',border = 0, cursor = "hand2")
         searchBtn.grid(column=2, row=1, padx=10, pady=10, sticky="w")
 
-        
+
         viewTree = ttk.Treeview(self.displayFrame,  style="mystyle.Treeview", height=5)
 
         #Define Columns
@@ -880,7 +905,7 @@ class Window(Tk):
         self.btnFrame.pack()
         connection.close()
 
-        
+
 
     #Creates self.displayFrame for selection of Salary or Wages Record
 
@@ -889,7 +914,7 @@ class Window(Tk):
 
     # creates frame and buttons inside the Billing tab's Navigation Button
     def navigationFrame_billing(self,tab):
-    
+
         if 1:
             self.billing_method = 0
 
@@ -914,10 +939,10 @@ class Window(Tk):
                     #templabel.grid(row= 1,column=6)
                     self.billingVatableAmountLabel.grid_forget()
                     self.VatableAmountLabel.grid_forget()
-                    
 
-                    
-        
+
+
+
         def vat_billing():
             if self.billing_method ==1:
                 viewProductsInBill()
@@ -934,17 +959,17 @@ class Window(Tk):
                         self.VatableAmountLabel.grid(row=1, column=0, sticky="n",  pady=0)
                         self.billingVatableAmountLabel.config(text = 0)
 
-                        #templabel.grid_forget()                     
+                        #templabel.grid_forget()
                 else:
                     self.billing_method = 0
                     self.billtypelabel.config(text='VAT BILLING')
                     self.billingVatableAmountLabel.grid(row=1, column=1, sticky="n",  pady=0)
                     self.VatableAmountLabel.grid(row=1, column=0, sticky="n",  pady=0)
                     self.billingVatableAmountLabel.config(text = 0)
-                    
-                
+
+
                     #templabel.grid_forget()
-                
+
 
 
 
@@ -964,7 +989,7 @@ class Window(Tk):
               background=[('disabled', 'magenta'),
                           ('pressed', '!focus', 'cyan'),
                           ('active', 'green')],
-              
+
               )
 
         self.btn_addProduct = ttk.Button(self.buttonFrame, text = "VAT Billing",style ='TButton', command = vat_billing)
@@ -979,7 +1004,7 @@ class Window(Tk):
 
         self.billingtypeFrame = Frame(self.displayFrame,bg='white')
         self.billingtypeFrame.pack(fill='x')
-        
+
         self.mainBillingFrame =Frame(self.displayFrame,bg='white')
         self.mainBillingFrame.pack(side='left', fill='both', padx=20, pady=25, ipady=10)
 
@@ -987,7 +1012,7 @@ class Window(Tk):
         self.billingButtonFrame.pack(side = 'left', fill = 'both', pady = 15,ipady=10)
         # self.billingButtonFrame.grid(column=1, row=0, sticky=NS)
 
-        
+
 
         self.billingSearchFrame=Frame(self.mainBillingFrame,bg='white')
         self.billingSearchFrame.pack(padx= 30)
@@ -1002,9 +1027,9 @@ class Window(Tk):
         # self.amountFrame.grid(column = 0, row = 2)
 
 
-        
-        
-        #Clears the billing 
+
+
+        #Clears the billing
         def clearBilling():
             try:
                 if (self.productsInBill == {}):
@@ -1015,8 +1040,8 @@ class Window(Tk):
                     self.billingTotalAmount = 0
                     self.billingAmountLabel.config(text=self.billingTotalAmount)
                     self.billingVatableAmountLabel.config(text = 0)
-                    
-                    
+
+
                     viewProductsInBill()
             except ValueError:
                 messagebox.showinfo("Invalid Request", "Billing process not initited yet.")
@@ -1029,7 +1054,7 @@ class Window(Tk):
                     if ((askEntry.get()) == ""):
                         raise ValueError
 
-                    
+
                     # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
                     # db = client.get_database('saiRecords')
                     # collection = db.inventory
@@ -1124,7 +1149,7 @@ class Window(Tk):
                         try:
                             value=int(phnNumEntry.get())
                         except ValueError:
-                            phnNumEntry.delete(-1,'end')   
+                            phnNumEntry.delete(-1,'end')
 
                     top = Toplevel()
                     top.grab_set()
@@ -1133,7 +1158,7 @@ class Window(Tk):
                     top.geometry("+%d+%d" % ( 500, 500))
                     askLable = Label(top, text = 'Customer Name : ', font = ('Helvetica', int(FR*15), 'bold') )
                     askLable.grid(row = 0, column = 0, padx = 5, pady = 5)
-                    
+
                     askEntry = Entry(top, width = int(WR*30), font=('Comic Sans MS', int(FR*15), 'bold'))
                     askEntry.grid(row = 0, column = 1, padx = 5, pady = 5)
                     askEntry.bind('<Return>',saveBilltoDbs)
@@ -1145,7 +1170,7 @@ class Window(Tk):
                     phnNumEntry.bind('<KeyRelease>',validateContact)
                     btn = Button(top, text ="Enter", width = int(WR*10), command = saveBilltoDbs)
                     btn.grid(row = 2, column = 1, padx = 5, pady = 5)
-                    
+
 
 
 
@@ -1186,26 +1211,26 @@ class Window(Tk):
                             self.productsInBill[values]['Units'],
                             self.productsInBill[values]['Sales Price'],
                             self.productsInBill[values]['Product Total']
-                            
+
                             ))
                 self.billingTotalAmount += int(self.productsInBill[values]['Product Total'])
                 self.billingAmountLabel.config(text=self.billingTotalAmount)
 
                 self.billingAmountLabel.focus()
-                
+
                 if self.billing_method ==0:
                     self.billingVatableAmountLabel.config(text = int(self.billingTotalAmount))
                     self.billingAmountLabel.config(text = int(self.billingTotalAmount+0.13*self.billingTotalAmount))
-                
+
                 count += 1
             print('Products in Bill')
             print(self.productsInBill)
 
        #New Add Product Funtion to add products in bill
         def billingProcess():
-            try:                  
+            try:
                 def displayToBillView(event=''):
-                    
+
                     requiredQuantity = float(askQuantityEntry.get())
                     top.destroy()
 
@@ -1230,14 +1255,14 @@ class Window(Tk):
                             viewProductsInBill()
                             top.destroy()
 
-                            
+
 
                 # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
                 # db = client.get_database('saiRecords')
                 # collection = db.inventory
-                
+
                 ##For local database storage
-                
+
                 connection = pymongo.MongoClient("localhost", 27017)
                 database = connection['saiRecords']
                 collection = database['inventory']
@@ -1245,11 +1270,11 @@ class Window(Tk):
                 print("Selected from itemlistbox" + toadd)
 
                 productToBill = collection.find_one({'Product Name': toadd})
-                
+
                 if (productToBill['Quantity']==0):
                     raise ValueError
 
-                # connection.close()                    
+                # connection.close()
                 top = Toplevel()
                 top.grab_set()
                 top.iconbitmap('./res/dsk.ico')
@@ -1267,7 +1292,7 @@ class Window(Tk):
                 salesPriceDsp = Label(top, text=productToBill['Sales Price'], padx=5, pady=5,font=('Helvetica', 15, 'bold'))
                 salesPriceDsp.grid(row = 1, column=1)
 
-                
+
                 askQuantityLabel = Label(top, text="Enter Quantity", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
                 askQuantityLabel.grid(row=2, column=0)
 
@@ -1284,7 +1309,7 @@ class Window(Tk):
                 # top.destroy()
             except ValueError:
                 messagebox.showerror('Invalid Request', 'The selected product seems Out of Stock. Try adding the product in the inventory')
-        
+
         def billingEditProcess():
             def applyEdits(event=''):
 
@@ -1347,12 +1372,12 @@ class Window(Tk):
 
         #Bill Product's Quantity Edit Function
         def applyDiscountProcess():
-            
+
             def applyDiscounts(event=''):
-                
+
                 discount_value = float(discountedValue.get())
                 discount_scheme = schemeType.get()
-                
+
 
                 try:
                     productname = (viewTree.item(iidEdit, 'values'))[0]
@@ -1380,7 +1405,7 @@ class Window(Tk):
                         viewTree.set(iidEdit, column='Sales Price', value=discount_value)
                         viewTree.set(iidEdit, column='Total',value=newTotal)
                         self.billingAmountLabel.config(text=self.billingTotalAmount)
-                        
+
                     if self.billing_method ==0:
                         self.billingVatableAmountLabel.config(text = int(self.billingTotalAmount))
                         self.billingAmountLabel.config(text = int(self.billingTotalAmount+0.13*self.billingTotalAmount))
@@ -1388,14 +1413,14 @@ class Window(Tk):
                     messagebox.showinfo("Transaction Complete","Discount Applied")
 
                     # viewTree.set(iidEdit, column='Quantity', value=newValue)
-                    
-                    
+
+
                 except ValueError:
                     messagebox.showerror("Invalid Request", "Enter new value")
-                
-            
+
+
             iidEdit = viewTree.focus()
-            
+
             if (iidEdit==""):
                 messagebox.showwarning("Warning", "Product Selection Required")
             else:
@@ -1409,8 +1434,8 @@ class Window(Tk):
                 schemeType =ttk.Combobox(top, width = int(WR*15), values=['Sales Price','Product Total'],font=('Comic Sans MS', int(FR*15), 'bold'))
                 schemeType.grid(row=0, column=1, padx=5, pady=10,)
                 schemeType.current(0)
-                
-                
+
+
                 quantityLabel = Label(top, text="Enter New Value",  font=('Helvetica', int(FR*15), 'bold'))
                 quantityLabel.grid(row=2, column=0,padx=5, pady=10,)
 
@@ -1435,11 +1460,11 @@ class Window(Tk):
                 # self.productTotalLabel.config(text=self.billingTotalAmount)
                 if self.billing_method ==0:
                     self.billingVatableAmountLabel.config(text = int(self.billingTotalAmount))
-                    self.billingAmountLabel.config(text = int(self.billingTotalAmount+0.13*self.billingTotalAmount)) 
+                    self.billingAmountLabel.config(text = int(self.billingTotalAmount+0.13*self.billingTotalAmount))
             except IndexError:
                 self.warnUser("Product Selection Required")
 
-        
+
         def callback(event = ''):
             state_left = win32api.GetKeyState(0x01)
             if state_left<0:
@@ -1459,7 +1484,7 @@ class Window(Tk):
         self.billingSearchEntry = Entry(self.billingSearchFrame,width = int(WR*35),font=('Helvetica', int(FR*20),'bold'), bg='#f7eeee')
         self.billingSearchEntry.grid(column = 1 , row = 1, padx = 15)
         self.billingSearchEntry.bind('<KeyRelease>',displayProductOptions)
-       
+
 
         #add button button
         self.searchButton = Button(self.billingSearchFrame, text="Add Product", font = ('Helvetica', int(FR*14), 'bold'), width = int(WR*10), bg="#6aeb7b", command=billingProcess)
@@ -1470,24 +1495,24 @@ class Window(Tk):
             self.billingSearchFrame, width = int(WR*80), height = int(HR*5), bg="#e8eddf")
         self.itemlistbox.grid(column=1,row=2,columnspan=4,pady=0)
         self.itemlistbox.bind("<<ListboxSelect>>", callback)
-        
+
 
 
         #for scroll bar
         self.scrollbar = Scrollbar(self.billingSearchFrame, orient=VERTICAL)
         self.scrollbar.config(command=self.itemlistbox.yview)
         self.scrollbar.grid(row=2,ipadx=10,column=5,sticky='ns')
-        
-       
-        #treeview Styling 
+
+
+        #treeview Styling
         vtStyle = ttk.Style()
         vtStyle.configure('Treeview.Heading', font=('Comic Sans MS', int(FR*12), 'bold'))
         treeStyle=ttk.Style()
 
         treeStyle.configure("mystyle.Treeview", highlightthickness=1, bd = 0,rowheight = int(HR*25), font=('Georgia', int(FR*13)))
         # treeStyle.layout('mystyle.Treeview',[('mystyle.Treeview.treearea',{'sticky':'nswe'})])
-       
-       #treeview 
+
+       #treeview
         viewTree = ttk.Treeview(self.billingFrame, height = int(HR*10), style="mystyle.Treeview")
         #Define Columns
         viewTree['columns']= ('Product Name','Quantity','Units', 'Sales Price','Total')
@@ -1509,7 +1534,7 @@ class Window(Tk):
         viewTree.heading('Sales Price', text='Price per unit', anchor=CENTER)
         viewTree.heading('Total', text='Total', anchor=CENTER)
         viewTree.grid(row = 0,column = 0,)
-        
+
 
         #for scroll bar
         Treescrollbar = Scrollbar(self.billingFrame, orient=VERTICAL)
@@ -1534,7 +1559,7 @@ class Window(Tk):
         saveBillButton.grid(column=0, row=4, sticky="n", padx=10, pady=10, ipadx=8)
 
         #amountLabel = font.Font(family = 'Helvetica', size = int(FR*22), weight = 'bold')
-        #amountTotal = font.Font(family='Helvetica', size=int(FR*22), weight='bold') 
+        #amountTotal = font.Font(family='Helvetica', size=int(FR*22), weight='bold')
 
         clear_Billing = Button(self.billingButtonFrame, text="Clear Billing", bg="#f54949",cursor ='X_cursor',
                               width = int(WR*10),  font=('Helvetica', int(FR*12), 'bold'), command=clearBilling)
@@ -1553,7 +1578,7 @@ class Window(Tk):
             self.amountFrame, width = int(WR*12), text="", bg="#4A2727",font=('Helvetica',int(FR*22),'bold'), fg='#FAF712')
         self.billingVatableAmountLabel.grid(row=1, column=1, sticky="n",  pady=0)
         self.billingVatableAmountLabel.config(text=self.billingTotalAmount)
-       
+
         #total amount
         self.totalAmountLabel = Label(
             self.amountFrame, width = int(WR*10), text='Grand Total :',font=('Helvetica',int(FR*22),'bold'), bg='#4A2727', fg='#FAF712')
@@ -1651,8 +1676,8 @@ class Window(Tk):
         # db = client.get_database('saiRecords')
         # collection = db.inventory
         try:
-            validate = collection.find_one({'Product Name': self.rawData['Product Name']},{'_id':1}) 
-            
+            validate = collection.find_one({'Product Name': self.rawData['Product Name']},{'_id':1})
+
             if (validate != None):
                 raise ValueError
 
@@ -1671,7 +1696,7 @@ class Window(Tk):
             except ValueError:
                 messagebox.showerror("Value Error", "Quantity and Unit Cost must be a Number.")
 
-            
+
         except ValueError:
             messagebox.showwarning('Request Denied', 'Product with same name is available in Inventory.')
      #Frame and gui for view tab
@@ -1688,14 +1713,14 @@ class Window(Tk):
 
         self.buttonFrame = Frame(self.displayFrame)
         self.buttonFrame.pack(side = 'left', fill = 'y')
-        
+
         self.searchLabelFrame = Frame(self.billdisplayFrame)
         self.searchLabelFrame.pack(pady = 10)
 
         searchhelpFrame = Frame(self.searchLabelFrame)
         searchhelpFrame.pack( side = 'left', pady = 10)
         #GUI of view tab
-        
+
         listboxFrame = Frame (self.billdisplayFrame)
         listboxFrame.pack(pady = 10, padx = 5)
 
@@ -1703,34 +1728,34 @@ class Window(Tk):
         self.labelsearchby.grid(padx = 5)
         helpLabel = Label(self.searchLabelFrame, text='(Set Search filter)', font =('Comic Snas MS', int(FR*12) ))
         helpLabel.pack(side='bottom')
-        
+
         def printBill():
             try:
                 billIndex = itemlistbox_view.index(ANCHOR)
                 billId = self.view_productId[billIndex]
-                
+
                 ##For Cloud Atlas
                 # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
                 # db = client.get_database('saiRecords')
                 # collection = db.sales
-                
+
                 ##For Local Database Storage
                 connection = pymongo.MongoClient("localhost", 27017)
                 database = connection['saiRecords']
                 collection = database['sales']
 
-                data = collection.find_one({'_id': ObjectId(billId)}) 
+                data = collection.find_one({'_id': ObjectId(billId)})
                 connection.close()
                 print(data)
                 count = 0
                 for rows in view_viewTree.get_children():
                     view_viewTree.delete(rows)
-                
+
                 dateLabel.config(text= data['Date'])
                 customerNameLabel.config(text=data['Customer Name'])
                 timeLabel.config(text=data['Time'])
                 billTotalLabel.config(text=data['Grand Total'])
-                
+
 
                 for vlue in (data['Products']):
                     print(vlue)
@@ -1760,8 +1785,8 @@ class Window(Tk):
                 messagebox.showerror('Invalid Request', 'Bill Selection Required')
             except KeyError:
                 helloat.config(text='N/A')
-            
-            
+
+
         def setSearchTips(event):
             key = viewcombobox_search.get()
             if (key == 'Date'):
@@ -1794,21 +1819,21 @@ class Window(Tk):
                     # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
                     # db = client.get_database('saiRecords')
                     # collection = db.sales
-                    
+
                     result = collection.find({key: {'$regex': searchValue, '$options': searchFilter}})
                     connection.close()
                     for x in result:
                         example.append(x['Customer Name'] + ' ------  ' + x['Date'] + '------' +  x['Contact Number'])
                         self.view_productId.append(x['_id'])
-                        
+
                     itemlistbox_view.insert(0, *example)
                     # if (len(self.view_productId) < 1):
                     #     messagebox.showinfo("Search Request", "No Record Found")
-                    
+
             except ValueError:
                 messagebox.showerror("Invalid Request", "Set Search Filter")
-                
-            
+
+
         viewcombobox_search = ttk.Combobox(
             self.searchLabelFrame, textvariable=4, width = int(WR*12), font = ('Comic Sans MS', int(FR*15)), state = 'readonly')
         viewcombobox_search['values'] = (
@@ -1816,7 +1841,7 @@ class Window(Tk):
             'Customer Name',
         )
         viewcombobox_search.current(0)
-        
+
 
         viewcombobox_search.pack(side='left', padx=5)
         viewcombobox_search.bind('<<ComboboxSelected>>',setSearchTips)
@@ -1833,11 +1858,11 @@ class Window(Tk):
         #                         width = int(WR*10), bg="#6aeb7b", command=displayBillSearch)
         # viewSearch_btn.pack(side='left')
 
-        
+
         #for listbox
         itemlistbox_view = Listbox(listboxFrame, width = int(WR*60), height = int(HR*4), bg="#e8eddf", font =('Comic Snas MS', int(FR*15) ))
         itemlistbox_view.grid(column=0, row=0, columnspan=1)
-        
+
 
         #for scroll bar
         viewScrollbar = Scrollbar(listboxFrame, orient=VERTICAL)
@@ -1846,14 +1871,14 @@ class Window(Tk):
 
         informationFrame = Frame(self.billdisplayFrame)
         informationFrame.pack(pady = 5)
-        #bill details label 
+        #bill details label
 
         lbl = Label(informationFrame, text = "Bill Details", font = ('Comic Snas MS ', int(FR*15), 'bold', 'underline'))
         lbl.grid(row = 0, column = 0, columnspan = 4)
         #date label
         Viewdatelabel = Label(informationFrame, text='Date : ', font = ('Helvetica', int(FR*12)))
         Viewdatelabel.grid(row=1, column=0)
-        
+
         dateLabel = Label(informationFrame, text='--/--/----', font=('Comic Sans MS', int(FR*15), 'bold'))
         dateLabel.grid(row=1, column=1)
 
@@ -1878,7 +1903,7 @@ class Window(Tk):
         helloat = Label (informationFrame, text = ' ----------- ', font = ('Comic Sans MS', int(FR*10), 'bold'))
         helloat.grid(row= 1, column=5)
 
-        #Bill Total Labels 
+        #Bill Total Labels
         billTotal = Label(informationFrame, text='Bill Total ', font = ('Helvetica',int(FR*15),'bold'))
         billTotal.grid(row=2, column=2,padx = 20)
 
@@ -1958,7 +1983,7 @@ class Window(Tk):
             c.drawString(15,230,"S.N")
             c.drawString(110, 230, "Product Name")
             c.drawString(350, 230, "Unit Cost")
-            c.drawString(430, 230, "Qunatity") 
+            c.drawString(430, 230, "Qunatity")
             # c.drawString(430, 230, "Discount")
             c.drawString(520, 230, "Total")
             c.line(10,235,790,235)
@@ -1976,14 +2001,14 @@ class Window(Tk):
                     name=items
                 c.drawString(x+50, y, name)
                 qty = str(data['Products'][items]['Quantity'])
-                
+
                 # print(data)
-                c.drawCentredString(x+360, y, str(data['Products'][items]['Sales Price']))  #x+345 
+                c.drawCentredString(x+360, y, str(data['Products'][items]['Sales Price']))  #x+345
                 c.drawCentredString(x+445, y, qty)
                 c.drawCentredString(x+520, y, str(data['Products'][items]['Product Total']))
                 cnt+=1
                 y+=20
-            
+
             c.line(10,y,790,y)
             c.setFont('Courier-Bold', 20)
             c.drawCentredString(200, y+20, "Grand Total")
@@ -2007,7 +2032,7 @@ class Window(Tk):
             except PermissionError:
                 messagebox.showerror("Permission Denied","The bill is currently open. Please close the file to display new bill.")
 
-        #Button Frame GUI 
+        #Button Frame GUI
 
         dspbill = Button(self.buttonFrame,text="Display Bill", command=printBill, font = ('Helvetica', int(FR*15),'bold'))
         dspbill.pack(side="top",pady = 10)
@@ -2015,13 +2040,13 @@ class Window(Tk):
         prntBill = Button(self.buttonFrame, text = "Print Bill", command=customerCopy, width = int(WR*15),font = ('Helvetica', int(FR*15),'bold'))
         prntBill.pack(side = "top", pady = 10)
 
-       
+
 
 
         # sendBill = Button(self.buttonFrame, text = "Send Bill")
         # sendBill.pack(pady= 10 )
 
-        
+
     def navigationFrame_settings(self,tab):
         # self.displayFrame.destroy()
         self.displayFrame = Frame(tab)
@@ -2041,14 +2066,14 @@ class Window(Tk):
             # db = client.get_database('saiRecords')
             # collection = db.configuration
 
-            
+
             collection.find_one_and_update({'_id': 'settingsData'},{'$set':{key:value}})
             data = collection.find_one({'_id':'settingsData'})
             self.sender_emaildata.config(text = data['sender_email'])
             self.receiver_emaildata.config(text = data['receiver_email'])
             self.master_passworddata.config(text=data['master_password'])
             self.sender_passworddata.config(text=data['sender_password'])
-            
+
             messagebox.showinfo('Value Updated','Value has been successfully Updated')
 
 
@@ -2056,11 +2081,11 @@ class Window(Tk):
         def update_sender():
             value = self.AppsSettingsEntry.get()
             configureSettingsData('sender_email', value)
-        
+
         def update_receiver():
             value = self.AppsSettingsEntry.get()
             configureSettingsData('receiver_email', value)
-        
+
         def update_senderPassword():
             value = self.AppsSettingsEntry.get()
             configureSettingsData('sender_password', value)
@@ -2074,7 +2099,7 @@ class Window(Tk):
             self.UpdatePopUp = Toplevel()
             self.UpdatePopUp.grab_set()
             self.UpdatePopUp.title("Update Values")
-            
+
             self.UpdatePopUp.geometry("+%d+%d" % (400, 300))
             # self.UpdatePopUp.minsize(200,200)
 
@@ -2086,13 +2111,13 @@ class Window(Tk):
             print("Flag1")
             updateBtn = Button(self.UpdatePopUp, text="Update Value", command=cmd)
             updateBtn.grid(row=2, column=0, padx=10, pady=20)
-            
-            
+
+
 
         # # Functions to Display pop up and get new values
         def getNewSender():
             displayTop('Enter New Sender Mmail-id',update_sender)
-            
+
         def getNewSenderPassword():
             displayTop('Enter New Sender Password', update_senderPassword)
 
@@ -2122,7 +2147,7 @@ class Window(Tk):
                 connection.close()
                 receiverLabel = Label(self.displayFrame, text = " Send mail using :", font = ('Helvetica', int(FR*10),'bold'))
                 receiverLabel.grid(row=0, column=0, padx=10, pady=10, sticky='w')
-                
+
                 infoLabel = Label(self.displayFrame, text=" (Set this email address send backup)")
                 infoLabel.grid(row=1, column=0, columnspan=2,padx=10, pady=0, sticky='w')
 
@@ -2148,7 +2173,7 @@ class Window(Tk):
 
                 self.receiver_emaildata = Label(self.displayFrame, text = sysData['sender_email'],font = ('Helvetica', int(FR*10),'bold'))
                 self.receiver_emaildata.grid(row = 4, column = 1, padx = 10, pady = 10)
-                
+
                 masterPasswordLabel = Label(self.displayFrame, text = "Master Password :",font = ('Helvetica', int(FR*10),'bold'))
                 masterPasswordLabel.grid(
                     row=6, column=0, padx=10, pady=10, sticky='w')
@@ -2156,7 +2181,7 @@ class Window(Tk):
                 infoLabel = Label(self.displayFrame,text=" (Password to access the Setting Tab)")
                 infoLabel.grid(row=7, column=0, columnspan=2,
                             padx=10, pady=0, sticky='w')
-                
+
                 self.master_passworddata = Label(self.displayFrame, text=sysData['master_password'], font=('Helvetica', int(FR*10), 'bold'))
                 self.master_passworddata.grid(row = 6, column = 1, padx = 10, pady = 10)
 
@@ -2178,7 +2203,7 @@ class Window(Tk):
             except TypeError:
                 pass
         displayContents()
-    
+
     def navigationFrame_customerDetails(self, tab):
         buttonBg = "#284F9B"
         self.buttonFrame = Frame(tab, bg=buttonBg)
@@ -2188,7 +2213,7 @@ class Window(Tk):
         self.belowFrame.pack(fill=X, side="bottom")
 
         # self.customerDisplay.destroy()
-        #Frame for left 
+        #Frame for left
         self.customerDisplay = Frame(tab, bg='#FFFFFF')
         self.customerDisplay.pack(fill="both", side="left")
 
@@ -2203,7 +2228,7 @@ class Window(Tk):
         #Bottom Frame inside Left Frame
         self.customerDisplay_dwn = Frame(self.customerDisplay, bg='#ffffff')
         self.customerDisplay_dwn.pack(fill='both', padx=10, pady = 10)
-        
+
         def customerHistory():
 
             def displayBill():
@@ -2244,9 +2269,9 @@ class Window(Tk):
                                          bill['Products'][vlue]['Product Total']))
 
 
-                
 
-                
+
+
 
             def searchCustomer():
                 name = ent_name.get()
@@ -2260,7 +2285,7 @@ class Window(Tk):
                 self.billpointer= []
                 totalPurchase = 0
                 result = collection.find({'Customer Name':{'$regex': name, '$options': 'i' } , 'Contact Number': number})
-                
+
                 print("List of Object ID")
                 for x in result:
                         totalPurchase+=x['Grand Total']
@@ -2279,9 +2304,9 @@ class Window(Tk):
                 billList.insert(0, *self.name_list)
                 salesTotal.config(text = totalPurchase)
 
-            
-                
-            
+
+
+
             lbl_name = Label(self.customerDisplay_top, text = "Name", bg='white', font=('Hevetica', int(FR*14), 'bold'))
             lbl_name.grid(row = 0, column = 0, pady=20)
 
@@ -2321,7 +2346,7 @@ class Window(Tk):
 
             #GUI for Right frame
 
-            
+
 
 
         s_btn = ttk.Style()
@@ -2381,7 +2406,7 @@ class Window(Tk):
                                bg='#F2F81D', fg='#164ECF', font=('Helvetica', int(FR*15), 'bold'))
         billTotalLabel.grid(row=5, column=1, pady = 10)
 
-        
+
 
         billFrame = Frame(self.customerBillDisplay)
         billFrame.grid(row = 7, column = 0, columnspan=4)
@@ -2428,7 +2453,7 @@ class AuthUser(Tk):
 
         self.minsize(500,400)
         self.maxsize(550,450)
-        
+
 
         displayFrame = Frame(self, bg='#ffffff')
         displayFrame.pack( fill='both')
@@ -2448,7 +2473,7 @@ class AuthUser(Tk):
         label1.image = test
         label1.pack()
 
-        
+
 
         def clearPlaceHolder(event):
             self.password_entry.delete(0, 'end')
@@ -2470,7 +2495,7 @@ class AuthUser(Tk):
 
 
 
-        
+
         loginbutton = Button(detailsframe,text='Get Access', border = 0,width = int(WR*15),bg='#151FC4',fg = '#ffffff',font=('Helvetica',int(FR*13),'bold'), command = self.checkPass)
         loginbutton.pack(padx=10, pady = 10)
         loginbutton.bind("<Return>",self.checkPass)
@@ -2539,10 +2564,10 @@ class AuthUser(Tk):
                 server.sendmail(sender_email, receiver_email, message)
                 messagebox.showinfo("Access Key Sent", "The Access Key has been sent to the registered email address.")
 
-                
+
         except smtplib.socket.gaierror:
             messagebox.showerror("Connection Failed", 'This function requires active internet connection.')
-        
+
 #authUser = AuthUser()
 #authUser.mainloop()
 
