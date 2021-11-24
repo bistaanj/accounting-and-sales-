@@ -709,25 +709,17 @@ class Window(Tk):
                         customerNameOrProductName.config(text="Product Name: ")
                         final = {}
                         result= collection.find({})
-                        print(searchValue)
                         process1 = {}
                         final={}
+                        if '.' in searchValue:
+                            searchValue = searchValue.replace('.','?')
+
                         for i in result:
                             for a in i['Products']:
-                                if searchValue.lower() in a.lower():
-                                    process1 = {'cName' :i['Customer Name'], 'product': i['Products'][searchValue]}
+                                if searchValue.lower() == a.lower():
+                                    print(searchValue)
+                                    process1 = {'cName' :i['Customer Name'], 'product': i['Products'][a]}
                                     final[i['_id']]=process1
-
-                            
-                            
-                            
-                        #     a= str((i['Products']))
-                        #     print("This is A")
-                        #     print(a)
-                        #     b=(a.upper())
-                        #     if searchValue.upper() in b:
-                        #         process1 = {'cName' :i['Customer Name'], 'product': i['Products'][searchValue]}
-                        #         final[i['_id']]=process1
                         for rows in viewTree.get_children():
                             viewTree.delete(rows)
                         count = 0
