@@ -643,7 +643,6 @@ class Window(Tk):
                 customerPhoneEntry.delete(-1,'end')
 
         def displayOrderSearch(event=''):
-            example = []
             self.view_productId = []
             searchValue = searchBox.get()
             key = PtypeCombo.get()
@@ -665,48 +664,39 @@ class Window(Tk):
                         searchBox.grid_forget()
                         productNameLabel.grid_forget()
                         viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
-                        customerNameOrProductName.config(text="Customer Name: ")
-                        searchFilter = 'i'
                         final = collection.find({'Contact Number': contact})
-                        y = {}
-                        
+                        customerNameOrProductName.config(text="Customer Name: " + final[0]['Customer Name'])
+
+                        y = []
                         for x in final:
                             raw = {}
                             raw = x['Products']
-                            y = {**y, **raw}
-                        
-                        print('The results....')
-                        print(y)
-                        for x in y:
-                            print(y[x])
-                            # print ("y[x]")
-                            # print(y[x])
-                            # print(" y[x]['Products']")
-                            # print(y[x])
-                        
+                            for k in list(raw):
+                                raw[k]['Date']=x['Date']
+                            y.append(raw)
+
                         for rows in viewTree.get_children():
                             viewTree.delete(rows)
                         count = 0
-                        for x in y:
-                            viewTree.insert(parent='', index=END, iid=y[x]['iid'], text=(count+1),
-                             values=(x,
-                             y[x]['Sales Price'],
-                             y[x]['Quantity'], y[x]['Units'],
-                             y[x]['Product Total']))
-                            count+=1
-
-
+                        for i in y:
+                            for x in i:
+                                viewTree.insert(parent='', index=END, iid=(i[x]['iid'],i[x]['Date']), text=(count+1),
+                                values=(i[x]['Date'],x,
+                                i[x]['Sales Price'],
+                                i[x]['Quantity'], i[x]['Units'],
+                                i[x]['Product Total']))
+                                count+=1
                     else:
                         customerNameEntry.grid_forget()
                         customerNameLabel.grid_forget()
                         customerPhoneEntry.grid_forget()
                         customerPhoneLabel.grid_forget()
+                        customerNameOrProductName.pack_forget()
                         searchBox.grid(column=2, row=1, padx = 10, pady=10)
                         productNameLabel.grid(column=1,row=1)
                         searchBox.bind('<KeyRelease>', displayOrderSearch)
                         searchBox.bind('<Return>')
                         viewTree.heading('Customer Name', text='Customer Name', anchor=CENTER)
-                        customerNameOrProductName.config(text="Product Name: ")
                         final = {}
                         result= collection.find({})
                         process1 = {}
@@ -718,14 +708,14 @@ class Window(Tk):
                             for a in i['Products']:
                                 if searchValue.lower() == a.lower():
                                     print(searchValue)
-                                    process1 = {'cName' :i['Customer Name'], 'product': i['Products'][a]}
+                                    process1 = {'date':i['Date'],'cName' :i['Customer Name'], 'product': i['Products'][a]}
                                     final[i['_id']]=process1
                         for rows in viewTree.get_children():
                             viewTree.delete(rows)
                         count = 0
                         for x in final:
                             viewTree.insert(parent='', index=END, iid=(final[x]), text=(count+1),
-                             values=(final[x]['cName'],
+                             values=(final[x]['date'],final[x]['cName'],
                              final[x]['product']['Sales Price'],
                              final[x]['product']['Quantity'], final[x]['product']['Units'],
                              final[x]['product']['Product Total']))
@@ -766,15 +756,16 @@ class Window(Tk):
         # scrollbar.config(command=self.itemlistbox.yview)
         # scrollbar.grid(row=1,ipadx=10,column=3,sticky='ns')
 
-        customerNameOrProductName = Label(orderDetailsFrame,text='Customer Name: ',font=('Comic Sans MS', int(FR*13)))
-        customerNameOrProductName.pack_forget()
+        customerNameOrProductName = Label(orderDetailsFrame,text='',font=('Comic Sans MS', int(FR*13)))
+        customerNameOrProductName.pack()
 
         viewTree = ttk.Treeview(orderDetailsFrame,  style="mystyle.Treeview", height=13)
 
         #Define Columns
-        viewTree['columns'] = ('Customer Name',
+        viewTree['columns'] = ('Date','Customer Name',
                                'Sales Price', 'Quantity', 'Units', 'Total Price')
         viewTree.column('#0', width = int(WR*40), minwidth=10, anchor=CENTER)
+        viewTree.column('Date',width=int(WR*100),anchor=CENTER)
         viewTree.column('Customer Name', width = int(WR*140), anchor=CENTER)
         viewTree.column('Sales Price', width = int(WR*130), anchor=CENTER)
         viewTree.column('Quantity', width = int(WR*110), anchor=CENTER)
@@ -783,6 +774,7 @@ class Window(Tk):
 
         #Create Headings
         viewTree.heading('#0', text='S.N', anchor=CENTER)
+        viewTree.heading('Date', text='Date', anchor=CENTER)
         viewTree.heading('Customer Name', text='Product Name', anchor=CENTER)
         viewTree.heading('Sales Price', text='Sales Price', anchor=CENTER)
         viewTree.heading('Quantity', text='Quantity', anchor=CENTER)
