@@ -821,11 +821,16 @@ class Window(Tk):
                 {"Product Name": {'$regex': searchValue, '$options': 'i'}})
             searchResult2 = collection.find(
                 {"Product Name": {'$regex': searchValue, '$options': 'i'}})
-
             connection.close()
             showCondition = FALSE
             lenCheck = len(list(searchResult2))
-
+            if (len(searchValue) == 0):
+                viewTree.pack_configure(expand=1)
+                totslOrderLabel.pack_forget()
+                totalSoldLabel.pack_forget()
+            else:
+                viewTree.pack_configure(expand=0)
+                
             if (lenCheck == 0):
                 self.warnUser("Product Not Found")
                 print("Warned !!!!!!!")
@@ -842,7 +847,11 @@ class Window(Tk):
                     print("End of loop ")
                     print("Exited For Loop")
             print("Exited If ELse Statement")
+        
 
+        totalSoldLabel = Label(self.displayFrame,text="",font=('Comic Sans MS', int(FR*15)))
+        totslOrderLabel = Label(self.displayFrame,text="",font=('Comic Sans MS', int(FR*15)))
+        
         self.searchEntry = Entry(searchFrame, width = int(WR*40), bg='#4F83FC', fg='#FFFFFF',border=0, font=('Comic Sans MS', int(FR*20)))
         self.searchEntry.grid(column=1, row=1, padx=10, pady=10, sticky="w")
         self.searchEntry.insert(0,'search for...')
@@ -855,7 +864,7 @@ class Window(Tk):
         searchBtn.grid(column=2, row=1, padx=10, pady=10, sticky="w")
 
 
-        viewTree = ttk.Treeview(self.displayFrame,  style="mystyle.Treeview", height=5)
+        viewTree = ttk.Treeview(self.displayFrame,  style="mystyle.Treeview")
 
         #Define Columns
         viewTree['columns'] = ('Product Name', 'Cost Price',
@@ -880,6 +889,27 @@ class Window(Tk):
         viewTree.heading('Purchased From', text='Purchased', anchor=CENTER)
         viewTree.pack(fill = 'both',expand = 1, padx = 20,pady = 20)
         self.viewTree = viewTree
+        
+        def showDetailsOfProduct(event=''):
+            row_iid = viewTree.focus()
+            if(row_iid != ''):
+                viewTree.pack_configure(expand=0)
+                connection = pymongo.MongoClient("localhost", 27017)
+                database = connection['saiRecords']
+                collection = database['inventory']
+                databaseRow = collection.find_one({'_id': ObjectId(row_iid)})
+                totalSoldLabel.pack()
+                totslOrderLabel.pack()
+                totalSoldLabel.config(text='Items sold: '+ str(databaseRow['Sold']))
+                totslOrderLabel.config(text='Items Ordered: '+ str(databaseRow['Order']))
+            else:
+                viewTree.pack_configure(expand=1)
+                totslOrderLabel.pack_forget()
+                totalSoldLabel.pack_forget()
+
+
+        viewTree.bind('<ButtonRelease-1>',showDetailsOfProduct)
+        
 
         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
         # db = client.get_database('saiRecords')
