@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from bson.objectid import ObjectId
+from datetime import datetime
 import pymongo
 from config.dynamicSize import FR, WR, HR
 
@@ -37,11 +38,56 @@ def updateInventory(self):
         self.updateEntry.bind('<Return>', cmd)
         updateBtn = Button(self.UpdatePopUp, text="Update Value", command=cmd)
         updateBtn.pack(padx=10, pady=20)
+    
+    def displayUpdateForm():
 
-    def dbsQuantityUpdate(event=''):
+        def getCred():
+            a = quantity_entry.get()
+            b= cp_entry.get()
+            c=seller_entry.get()
+            print(a,b,c)
+            dbsQuantityUpdate(a,b,c)
+            
+        self.UpdatePopUp = Toplevel()
+        self.UpdatePopUp.grab_set()
+        self.UpdatePopUp.iconbitmap('./res/dsk.ico')
+        self.UpdatePopUp.title("Update Quantity")
+
+        self.UpdatePopUp.geometry("+%d+%d" % (500, 300))
+        self.UpdatePopUp.minsize(350,200)
+
+        quantity_label = Label(self.UpdatePopUp, text = " Quantity")
+        quantity_label.grid(row = 0, column = 0)
+
+        quantity_entry = Entry(self.UpdatePopUp)
+        quantity_entry.grid(row=0, column=1, pady=10)
+
+        cp_label = Label(self.UpdatePopUp, text = " Cost Price")
+        cp_label.grid(row = 1, column = 0)
+
+        cp_entry = Entry(self.UpdatePopUp)
+        cp_entry.grid(row=1, column=1, pady=10)
+
+        seller_label = Label(self.UpdatePopUp, text = " Purchased From")
+        seller_label.grid(row = 2, column = 0)
+
+        seller_entry = Entry(self.UpdatePopUp, width=30)
+        seller_entry.grid(row=2, column=1, pady=10, padx=5)
+
+        # self.updateLabel = Label(self.UpdatePopUp, text=displayText)
+        # self.updateLabel.pack(padx=10, pady=10)
+        # self.updateEntry = Entry(self.UpdatePopUp, width=20)
+        # self.updateEntry.pack(padx=10, pady=10)
+        # self.updateEntry.focus()
+        # self.updateEntry.bind('<Return>', cmd)
+        updateBtn = Button(self.UpdatePopUp, text="Update Value", command=getCred)
+        updateBtn.grid(row = 3, column = 0, pady=10)
+
+    def dbsQuantityUpdate(quantity,cp,seller):
+        
         try:
             iid = self.row_iid
-            grabbedValue = int(self.updateEntry.get())
+            # grabbedValue = int(self.updateEntry.get())
             if (grabbedValue == 0):
                 raise ValueError
 
@@ -57,10 +103,14 @@ def updateInventory(self):
             databaseRow = collection.find_one({'_id': ObjectId(iid)}, {'Quantity': 1, '_id': 0})
             # connection.close()
             currentValue = databaseRow['Quantity']
-            currentValue = int(currentValue)
+            currentValue = quantity
             newValue = grabbedValue + currentValue
             collection.update_one({'_id': ObjectId(iid)}, {'$set': {'Quantity': newValue}})
-            self.UpdatePopUp.destroy()
+            # self.UpdatePopUp.destroy()
+            collection = database['restock']
+            nw = datetime.now()
+            time = nw.strftime("%H:%M")
+            print(time)
             self.warnUser("Value Updated")
             displaySearchResult()
         except ValueError:
@@ -122,7 +172,7 @@ def updateInventory(self):
         if self.row_iid == 0:
             self.warnUser("One Record Selection Required !")
         else:
-            displayUpdatePopup("Add Quantity", dbsQuantityUpdate)
+            displayUpdateForm()
 
     def updateCostDbs():
         self.row_iid = getObjectIid()
