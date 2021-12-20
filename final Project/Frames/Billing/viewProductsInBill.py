@@ -27,3 +27,4 @@ def viewProductsInBill(self,viewTree):
         count += 1
     print('Products in Bill')
     print(self.productsInBill)
+    self.executing = False

@@ -121,6 +121,7 @@ def viewOrders(self):
                                     temp2[k] = i['Products'][k]['Quantity']
                     j=0
                     for i in temp2:
+                        i.replace("?",".")
                         itemlistbox.insert(j,i+' --- '+str(temp2[i]))
                         j+=1
                     final = {}
@@ -172,118 +173,6 @@ def viewOrders(self):
                     
         except ValueError:
             messagebox.showerror("Invalid Request", "Set Search Filter")
-
-    def checkoutAllProduct():
-         #For Local database Storage
-        connection = pymongo.MongoClient("localhost", 27017)
-        database = connection['saiRecords']
-        collection = database['inventory']
-        allProducts = collection.find()
-        productDetails = {}
-        for x in allProducts:
-            if x['Order'] > 0:
-                productDetails[x['Product Name']]= {'orderQuantity':x['Order'],'Sales Price':x['Sales Price']}
-        popForProducts = Toplevel()
-        totalLabel = Label(popForProducts,text="Total",font=('Comic Sans MS',int(FR*12),'bold'))
-        totalLabel.grid(row=len(list(productDetails))+1,column=1,pady=12)
-        totalQuantityLabel = Label(popForProducts,text=0,font=('Comic Sans MS',int(FR*12),'bold'))
-        totalQuantityLabel.grid(row=len(list(productDetails))+1,column=3,pady=12)
-        totalAmountLabel = Label(popForProducts,text=0,font=('Comic Sans MS',int(FR*12),'bold'))
-        totalAmountLabel.grid(row=len(list(productDetails))+1,column=4,pady=12)
-        proceedButton = Button(popForProducts,text="Proceed")
-        proceedButton.grid(row=len(list(productDetails))+2,column=1,columnspan=8,pady=10)
-        popForProducts.grab_set()
-        popForProducts.iconbitmap('./res/dsk.ico')
-        popForProducts.title("Update Values")
-        self.row = 1
-        self.addedProducts = []
-        self.photo = PhotoImage(file = r".\res\delete.png")
-
-        def addAllProducts(event=""):
-            for i in list(productDetails):
-                if i not in self.addedProducts:
-                    choseProduct("",i)
-            
-        def removeProductFromList(event,row):
-            column = 7
-            widget = popForProducts.grid_slaves(row=row, column=1)[0]
-            self.addedProducts.remove(widget['text'])
-            for i in range(0,column):
-                try:
-                    popForProducts.grid_slaves(row=row, column=column-i)[0].destroy()
-                except:pass
-            # self.row-=1
-            refresh()
-
-        def refresh():
-            tQuanty = 0
-            tPrice = 0
-            for i in range(2,self.row+1):
-                try:
-                    qLabel = popForProducts.grid_slaves(row=i, column=4)[0]
-                    cBox = popForProducts.grid_slaves(row=i, column=3)[0]
-                    tQuanty+=int(cBox.get())
-                    tPrice+=float(qLabel['text'])
-                except:pass  
-
-            totalQuantityLabel.config(text=tQuanty)
-            totalAmountLabel.config(text=tPrice)
-            totalAmountLabel.grid_configure(row = self.row+1)
-            totalQuantityLabel.grid_configure(row = self.row+1)
-            totalLabel.grid_configure(row = self.row+1)
-            proceedButton.grid_configure(row = self.row+2)
-
-        def choseProduct(event="",product=""):
-            def validatePrice(e,entry):
-                try:
-                    widget = popForProducts.grid_slaves(row=entry.grid_info()['row'], column=entry.grid_info()['column'])[0]
-                    float(widget.get())
-                    callback()
-                except ValueError:
-                    widget.delete(-1,'end')
-    
-            def callback(event = ""):
-                if (int(productComboBox.get()) != 0):
-                    totalPrice.config(text=int(productComboBox.get())*float(salesPriceEntry.get()))
-                    refresh()
-                else:
-                    removeProductFromList("",productComboBox.grid_info()['row'])
-            if product == "":
-                product = selectProduct.get()
-            if product not in self.addedProducts:
-                self.row +=1
-                self.addedProducts.append(product)
-                productLabel = Label(popForProducts,text=product,borderwidth=1, relief="solid",font=('Comic Sans MS',int(FR*10)))
-                productLabel.grid(row = self.row,column=1,sticky=NSEW)
-                salesPriceEntry = Entry(popForProducts,width=10,borderwidth=1, relief="solid",)
-                salesPriceEntry.bind('<KeyRelease>',lambda e = "",entry = salesPriceEntry: validatePrice(e,entry))
-                salesPriceEntry.insert(0,productDetails[product]['Sales Price'])
-                salesPriceEntry.grid(row=self.row,column=2,sticky=NSEW)
-                productComboBox = ttk.Combobox(popForProducts,values= list(range(0,int(productDetails[product]['orderQuantity'])+1)),width=2,font=('Comic Sans MS',int(FR*10)),state = 'readonly')
-                productComboBox.grid(row=self.row,column=3,sticky=NSEW)
-                productComboBox.bind('<<ComboboxSelected>>',callback)
-                productComboBox.current(int(productDetails[product]['orderQuantity']))
-                totalPrice = Label(popForProducts,borderwidth=1, relief="solid",text= int(productComboBox.get())*float(salesPriceEntry.get()),font=('Comic Sans MS',int(FR*10)))
-                totalPrice.grid(row = self.row,ipady=2,column=4,sticky=NSEW)
-                deleteButton = Button(popForProducts, image = self.photo,border=0,command=lambda:removeProductFromList("",deleteButton.grid_info()['row']))
-                deleteButton.grid(row=self.row,ipady=2,column=5,sticky=NSEW)
-                refresh()
-  
-        Label(popForProducts).grid(row=0,column=0,padx=25)
-        popForProducts.geometry("+%d+%d" % (400, 100))
-        popForProducts.minsize(800,500)
-        popForProducts.maxsize(800,600)
-        selectProduct = ttk.Combobox(popForProducts, background='#CED7D7',width = int(WR*10), values=list(productDetails),font=('Comic Sans MS',int(FR*8),'bold'),state = 'readonly')
-        selectProduct.grid(pady=5,row=0,column=1,columnspan=8)
-        selectProduct.current(0)
-        selectProduct.bind('<<ComboboxSelected>>',choseProduct)
-        Label(popForProducts,text="Product Name",borderwidth=1, relief="solid",font=('Comic Sans MS',int(FR*10),'bold')).grid(sticky=EW,ipadx=2,ipady=5,row=1,column=1)
-        Label(popForProducts,text="Sales Price (NPR)",borderwidth=1, relief="solid",font=('Comic Sans MS',int(FR*10),'bold')).grid(sticky=EW,ipadx=2,ipady=5,row=1,column=2)
-        Label(popForProducts,text="Product Quantity",borderwidth=1, relief="solid",font=('Comic Sans MS',int(FR*10),'bold')).grid(sticky=EW,ipadx=2,ipady=5,row=1,column=3)
-        Label(popForProducts,text="Total Price",borderwidth=1, relief="solid",font=('Comic Sans MS',int(FR*10),'bold')).grid(sticky=EW,ipadx=2,ipady=5,row=1,column=4)
-        Label(popForProducts,text="Remove Item",font=('Comic Sans MS',int(FR*10))).grid(sticky=EW,ipadx=2,row=1,column=5)
-
-        Button(popForProducts,text='Add All Products',command=addAllProducts).grid(row=1,column=7,padx=5)
 
 
     PtypeCombo = ttk.Combobox(topFrame, background='#CED7D7',width = int(WR*10), values=['By Customer', 'By Product'],font=('Comic Sans MS',int(FR*10),'bold'),state = 'readonly')
@@ -356,5 +245,4 @@ def viewOrders(self):
     checkoutAllOrderButton.pack_forget()
 
     
-    checkoutAllProduct()
-    # displayOrderSearch()
+    displayOrderSearch()

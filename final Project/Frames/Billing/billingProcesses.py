@@ -7,9 +7,15 @@ import pymongo
 #New Add Product Funtion to add products in bill
 def billingProcess(self,viewTree):
     try:
-        def displayToBillView(event=''):
+        def on_closing():
+            top.destroy()
+            self.executing = False
 
+        def displayToBillView(event=''):
+            if askQuantityEntry.get() == "":
+                return
             requiredQuantity = float(askQuantityEntry.get())
+            salesPrice = float(askSalesPriceEntry.get())
             top.destroy()
 
             # messagebox.showerror('Invalid Request', 'Quantity must be a number')
@@ -23,12 +29,12 @@ def billingProcess(self,viewTree):
                     warnUser("Product Already in Bill")
                     top.destroy()
                 else:
-                    productTotal = int(productToBill['Sales Price'])*requiredQuantity
                     self.productsInBill[productToBill['Product Name']] = {}
                     self.productsInBill[productToBill['Product Name']]['Quantity'] = requiredQuantity
                     self.productsInBill[productToBill['Product Name']]['iid'] = productToBill['_id']
-                    self.productsInBill[productToBill['Product Name']]['Sales Price'] = productToBill['Sales Price']
+                    self.productsInBill[productToBill['Product Name']]['Sales Price'] = salesPrice
                     self.productsInBill[productToBill['Product Name']]['Units'] = productToBill['Units']
+                    productTotal = int(self.productsInBill[productToBill["Product Name"]]['Sales Price'])*requiredQuantity
                     self.productsInBill[productToBill['Product Name']]['Product Total'] = productTotal
                     viewProductsInBill.viewProductsInBill(self,viewTree)
                     top.destroy()
@@ -39,6 +45,12 @@ def billingProcess(self,viewTree):
 
         ##For local database storage
 
+        def validateSalesPrice(e):
+            try:
+                float(askSalesPriceEntry.get())
+            except ValueError:
+                askSalesPriceEntry.delete(-1,'end')
+       
         connection = pymongo.MongoClient("localhost", 27017)
         database = connection['saiRecords']
         collection = database['inventory']
@@ -62,28 +74,32 @@ def billingProcess(self,viewTree):
         displayAvailableQuantity = Label(top, text=(str(productToBill['Quantity'])+" "+ str(productToBill['Units'])), padx=5, pady=5, font=('Comic Sans MS', int(FR*15), 'bold'))
         displayAvailableQuantity.grid(row=0, column=1)
 
-        salesPriceLbl = Label(top, text="Sales Price", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
-        salesPriceLbl.grid(row = 1, column= 0)
-
-        salesPriceDsp = Label(top, text=productToBill['Sales Price'], padx=5, pady=5,font=('Helvetica', 15, 'bold'))
-        salesPriceDsp.grid(row = 1, column=1)
-
-
         askQuantityLabel = Label(top, text="Enter Quantity", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
-        askQuantityLabel.grid(row=2, column=0)
+        askQuantityLabel.grid(row=1, column=0)
 
         askQuantityEntry = Entry(top, width = int(WR*10), font=('Comic Sans MS', int(FR*15), 'bold'))
-        askQuantityEntry.grid(row=2, column=1)
+        askQuantityEntry.grid(row=1, column=1)
         askQuantityEntry.focus()
-        askQuantityEntry.bind('<Return>', displayToBillView)
+
+        askSalesPriceLabel = Label(top, text="Sales Price", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
+        askSalesPriceLabel.grid(row=2, column=0)
+        askSalesPriceEntry = Entry(top, width = int(WR*10), font=('Comic Sans MS', int(FR*15), 'bold'))
+        askSalesPriceEntry.insert(0,productToBill['Sales Price'])
+        askSalesPriceEntry.grid(row=2, column=1)
+        askSalesPriceEntry.bind("<KeyRelease>",validateSalesPrice)
+
+        top.bind('<Return>', displayToBillView)
 
         okBtn = Button(top, text="Sell", padx=5,pady=10, width = int(WR*8),font=('Georgia', int(FR*10),'bold'), command=displayToBillView)
-        okBtn.grid(row=3, column=0)
+        okBtn.grid(row=3, column=0,columnspan=2)
+        top.protocol("WM_DELETE_WINDOW", on_closing)
 
     except TypeError:
         warnUser("Product Selection Required")
+        self.executing = False
         # top.destroy()
     except ValueError:
+        self.executin = False
         messagebox.showerror('Invalid Request', 'The selected product seems Out of Stock. Try adding the product in the inventory')
 
 def getConnect(self):

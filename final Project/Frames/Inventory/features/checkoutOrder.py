@@ -43,7 +43,7 @@ def checkoutOrders(self):
             productDetails[x['Product Name']]= {'orderQuantity':x['Order'],'Sales Price':x['Sales Price']}
     #Displays Product in the Listbox of billing tabs to search for Product
     connection.close()
-    self.executing = False
+    
     def editOrder():
         def on_closing():
             top.destroy()
@@ -122,25 +122,22 @@ def checkoutOrders(self):
         self.executing = False 
 
     def deleteOrder(e=""):
-        if not self.executing:
-            self.executing = True
             iidDelete = viewTree.focus()
             product = (viewTree.item(iidDelete, 'values'))[0]
             productsInBill.pop(product)
             viewProductsInBill()
 
     def clearBilling(e=""):
-        if not self.executing:
-            self.executing = True
             productsInBill.clear()
             viewProductsInBill() 
+    
     def displayProductOptions(event = ''):
         example = []
         searchValue = billingSearchEntry.get()
 
         ##For local storage
         for x in productDetails:
-            if searchValue in x:
+            if searchValue.upper() in x.upper():
                 example.append(x)
         itemlistbox.delete(0,END)
         itemlistbox.insert(0, *example)
@@ -234,7 +231,6 @@ def checkoutOrders(self):
             askOrderQuantityEntry.insert(0,productDetails[product]['orderQuantity'])
             askOrderQuantityEntry.grid(row=0, column=1)
             askOrderQuantityEntry.bind("<KeyRelease>",validateQuantity)
-            askOrderQuantityEntry.bind("<Return>",displayToBill)
 
             salesPriceLbl = Label(top, text="Sales Price (RS)", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
             salesPriceLbl.grid(row = 1, column= 0)
@@ -243,7 +239,6 @@ def checkoutOrders(self):
             askSalesPriceEntry.insert(0,productDetails[product]['Sales Price'])
             askSalesPriceEntry.grid(row=1, column=1)
             askSalesPriceEntry.bind("<KeyRelease>",validateSalesPrice)
-            askSalesPriceEntry.bind("<Return>",displayToBill)
 
             askOrderQuantityEntry.focus()
 
@@ -251,6 +246,7 @@ def checkoutOrders(self):
             command=displayToBill)
             okBtn.grid(row=3, column=0)
             top.protocol("WM_DELETE_WINDOW", on_closing)
+            top.bind('<Return>',displayToBill)
 
         else:
             if not self.executing:

@@ -23,7 +23,6 @@ def navigationFrame(self, tab):
                           ('pressed', '!focus', 'cyan'),
                           ('active', 'green')],
               )
-
     self.btn_addProduct = ttk.Button(self.buttonFrame, text="Add New Product", style='TButton', command= lambda:addNewProduct.addNewRecord(self,tab))
     self.btn_addProduct.grid(column=0, row=1, pady=10)
 
@@ -34,10 +33,6 @@ def navigationFrame(self, tab):
     self.btn_viewInventory = ttk.Button(
         self.buttonFrame, text="View Inventory", style='TButton', command=lambda:viewInventory.viewInventory(self,tab))
     self.btn_viewInventory.grid(column=0, row=3, pady=5)
-
-    self.btn_viewInventory = ttk.Button(
-        self.buttonFrame, text="View Orders", style='TButton', command=lambda:viewOrders.viewOrders(self))
-    self.btn_viewInventory.grid(column=0, row=4, pady=5)
 
     self.btn_checkoutOrders = ttk.Button(
         self.buttonFrame, text="Checkout Orders", style='TButton', command=lambda:checkoutOrders.checkoutOrders(self))
@@ -50,6 +45,7 @@ def navigationFrame(self, tab):
     backupBtn = ttk.Button(self.buttonFrame, text="Day End", style='TButton', command=lambda:dayEnd.dayEnd(self))
     backupBtn.grid(column=0, row=7, pady=5)
 
+   
     def endSession():
         ans = messagebox.askyesno(
             "Quit", " Any unsaved billing process will not be Saved. Are you sure ?")

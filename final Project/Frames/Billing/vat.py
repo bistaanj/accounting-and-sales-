@@ -16,14 +16,9 @@ def vat_billing(self,viewTree):
                 self.billingVatableAmountLabel.grid(row=1, column=1, sticky="n",  pady=0)
                 self.VatableAmountLabel.grid(row=1, column=0, sticky="n",  pady=0)
                 self.billingVatableAmountLabel.config(text = 0)
-
-                #templabel.grid_forget()
         else:
             self.billing_method = 0
             self.billtypelabel.config(text='VAT BILLING')
             self.billingVatableAmountLabel.grid(row=1, column=1, sticky="n",  pady=0)
             self.VatableAmountLabel.grid(row=1, column=0, sticky="n",  pady=0)
             self.billingVatableAmountLabel.config(text = 0)
-
-
-            #templabel.grid_forget()

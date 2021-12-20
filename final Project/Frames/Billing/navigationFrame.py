@@ -5,13 +5,12 @@ import win32api
 import pymongo
 from config.dynamicSize import FR,WR,HR
 from Frames.Billing.config import *
-
 # creates frame and buttons inside the Billing tab's Navigation Button
 def navigationFrame(self,tab):
-    
     self.billing_method = 0
+    self.billingTotalAmount = 0
+    self.productsInBill = {}
     buttonBg = "#284F9B"
-
     self.buttonFrame = Frame(tab, bg=buttonBg)
     self.buttonFrame.pack(side = LEFT,fill= Y)
 
@@ -82,9 +81,11 @@ def navigationFrame(self,tab):
         self.itemlistbox.insert(0, *example)
 
     def callback(event = ''):
-        state_left = win32api.GetKeyState(0x01)
-        if state_left<0:
-            billingProcess.billingProcess(self,viewTree)
+        if not self.executing:
+            self.executing = True
+            state_left = win32api.GetKeyState(0x01)
+            if state_left<0:
+                billingProcess.billingProcess(self,viewTree)
 
     #Billing GUI starts here
 
