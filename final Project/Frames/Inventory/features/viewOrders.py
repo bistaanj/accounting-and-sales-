@@ -120,7 +120,10 @@ def viewOrders(self):
                                 except:
                                     temp2[k] = i['Products'][k]['Quantity']
                     j=0
+
                     for i in temp2:
+                        # if '?' in i:
+                        #     i=i.replace('?','.')
                         itemlistbox.insert(j,i+' --- '+str(temp2[i]))
                         j+=1
                     final = {}
@@ -178,11 +181,17 @@ def viewOrders(self):
         connection = pymongo.MongoClient("localhost", 27017)
         database = connection['saiRecords']
         collection = database['inventory']
-        allProducts = collection.find()
+        
+        tp = collection.find({'Order': {'$gt': 0}})
         productDetails = {}
-        for x in allProducts:
-            if x['Order'] > 0:
-                productDetails[x['Product Name']]= {'orderQuantity':x['Order'],'Sales Price':x['Sales Price']}
+        for x in tp:
+            productDetails[x['Product Name']]= {'orderQuantity':x['Order'],'Sales Price':x['Sales Price']}
+
+        # allProducts = collection.find()
+        
+        # for x in allProducts:
+        #     if x['Order'] > 0:
+        #         productDetails[x['Product Name']]= {'orderQuantity':x['Order'],'Sales Price':x['Sales Price']}
         popForProducts = Toplevel()
         totalLabel = Label(popForProducts,text="Total",font=('Comic Sans MS',int(FR*12),'bold'))
         totalLabel.grid(row=len(list(productDetails))+1,column=1,pady=12)

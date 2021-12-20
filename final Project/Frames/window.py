@@ -41,6 +41,9 @@ class Window(Tk):
         self.customerTab = ttk.Frame(tab_control)
         tab_control.add(self.customerTab, text="Customer Details")
 
+        self.overViewTab = ttk.Frame(tab_control)
+        tab_control.add(self.overViewTab, text="Overviiiiiiiiiew")
+
 
         #Packs the Created Tabs in the Frame
         tab_control.pack(expand = 1, fill = "both")
@@ -59,6 +62,9 @@ class Window(Tk):
 
         #Creates Frame for Customer Details
         navigationFrameCustomerDetails.navigationFrame(self,self.customerTab)
+
+        #Creates Frame for Overview
+        navigationFrameOverview.navigationFrame(self,self.overViewTab)
 
         #Creates an Empty Frame to initialize the self.displayFrame
         self.displayFrame = Frame(self.inventory)
