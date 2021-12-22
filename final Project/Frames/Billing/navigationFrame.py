@@ -81,7 +81,7 @@ def navigationFrame(self,tab):
         self.itemlistbox.insert(0, *example)
 
     def callback(event = ''):
-        if not self.executing:
+        if not self.executing and self.tab_control.tab(self.tab_control.select(), "text") == "Billing":
             self.executing = True
             state_left = win32api.GetKeyState(0x01)
             if state_left<0:
