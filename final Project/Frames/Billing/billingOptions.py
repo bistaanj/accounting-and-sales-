@@ -110,8 +110,6 @@ def completeBilling(self,viewTree):
         except ValueError:
             messagebox.showerror("Insuccifient Data", "Provide Customer Name")
 
-
-
     if (len(self.productsInBill)<1):
         messagebox.showerror("error", "No Products in Bill ! ")
     else:

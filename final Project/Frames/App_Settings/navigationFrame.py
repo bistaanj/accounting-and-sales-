@@ -4,6 +4,7 @@ import pymongo
 from config.dynamicSize import FR,WR,HR
 
 def navigationFrame(self,tab):
+    
     self.displayFrame = Frame(tab)
     self.displayFrame.pack(fill="both", padx=20, pady=20)
 
