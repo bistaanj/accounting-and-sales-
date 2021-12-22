@@ -1,3 +1,4 @@
+# from _typeshed import ReadableBuffer
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -103,7 +104,7 @@ def updateInventory(self):
             database = connection['saiRecords']
             collection = database['inventory']
 
-            databaseRow = collection.find_one({'_id': ObjectId(iid)}, {'Quantity': 1, '_id': 0})
+            databaseRow = collection.find_one({'_id': ObjectId(iid)}, {'Quantity': 1, 'Product Name':1, '_id': 0})
             # connection.close()
             currentValue = databaseRow['Quantity']
             print(type(currentValue))
@@ -117,13 +118,36 @@ def updateInventory(self):
             nw = datetime.now()
             id = nw.strftime("%d%m%Y-%H%M%S")
             
+            print(iid)
             rawdata={}
-            rawdata[id]={}
-            rawdata[id]['Quantity']= int(quantity)
-            rawdata[id]['CP']= int(cp)
-            rawdata[id]['Seller']= seller
-            rawdata[id]['Product']= iid
-            collection.insert(rawdata)
+            rawdata['PN']=databaseRow['Product Name']
+            rawdata['Quantity']= int(quantity)
+            rawdata['CP']= int(cp)
+            rawdata['Seller']= seller
+            collection.update_one({'_id': ObjectId(iid)}, {'$set':{id:rawdata}})
+
+            # rawdata={
+            #     '_id':123456789,
+            #     "20112021-221205":{
+            #             "Quantity":100,
+            #             "CP":500,
+            #             "Purchased From": "ABC"
+            #         },
+            #     "20112021-221305":{
+            #             "Quantity":100,
+            #             "CP":500,
+            #             "Purchased From": "ABC"
+            #         }, 
+                
+            # }
+
+            # for x in rawdata:
+            #     print(rawdata[x])
+            
+            
+
+
+
 
             for x in rawdata:
                 print(x)
