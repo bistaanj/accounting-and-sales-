@@ -1,13 +1,10 @@
-from config.dynamicSize import WR,FR,HR,fontToUse
-from config.config import day1Date
+from config.dynamicSize import WR,FR,HR,fontToUse,day1Date
 from tkinter import *
 from tkcalendar import DateEntry
 from datetime import datetime
 
 # Current date time in local system
-print(datetime.now())
 def navigationFrame(self,tab):
-
     def getDate():
         startDate = chooseStartDate.get_date()
         endDate = chooseEndDate.get_date()
@@ -21,12 +18,12 @@ def navigationFrame(self,tab):
         else:
             dateToInsert = datetime.strptime(dateToInsert, '%y-%m-%d')
             chooseStartDate.set_date(dateToInsert)
+
     self.displayFrame = Frame(tab)
     self.displayFrame.pack(fill = 'both')
 
-    descLabel = Label(self.displayFrame,text="Overview of Sales",font=(fontToUse,int(FR*20)))
+    descLabel = Label(self.displayFrame,text="Overview of Stocks",font=(fontToUse,int(FR*20)))
     descLabel.pack()
-
     topFrame = Frame(self.displayFrame)
     topFrame.pack()
     
