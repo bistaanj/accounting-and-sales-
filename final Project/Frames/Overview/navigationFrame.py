@@ -1,5 +1,5 @@
 from config.dynamicSize import WR,FR,HR,fontToUse
-from config.config import day1Date
+
 from tkinter import *
 from tkcalendar import DateEntry
 from datetime import datetime
