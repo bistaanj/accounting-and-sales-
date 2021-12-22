@@ -18,32 +18,32 @@ class Window(Tk):
         self.state('zoomed')
 
         # Creates Notebook
-        tab_control = ttk.Notebook(self)
+        self.tab_control = ttk.Notebook(self)
         notebookstyle = ttk.Style()
         notebookstyle.configure('TNotebook.Tab',font=('URW Gothic L', int(FR*15), 'bold'), padding=[10, 10])
 
         #Creates Expense Tab
-        self.inventory = Frame(tab_control, padx = 5, bg = "white" )
-        tab_control.add(self.inventory, text ="Inventory")
+        self.inventory = Frame(self.tab_control, padx = 5, bg = "white" )
+        self.tab_control.add(self.inventory, text ="Inventory")
 
         #Creates Sales Tab
-        self.billingTab = ttk.Frame(tab_control)
-        tab_control.add(self.billingTab, text = "Billing")
+        self.billingTab = ttk.Frame(self.tab_control)
+        self.tab_control.add(self.billingTab, text = "Billing")
 
         #Create overview Tab
-        self.overView = ttk.Frame(tab_control)
-        tab_control.add(self.overView,text="Overview")
+        self.overView = ttk.Frame(self.tab_control)
+        self.tab_control.add(self.overView,text="Overview")
 
         #Creates View Tab
-        self.viewTab = ttk.Frame(tab_control)
-        tab_control.add(self.viewTab, text = "Bill History")
+        self.customerDetails = ttk.Frame(self.tab_control)
+        self.tab_control.add(self.customerDetails, text = "Customer Details")
 
-        self.settingsTab = ttk.Frame(tab_control)
-        tab_control.add(self.settingsTab, text="App Settings")
+        self.settingsTab = ttk.Frame(self.tab_control)
+        self.tab_control.add(self.settingsTab, text="App Settings")
 
 
         #Packs the Created Tabs in the Frame
-        tab_control.pack(expand = 1, fill = "both")
+        self.tab_control.pack(expand = 1, fill = "both")
 
         #Creates Frame for Navigation Button
         navigationFrameInventory.navigationFrame(self,self.inventory)
@@ -54,8 +54,8 @@ class Window(Tk):
         #Creates Frame for Overview Tab
         navigationFrameOverview.navigationFrame(self,self.overView)
         
-        #Creates frame for view Button
-        navigationFrameBillHistory.navigationFrame(self,self.viewTab)
+        #Creates frame for customer Details Button
+        navigationFrameCustomerDetails.navigationFrame(self,self.customerDetails)
 
         #Creates Frame for Settings Tab
         navigationFrameAppSettings.navigationFrame(self,self.settingsTab)
@@ -67,7 +67,7 @@ class Window(Tk):
         #Style Section for the widgets
         self.myFont = font.Font(family='Helvetica', size=int(FR*20), weight='bold')
 
-        tab_control.select(self.overView)
+        self.tab_control.select(self.inventory)
             
         addNewRecord(self,self.inventory)
 
