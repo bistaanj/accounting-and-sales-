@@ -6,7 +6,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 import pymongo
 from config.dynamicSize import FR, WR, HR
-import Frames.supportingFunctions as sf
+from Frames.supportingFunctions import warnUser
 
 def updateInventory(self):
     self.displayFrame.destroy()
@@ -113,18 +113,34 @@ def updateInventory(self):
             currentValue = int(currentValue)
             newValue = grabbedValue + currentValue
             collection.update_one({'_id': ObjectId(iid)}, {'$set': {'Quantity': newValue}})
+            cp = float(cp)
+            quantity = int(quantity)
+            cp = float('{:.2f}'.format(cp/quantity))
+            collection.update_one({'_id': ObjectId(iid)}, {'$set': {'Cost Price': cp}})
             self.UpdatePopUp.destroy()
             collection = database['restock']
             nw = datetime.now()
             id = nw.strftime("%d%m%Y-%H%M%S")
             
+            
             print(iid)
             rawdata={}
-            rawdata['PN']=databaseRow['Product Name']
-            rawdata['Quantity']= int(quantity)
-            rawdata['CP']= int(cp)
+            rawdata['Quantity']= quantity
+            rawdata['CP']= cp
             rawdata['Seller']= seller
             collection.update_one({'_id': ObjectId(iid)}, {'$set':{id:rawdata}})
+
+            cumi= {}
+            cumi['Quantity']= quantity
+            cumi['CP']= cp
+            collection= database['presentStock']
+            collection.update_one({'_id': ObjectId(iid)}, {'$set':{id:cumi}})
+            
+            # for x in rawdata[::-1]:
+            #     print(rawdata[x]['Seller'])
+
+            
+
 
             # rawdata={
             #     '_id':123456789,
@@ -153,7 +169,7 @@ def updateInventory(self):
                 print(x)
                 print(rawdata[x])
             rawdata
-            sf.warnUser("Value Updated")
+            warnUser("Value Updated")
             displaySearchResult()
         except ValueError:
             messagebox.showerror('Error', 'Value Missing or Insufficient')
@@ -177,7 +193,7 @@ def updateInventory(self):
 
             collection.update_one({'_id': ObjectId(iid)}, {'$set': {'Sales Price': grabbedValue}})
             self.UpdatePopUp.destroy()
-            self.warnUser("Value Updated")
+            warnUser("Value Updated")
             displaySearchResult()
         except ValueError:
             messagebox.showerror('Error', 'Value Missing or Insufficient')
@@ -203,7 +219,7 @@ def updateInventory(self):
             collection.update_one({'_id': ObjectId(iid)}, {
                                 '$set': {'Location': grabbedValue}})
             self.UpdatePopUp.destroy()
-            self.warnUser("Value Updated")
+            warnUser("Value Updated")
             displaySearchResult()
         except ValueError:
             messagebox.showerror('Error', 'Value Missing or Insufficient')
@@ -212,21 +228,21 @@ def updateInventory(self):
     def updateQuantityDbs():
         self.row_iid = getObjectIid()
         if self.row_iid == 0:
-            self.warnUser("One Record Selection Required !")
+            warnUser("One Record Selection Required !")
         else:
             displayUpdateForm()
 
     def updateCostDbs():
         self.row_iid = getObjectIid()
         if self.row_iid == 0:
-            self.warnUser("One Record Selection Required !")
+            warnUser("One Record Selection Required !")
         else:displayUpdatePopup("Update Value", dbsCostUpdate)
 
 
     def updateLocationDbs():
         self.row_iid = getObjectIid()
         if self.row_iid == 0:
-            self.warnUser("One Record Selection Required !")
+            warnUser("One Record Selection Required !")
         else:displayUpdatePopup("Update Value", dbsLocationUpdate)
 
 
@@ -258,7 +274,7 @@ def updateInventory(self):
         lenCheck = len(list(searchResult2))
 
         if (lenCheck == 0):
-            self.warnUser("Product Not Found")
+            warnUser("Product Not Found")
             print("Warned !!!!!!!")
         else:
             showCondition = True
@@ -266,7 +282,7 @@ def updateInventory(self):
             self.txt = 0
             for x in searchResult:
                 viewTree.insert(parent='', index=END, iid=(x["_id"]), text=(self.txt+1), values=(
-                    x['Product Name'], x['Cost Price'], x['Sales Price'], x['Quantity'], x['Units'], x['Location'], x['Purchased From']))
+                    x['Product Name'], x['Cost Price'], x['Sales Price'], x['Quantity'], x['Units'], x['Purchased From']))
                 self.txt += 1
                 
         
@@ -322,14 +338,14 @@ def updateInventory(self):
     viewTree = ttk.Treeview(self.rsltFrame,height = int(HR*8), style="mystyle.Treeview")
 
     #Define Columns
-    viewTree['columns'] = ('Product Name', 'Cost Price' ,'Sales Price', 'Quantity','Units' , 'Location')
+    viewTree['columns'] = ('Product Name', 'Cost Price' ,'Sales Price', 'Quantity','Units' )
     viewTree.column('#0', width = int(WR*60), minwidth=10, anchor=CENTER)
     viewTree.column('Product Name', width = int(WR*350), anchor=W)
     viewTree.column('Cost Price', width = int(WR*138), anchor=CENTER)
     viewTree.column('Sales Price', width = int(WR*138), anchor=CENTER)
     viewTree.column('Quantity', width = int(WR*130), anchor=CENTER)
     viewTree.column('Units', width = int(WR*110), anchor=CENTER)
-    viewTree.column('Location', width = int(WR*150), anchor=CENTER)
+    # viewTree.column('Location', width = int(WR*150), anchor=CENTER)
 
     #Create Headings
     viewTree.heading('#0', text='S.N', anchor=CENTER)
@@ -338,7 +354,7 @@ def updateInventory(self):
     viewTree.heading('Sales Price', text='Sales Price', anchor=CENTER)
     viewTree.heading('Quantity', text='Quantity', anchor=CENTER)
     viewTree.heading('Units', text='Units', anchor=CENTER)
-    viewTree.heading('Location', text='Location', anchor=CENTER)
+    # viewTree.heading('Location', text='Location', anchor=CENTER)
 
     viewTree.pack(padx = 10)
 
