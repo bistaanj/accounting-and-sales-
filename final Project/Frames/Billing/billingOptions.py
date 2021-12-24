@@ -3,6 +3,7 @@ from tkinter import *
 import pymongo
 from config.dynamicSize import FR,WR,HR
 import Frames.Billing.viewProductsInBill as viewProductsInBill
+import Frames.Billing.stockManager as sm
 
 #Clears the billing
 def clearBilling(self,viewTree):
@@ -37,7 +38,8 @@ def completeBilling(self,viewTree):
             database = connection['saiRecords']
             collection = database['inventory']
             for product in self.productsInBill:
-                print(product)
+                
+                print()
                 orgValue = int((collection.find_one({'Product Name': product}))['Quantity'])
                 orgValue_sold = int((collection.find_one({'Product Name': product}))['Sold'])
                 orgValue_order = int((collection.find_one({'Product Name': product}))['Order'])
@@ -47,6 +49,12 @@ def completeBilling(self,viewTree):
                 {'$set':{
                     'Quantity': (orgValue-int(self.productsInBill[product]['Quantity'])),
                 }})
+
+                para1 =self.productsInBill[product]['iid']
+                qnty = int(self.productsInBill[product]['Quantity'])
+                sm.manageStock(para1,qnty)
+                
+
                 if self.billing_method == 0:
                     collection = database['inventory']
                     collection.find_one_and_update({'Product Name': product},

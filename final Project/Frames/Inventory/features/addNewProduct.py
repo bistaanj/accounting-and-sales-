@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import pymongo
-import datetime
+from datetime import datetime
 from config.dynamicSize import HR, WR, FR
 import Frames.supportingFunctions as supportingFunctions
 # creates widget inside Inventory Label Frame. Tab-> Inventory
@@ -88,10 +88,20 @@ def postRecord(self):
             inserted = collection.insert_one(self.rawData)
             print("Data Posting Completed")
             ref_id = inserted.inserted_id
-            collection = database['presentStock']
-            ref_collection = {'_id':ref_id, 'PN': self.rawData['Product Name']}
-            collection.insert_one(ref_collection)
             collection = database['restock']
+            nw = datetime.now()
+            id = nw.strftime("%d%m%Y-%H%M%S")
+            ref_collection = {'_id':ref_id, 'PN': self.rawData['Product Name'],
+             id: {
+                 'Quantity': self.rawData['Quantity'],
+                 'CP': self.rawData['Cost Price']
+            }}
+            collection.insert_one(ref_collection)
+            collection = database['presentStock']
+
+            ref_collection = {'_id':ref_id, 'PN': self.rawData['Product Name'],
+            'Stock': [{'Quantity':self.rawData['Quantity'],'CP':self.rawData['Cost Price']}]
+            }
             collection.insert_one(ref_collection)
             # connection.close()
             messagebox.showinfo("Information", "Product Addition Successful")

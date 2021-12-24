@@ -130,11 +130,11 @@ def updateInventory(self):
             rawdata['Seller']= seller
             collection.update_one({'_id': ObjectId(iid)}, {'$set':{id:rawdata}})
 
-            cumi= {}
-            cumi['Quantity']= quantity
-            cumi['CP']= cp
+            # cumi= {}
+            # cumi['Quantity']= quantity
+            # cumi['CP']= cp
             collection= database['presentStock']
-            collection.update_one({'_id': ObjectId(iid)}, {'$set':{id:cumi}})
+            collection.update_one({'_id': ObjectId(iid)}, {'$push':{'Stock':{'Quantity':quantity,'CP':cp}}})
             
             # for x in rawdata[::-1]:
             #     print(rawdata[x]['Seller'])
@@ -199,31 +199,31 @@ def updateInventory(self):
             messagebox.showerror('Error', 'Value Missing or Insufficient')
             self.UpdatePopUp.destroy()
 
-    def dbsLocationUpdate(event = ''):
-        try:
-            iid = self.row_iid
-            grabbedValue = self.updateEntry.get()
-            if (grabbedValue == 0):
-                raise ValueError
-            grabbedValue = str(grabbedValue)
+    # def dbsLocationUpdate(event = ''):
+    #     try:
+    #         iid = self.row_iid
+    #         grabbedValue = self.updateEntry.get()
+    #         if (grabbedValue == 0):
+    #             raise ValueError
+    #         grabbedValue = str(grabbedValue)
 
-            # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-            # db = client.get_database('saiRecords')
-            # collection = db.inventory
+    #         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+    #         # db = client.get_database('saiRecords')
+    #         # collection = db.inventory
 
-            ##For local Storage
-            connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
-            collection = database['inventory']
+    #         ##For local Storage
+    #         connection = pymongo.MongoClient("localhost", 27017)
+    #         database = connection['saiRecords']
+    #         collection = database['inventory']
 
-            collection.update_one({'_id': ObjectId(iid)}, {
-                                '$set': {'Location': grabbedValue}})
-            self.UpdatePopUp.destroy()
-            warnUser("Value Updated")
-            displaySearchResult()
-        except ValueError:
-            messagebox.showerror('Error', 'Value Missing or Insufficient')
-            self.UpdatePopUp.destroy()
+    #         collection.update_one({'_id': ObjectId(iid)}, {
+    #                             '$set': {'Location': grabbedValue}})
+    #         self.UpdatePopUp.destroy()
+    #         warnUser("Value Updated")
+    #         displaySearchResult()
+    #     except ValueError:
+    #         messagebox.showerror('Error', 'Value Missing or Insufficient')
+    #         self.UpdatePopUp.destroy()
 
     def updateQuantityDbs():
         self.row_iid = getObjectIid()
@@ -372,9 +372,9 @@ def updateInventory(self):
     changeCost = Button(self.btnFrame, text = "Update Cost", command = updateCostDbs)
     changeCost.grid(column=1, row=0, padx=10, pady=10, sticky="w")
 
-    changeLocation = Button(
-        self.btnFrame, text="Update Location", command=updateLocationDbs)
-    changeLocation.grid(column=2, row=0, padx=10, pady=10, sticky="w")
+    # changeLocation = Button(
+    #     self.btnFrame, text="Update Location", command=updateLocationDbs)
+    # changeLocation.grid(column=2, row=0, padx=10, pady=10, sticky="w")
 
     phaseoutBtn = Button(self.btnFrame, text='Phase Out Product', command=phaseOutProducts)
     phaseoutBtn.grid(column=3, row=0, padx=10, pady=10, sticky="w")

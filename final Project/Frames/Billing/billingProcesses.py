@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import Frames.Billing.viewProductsInBill as viewProductsInBill
+
 from config.dynamicSize import FR,WR,HR
 from Frames.supportingFunctions import warnUser
 import pymongo
