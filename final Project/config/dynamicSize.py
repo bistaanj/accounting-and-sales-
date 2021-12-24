@@ -4,7 +4,7 @@ from win32api import GetSystemMetrics, WinExec
 
 width = GetSystemMetrics(0)
 height = GetSystemMetrics(1)
-fontToUse = "Aerial"
+fontToUse = "Helvetica"
 day1Date = datetime.date(datetime.now())
 WR = width/1366
 HR = height/768

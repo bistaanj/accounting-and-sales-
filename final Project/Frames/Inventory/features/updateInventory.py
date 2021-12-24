@@ -2,8 +2,10 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from bson.objectid import ObjectId
+from datetime import datetime
 import pymongo
 from config.dynamicSize import FR, WR, HR
+from Frames.supportingFunctions import warnUser
 
 def updateInventory(self):
     self.displayFrame.destroy()
@@ -37,12 +39,59 @@ def updateInventory(self):
         self.updateEntry.bind('<Return>', cmd)
         updateBtn = Button(self.UpdatePopUp, text="Update Value", command=cmd)
         updateBtn.pack(padx=10, pady=20)
+    
+    def displayUpdateForm():
 
-    def dbsQuantityUpdate(event=''):
+        def getCred():
+            a = quantity_entry.get()
+            b= cp_entry.get()
+            c=seller_entry.get()
+            print(a,b,c)
+            dbsQuantityUpdate(a,b,c)
+            
+        self.UpdatePopUp = Toplevel()
+        self.UpdatePopUp.grab_set()
+        self.UpdatePopUp.iconbitmap('./res/dsk.ico')
+        self.UpdatePopUp.title("Update Quantity")
+
+        self.UpdatePopUp.geometry("+%d+%d" % (500, 300))
+        self.UpdatePopUp.minsize(350,200)
+
+        quantity_label = Label(self.UpdatePopUp, text = " Quantity")
+        quantity_label.grid(row = 0, column = 0)
+
+        quantity_entry = Entry(self.UpdatePopUp)
+        quantity_entry.grid(row=0, column=1, pady=10)
+
+        cp_label = Label(self.UpdatePopUp, text = " Cost Price")
+        cp_label.grid(row = 1, column = 0)
+
+        cp_entry = Entry(self.UpdatePopUp)
+        cp_entry.grid(row=1, column=1, pady=10)
+
+        seller_label = Label(self.UpdatePopUp, text = " Purchased From")
+        seller_label.grid(row = 2, column = 0)
+
+        seller_entry = Entry(self.UpdatePopUp, width=30)
+        seller_entry.grid(row=2, column=1, pady=10, padx=5)
+
+        # self.updateLabel = Label(self.UpdatePopUp, text=displayText)
+        # self.updateLabel.pack(padx=10, pady=10)
+        # self.updateEntry = Entry(self.UpdatePopUp, width=20)
+        # self.updateEntry.pack(padx=10, pady=10)
+        # self.updateEntry.focus()
+        # self.updateEntry.bind('<Return>', cmd)
+        updateBtn = Button(self.UpdatePopUp, text="Update Value", command=getCred)
+        updateBtn.grid(row = 3, column = 0, pady=10)
+
+    def dbsQuantityUpdate(quantity,cp,seller):
+        
         try:
             iid = self.row_iid
-            grabbedValue = int(self.updateEntry.get())
-            if (grabbedValue == 0):
+            # grabbedValue = int(self.updateEntry.get())
+            grabbedValue = quantity
+            grabbedValue = int(grabbedValue)
+            if (grabbedValue == '0'):
                 raise ValueError
 
             # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
@@ -57,11 +106,32 @@ def updateInventory(self):
             databaseRow = collection.find_one({'_id': ObjectId(iid)}, {'Quantity': 1, '_id': 0})
             # connection.close()
             currentValue = databaseRow['Quantity']
+            print(type(currentValue))
+            print(type(grabbedValue))
+
             currentValue = int(currentValue)
             newValue = grabbedValue + currentValue
             collection.update_one({'_id': ObjectId(iid)}, {'$set': {'Quantity': newValue}})
             self.UpdatePopUp.destroy()
-            self.warnUser("Value Updated")
+            collection = database['restock']
+            nw = datetime.now()
+            id = nw.strftime("%d%m%Y-%H%M%S")
+            
+            rawdata={}
+            # rawdata["_id"] = iid
+            rawdata[id]={}
+            rawdata[id]['Quantity']= int(quantity)
+            rawdata[id]['CP']= cp
+            rawdata[id]['Seller']= seller
+            rawdata[id]['Product Name']= databaseRow['Product Name']
+        
+            collection.update_one({"_id":ObjectId(iid)},{"$set":{id:rawdata}})
+
+            for x in rawdata:
+                print(x)
+                print(rawdata[x])
+            rawdata
+            warnUser("Value Updated")
             displaySearchResult()
         except ValueError:
             messagebox.showerror('Error', 'Value Missing or Insufficient')
@@ -85,7 +155,7 @@ def updateInventory(self):
 
             collection.update_one({'_id': ObjectId(iid)}, {'$set': {'Sales Price': grabbedValue}})
             self.UpdatePopUp.destroy()
-            self.warnUser("Value Updated")
+            warnUser("Value Updated")
             displaySearchResult()
         except ValueError:
             messagebox.showerror('Error', 'Value Missing or Insufficient')
@@ -111,7 +181,7 @@ def updateInventory(self):
             collection.update_one({'_id': ObjectId(iid)}, {
                                 '$set': {'Location': grabbedValue}})
             self.UpdatePopUp.destroy()
-            self.warnUser("Value Updated")
+            warnUser("Value Updated")
             displaySearchResult()
         except ValueError:
             messagebox.showerror('Error', 'Value Missing or Insufficient')
@@ -120,21 +190,21 @@ def updateInventory(self):
     def updateQuantityDbs():
         self.row_iid = getObjectIid()
         if self.row_iid == 0:
-            self.warnUser("One Record Selection Required !")
+            warnUser("One Record Selection Required !")
         else:
-            displayUpdatePopup("Add Quantity", dbsQuantityUpdate)
+            displayUpdateForm()
 
     def updateCostDbs():
         self.row_iid = getObjectIid()
         if self.row_iid == 0:
-            self.warnUser("One Record Selection Required !")
+            warnUser("One Record Selection Required !")
         else:displayUpdatePopup("Update Value", dbsCostUpdate)
 
 
     def updateLocationDbs():
         self.row_iid = getObjectIid()
         if self.row_iid == 0:
-            self.warnUser("One Record Selection Required !")
+            warnUser("One Record Selection Required !")
         else:displayUpdatePopup("Update Value", dbsLocationUpdate)
 
 
@@ -166,21 +236,18 @@ def updateInventory(self):
         lenCheck = len(list(searchResult2))
 
         if (lenCheck == 0):
-            self.warnUser("Product Not Found")
+            warnUser("Product Not Found")
             print("Warned !!!!!!!")
         else:
             showCondition = True
         if (showCondition == TRUE):
-            print("Printing Results")
             self.txt = 0
             for x in searchResult:
-                print("Inside Second Loop")
                 viewTree.insert(parent='', index=END, iid=(x["_id"]), text=(self.txt+1), values=(
                     x['Product Name'], x['Cost Price'], x['Sales Price'], x['Quantity'], x['Units'], x['Location'], x['Purchased From']))
                 self.txt += 1
-                print("End of loop ")
-                print("Exited For Loop")
-        print("Exited If ELse Statement")
+                
+        
     # searchLabel = Label(self.searchFrame, text="Product", bg='#4F83FC', fg = '#FFFFFF')
     # searchLabel.grid(column=0, row=1, padx=10, pady=10, sticky="w")
 
