@@ -1,3 +1,4 @@
+# from os import _OnError
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -110,6 +111,11 @@ def postRecord(self, inventory):
                               'Stock': [{'Quantity': self.rawData['Quantity'], 'CP':self.rawData['Cost Price']}]
                               }
             collection.insert_one(ref_collection)
+
+            collection = database['outStock']
+            ref_collection = {'_id':ref_id, 'PN': self.rawData['Product Name']}
+            collection.insert_one(ref_collection)
+
             # connection.close()
             messagebox.showinfo("Information", "Product Addition Successful")
             addNewRecord(self, inventory)
