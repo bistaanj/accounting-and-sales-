@@ -6,6 +6,7 @@ width = GetSystemMetrics(0)
 height = GetSystemMetrics(1)
 fontToUse = "Helvetica"
 day1Date = datetime.date(datetime.now())
+
 WR = width/1366
 HR = height/768
 FR = (width*height)/(1366*768)

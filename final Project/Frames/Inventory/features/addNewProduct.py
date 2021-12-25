@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import pymongo
-import datetime
+from datetime import datetime
 from config.dynamicSize import HR, WR, FR
 import Frames.supportingFunctions as supportingFunctions
 # creates widget inside Inventory Label Frame. Tab-> Inventory
@@ -81,15 +81,31 @@ def postRecord(self):
         try:
             self.rawData['Quantity'] = float(self.rawData['Quantity'])
             self.rawData['Sales Price'] = float(self.rawData['Sales Price'])
-            self.rawData['Cost Price'] = float(self.rawData['Cost Price'])
+            self.rawData['Cost Price'] = float('{:.2f}'.format ( float(self.rawData['Cost Price'])/float(self.rawData['Quantity'])))
             self.rawData['Order'] = 0
             self.rawData['Sold'] = 0
 
-            collection.insert_one(self.rawData)
+            inserted = collection.insert_one(self.rawData)
             print("Data Posting Completed")
+            ref_id = inserted.inserted_id
+            collection = database['restock']
+            nw = datetime.now()
+            id = nw.strftime("%d%m%Y-%H%M%S")
+            ref_collection = {'_id':ref_id, 'PN': self.rawData['Product Name'],
+             id: {
+                 'Quantity': self.rawData['Quantity'],
+                 'CP': self.rawData['Cost Price']
+            }}
+            collection.insert_one(ref_collection)
+            collection = database['presentStock']
+
+            ref_collection = {'_id':ref_id, 'PN': self.rawData['Product Name'],
+            'Stock': [{'Quantity':self.rawData['Quantity'],'CP':self.rawData['Cost Price']}]
+            }
+            collection.insert_one(ref_collection)
             # connection.close()
             messagebox.showinfo("Information", "Product Addition Successful")
-            self.addNewRecord()
+            self.addNewRecord(self.inventory)
         except ValueError:
             messagebox.showerror("Value Error", "Quantity and Unit Cost must be a Number.")
 
@@ -151,12 +167,12 @@ def addNewRecord(self,inventory):
     productCostEntry = Entry(self.displayLabel, width = int(WR*20), border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
     productCostEntry.grid(column = 1, row = 5,  padx = 10, pady = 10, sticky = "w")
 
-    locationLabel = ttk.Label(
-        self.displayLabel, text='Location', style='TLabel')
-    locationLabel.grid(column=0, row=6, padx=10, pady=10, sticky="w")
+    # locationLabel = ttk.Label(
+    #     self.displayLabel, text='Location', style='TLabel')
+    # locationLabel.grid(column=0, row=6, padx=10, pady=10, sticky="w")
 
-    locationEntry = Entry(self.displayLabel, width = int(WR*20),border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
-    locationEntry.grid(column=1, row=6, padx=10, pady=10, sticky="w")
+    # locationEntry = Entry(self.displayLabel, width = int(WR*20),border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
+    # locationEntry.grid(column=1, row=6, padx=10, pady=10, sticky="w")
 
     productDescriptionLabel = ttk.Label(self.displayLabel, text="Purchased From", style='TLabel')
     productDescriptionLabel.grid(column = 0, row = 7,  padx = 10, pady = 10, sticky = "w")

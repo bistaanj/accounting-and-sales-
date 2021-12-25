@@ -5,6 +5,7 @@ import win32api
 import pymongo
 from Frames.supportingFunctions import warnUser,getDateTime
 from config.dynamicSize import FR,WR,HR
+import Frames.Billing.billingOptions as billingOptions
 
 # creates frame and buttons inside the Billing tab's Navigation Button
 def checkoutOrders(self):
@@ -450,6 +451,7 @@ def checkoutOrders(self):
 
     #Save Bill and complete Transaction
     saveBillButton = Button(billingButtonFrame, text="Save Bill",command=completeBilling,
+
                                     width = int(WR*10),  height = int(HR*2),
                                     font=('Times New Roman', int(FR*15)), bg='#648EF1', fg='#FFFFFF', border=0, cursor = 'hand2')
     saveBillButton.grid(column=0, row=4, sticky="n", padx=10, pady=10, ipadx=8)

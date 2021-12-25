@@ -1,3 +1,4 @@
+# from _typeshed import ReadableBuffer
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
@@ -103,7 +104,7 @@ def updateInventory(self):
             database = connection['saiRecords']
             collection = database['inventory']
 
-            databaseRow = collection.find_one({'_id': ObjectId(iid)}, {'Quantity': 1, '_id': 0})
+            databaseRow = collection.find_one({'_id': ObjectId(iid)}, {'Quantity': 1, 'Product Name':1, '_id': 0})
             # connection.close()
             currentValue = databaseRow['Quantity']
             print(type(currentValue))
@@ -112,20 +113,53 @@ def updateInventory(self):
             currentValue = int(currentValue)
             newValue = grabbedValue + currentValue
             collection.update_one({'_id': ObjectId(iid)}, {'$set': {'Quantity': newValue}})
+            cp = float(cp)
+            quantity = int(quantity)
+            cp = float('{:.2f}'.format(cp/quantity))
+            collection.update_one({'_id': ObjectId(iid)}, {'$set': {'Cost Price': cp}})
             self.UpdatePopUp.destroy()
             collection = database['restock']
             nw = datetime.now()
             id = nw.strftime("%d%m%Y-%H%M%S")
             
+            
+            print(iid)
             rawdata={}
-            # rawdata["_id"] = iid
-            rawdata[id]={}
-            rawdata[id]['Quantity']= int(quantity)
-            rawdata[id]['CP']= cp
-            rawdata[id]['Seller']= seller
-            rawdata[id]['Product Name']= databaseRow['Product Name']
-        
-            collection.update_one({"_id":ObjectId(iid)},{"$set":{id:rawdata}})
+            rawdata['Quantity']= quantity
+            rawdata['CP']= cp
+            rawdata['Seller']= seller
+            collection.update_one({'_id': ObjectId(iid)}, {'$set':{id:rawdata}})
+
+            # cumi= {}
+            # cumi['Quantity']= quantity
+            # cumi['CP']= cp
+            collection= database['presentStock']
+            collection.update_one({'_id': ObjectId(iid)}, {'$push':{'Stock':{'Quantity':quantity,'CP':cp}}})
+            
+            # for x in rawdata[::-1]:
+            #     print(rawdata[x]['Seller'])
+
+            
+
+
+            # rawdata={
+            #     '_id':123456789,
+            #     "20112021-221205":{
+            #             "Quantity":100,
+            #             "CP":500,
+            #             "Purchased From": "ABC"
+            #         },
+            #     "20112021-221305":{
+            #             "Quantity":100,
+            #             "CP":500,
+            #             "Purchased From": "ABC"
+            #         }, 
+                
+            # }
+
+            # for x in rawdata:
+            #     print(rawdata[x])
+            
 
             for x in rawdata:
                 print(x)
@@ -160,32 +194,32 @@ def updateInventory(self):
         except ValueError:
             messagebox.showerror('Error', 'Value Missing or Insufficient')
             self.UpdatePopUp.destroy()
+    # def dbsLocationUpdate(event = ''):
+    #     try:
+    #         iid = self.row_iid
+    #         grabbedValue = self.updateEntry.get()
+    #         if (grabbedValue == 0):
+    #             raise ValueError
+    #         grabbedValue = str(grabbedValue)
 
-    def dbsLocationUpdate(event = ''):
-        try:
-            iid = self.row_iid
-            grabbedValue = self.updateEntry.get()
-            if (grabbedValue == 0):
-                raise ValueError
-            grabbedValue = str(grabbedValue)
+    #         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+    #         # db = client.get_database('saiRecords')
+    #         # collection = db.inventory
 
-            # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-            # db = client.get_database('saiRecords')
-            # collection = db.inventory
+    #         ##For local Storage
+    #         connection = pymongo.MongoClient("localhost", 27017)
+    #         database = connection['saiRecords']
+    #         collection = database['inventory']
 
-            ##For local Storage
-            connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
-            collection = database['inventory']
+    #         collection.update_one({'_id': ObjectId(iid)}, {
+    #                             '$set': {'Location': grabbedValue}})
+    #         self.UpdatePopUp.destroy()
+    #         warnUser("Value Updated")
+    #         displaySearchResult()
+    #     except ValueError:
+    #         messagebox.showerror('Error', 'Value Missing or Insufficient')
+    #         self.UpdatePopUp.destroy()
 
-            collection.update_one({'_id': ObjectId(iid)}, {
-                                '$set': {'Location': grabbedValue}})
-            self.UpdatePopUp.destroy()
-            warnUser("Value Updated")
-            displaySearchResult()
-        except ValueError:
-            messagebox.showerror('Error', 'Value Missing or Insufficient')
-            self.UpdatePopUp.destroy()
 
     def updateQuantityDbs():
         self.row_iid = getObjectIid()
@@ -244,7 +278,7 @@ def updateInventory(self):
             self.txt = 0
             for x in searchResult:
                 viewTree.insert(parent='', index=END, iid=(x["_id"]), text=(self.txt+1), values=(
-                    x['Product Name'], x['Cost Price'], x['Sales Price'], x['Quantity'], x['Units'], x['Location'], x['Purchased From']))
+                    x['Product Name'], x['Cost Price'], x['Sales Price'], x['Quantity'], x['Units'], x['Purchased From']))
                 self.txt += 1
                 
         
@@ -300,14 +334,14 @@ def updateInventory(self):
     viewTree = ttk.Treeview(self.rsltFrame,height = int(HR*8), style="mystyle.Treeview")
 
     #Define Columns
-    viewTree['columns'] = ('Product Name', 'Cost Price' ,'Sales Price', 'Quantity','Units' , 'Location')
+    viewTree['columns'] = ('Product Name', 'Cost Price' ,'Sales Price', 'Quantity','Units' )
     viewTree.column('#0', width = int(WR*60), minwidth=10, anchor=CENTER)
     viewTree.column('Product Name', width = int(WR*350), anchor=W)
     viewTree.column('Cost Price', width = int(WR*138), anchor=CENTER)
     viewTree.column('Sales Price', width = int(WR*138), anchor=CENTER)
     viewTree.column('Quantity', width = int(WR*130), anchor=CENTER)
     viewTree.column('Units', width = int(WR*110), anchor=CENTER)
-    viewTree.column('Location', width = int(WR*150), anchor=CENTER)
+    # viewTree.column('Location', width = int(WR*150), anchor=CENTER)
 
     #Create Headings
     viewTree.heading('#0', text='S.N', anchor=CENTER)
@@ -316,7 +350,7 @@ def updateInventory(self):
     viewTree.heading('Sales Price', text='Sales Price', anchor=CENTER)
     viewTree.heading('Quantity', text='Quantity', anchor=CENTER)
     viewTree.heading('Units', text='Units', anchor=CENTER)
-    viewTree.heading('Location', text='Location', anchor=CENTER)
+    # viewTree.heading('Location', text='Location', anchor=CENTER)
 
     viewTree.pack(padx = 10)
 
@@ -334,9 +368,9 @@ def updateInventory(self):
     changeCost = Button(self.btnFrame, text = "Update Cost", command = updateCostDbs)
     changeCost.grid(column=1, row=0, padx=10, pady=10, sticky="w")
 
-    changeLocation = Button(
-        self.btnFrame, text="Update Location", command=updateLocationDbs)
-    changeLocation.grid(column=2, row=0, padx=10, pady=10, sticky="w")
+    # changeLocation = Button(
+    #     self.btnFrame, text="Update Location", command=updateLocationDbs)
+    # changeLocation.grid(column=2, row=0, padx=10, pady=10, sticky="w")
 
     phaseoutBtn = Button(self.btnFrame, text='Phase Out Product', command=phaseOutProducts)
     phaseoutBtn.grid(column=3, row=0, padx=10, pady=10, sticky="w")

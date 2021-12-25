@@ -3,6 +3,7 @@ from bson.objectid import ObjectId
 from config.dynamicSize import WR,FR,HR,fontToUse,day1Date
 from Frames.supportingFunctions import warnUser
 from Frames.getConnect import getConnect
+
 from tkinter import *
 from tkcalendar import DateEntry
 from datetime import datetime
