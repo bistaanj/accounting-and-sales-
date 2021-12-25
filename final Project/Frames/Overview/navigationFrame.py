@@ -39,6 +39,8 @@ def navigationFrame(self, tab):
             text="Toal Stock Value =  Rs. "+str("{:.2f}".format(float(totalStockValue))))
 
     def getDateAndShowToTable():
+        for rows in detailsTable.get_children():
+                detailsTable.delete(rows)            
         descriptionLabel.config(
             text="The stock of products in your shop at " + chooseEndDate.get() + "  is:")
         endDate = chooseEndDate.get_date()
