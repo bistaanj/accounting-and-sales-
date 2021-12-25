@@ -148,6 +148,7 @@ def completeBilling(self, viewTree):
             viewProductsInBill.viewProductsInBill(self, viewTree)
             messagebox.showinfo('Transaction Completed',
                                 'Bill saved to Database')
+            self.executing = False
         except ValueError:
             messagebox.showerror(
                 "Invalid Data", "Provide valid Customer Details")
@@ -158,6 +159,11 @@ def completeBilling(self, viewTree):
         proceedBilling = messagebox.askokcancel(
             "Conformation Required", "Conform Billing ?")
         if(proceedBilling == 1):
+            self.executing = True
+
+            def on_closing():
+                top.destroy()
+                self.executing = False
 
             def validateNumber(e):
                 try:
@@ -208,14 +214,6 @@ def completeBilling(self, viewTree):
             top.geometry("+%d+%d" % (510, 280))
             top.maxsize(int(WR*550), int(HR*300))
             self.panExistsInDB = False
-            askLablel = Label(top, text='Customer Name : ',
-                              font=('Helvetica', int(FR*15), 'bold'))
-            askLablel.grid(row=1, column=0, padx=5, pady=5)
-
-            askEntry = Entry(top, width=int(WR*30),
-                             font=('Comic Sans MS', int(FR*15), 'bold'), highlightthickness=2)
-            askEntry.grid(row=1, column=1, padx=5, pady=5)
-            askEntry.bind('<Return>', saveBilltoDbs)
             if self.billing_method == 0:
                 panNumberLabel = Label(
                     top, text="Pan number *", font=('Helvetica', int(FR*15), 'bold'))
@@ -226,8 +224,14 @@ def completeBilling(self, viewTree):
                 panNumberEntry.grid(row=0, column=1, padx=5, pady=5)
                 panNumberEntry.bind('<KeyRelease>', validatePanNumber)
                 panNumberEntry.focus()
-            else:
-                askEntry.focus_set()
+            askLablel = Label(top, text='Customer Name : ',
+                              font=('Helvetica', int(FR*15), 'bold'))
+            askLablel.grid(row=1, column=0, padx=5, pady=5)
+
+            askEntry = Entry(top, width=int(WR*30),
+                             font=('Comic Sans MS', int(FR*15), 'bold'), highlightthickness=2)
+            askEntry.grid(row=1, column=1, padx=5, pady=5)
+            askEntry.bind('<Return>', saveBilltoDbs)
             phnNum = Label(top, text='Contact Number : ',
                            font=('Helvetica', int(FR*15), 'bold'))
             phnNum.grid(row=2, column=0, padx=5, pady=5)
@@ -235,10 +239,13 @@ def completeBilling(self, viewTree):
                 WR*30), font=('Comic Sans MS', int(FR*15), 'bold'), highlightthickness=2)
             phnNumEntry.grid(row=2, column=1, padx=5, pady=5)
             phnNumEntry.bind('<KeyRelease>', validateNumber)
-
+            if self.billing_method != 0:
+                askEntry.focus()
             btn = Button(top, text="Enter", width=int(
                 WR*12), command=saveBilltoDbs)
             btn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+            top.protocol("WM_DELETE_WINDOW", on_closing)
+            top.bind('<Return>',saveBilltoDbs)
 
     # Bill Product's Quantity Edit Function
 
