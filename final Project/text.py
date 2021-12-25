@@ -1,8 +1,17 @@
-import pymongo
-connection = pymongo.MongoClient("localhost", 27017)
-database = connection['saiRecords']
-collection = database['panDetails']
+raw_data = {}
+raw_data['02122021-121212']=[]
+innerDict={}
+innerDict['Quantity']= 10
+innerDict['CP']= 30
+raw_data['02122021-121212'].append(innerDict)
+for x in raw_data:
+    print(innerDict[x] )
 
-r = {'_id':"123456789", 'Name': ' Anuj Bista', 'Phone Number':1234567890}
+innerDict['Quantity']= 20
+innerDict['CP']= 60
+
+raw_data['02122021-121212'].append(innerDict)
+print("New Array")
+for x in raw_data:
+    print(x , innerDict[x] )
     
-collection.insert_one(r)

@@ -65,7 +65,8 @@ def completeBilling(self, viewTree):
 
                 para1 = self.productsInBill[product]['iid']
                 qnty = int(self.productsInBill[product]['Quantity'])
-                sm.manageStock(para1, qnty)
+                sp = self.productsInBill[product]['Sales Price']
+                sm.manageStock(para1, qnty, sp)
 
                 if self.billing_method == 0:
                     collection = database['inventory']
