@@ -34,7 +34,7 @@ def updateInventory(self):
         self.UpdatePopUp.geometry("+%d+%d" % (400, 300))
         self.UpdatePopUp.minsize(250, 200)
 
-        self.updateLabel = Label(self.UpdatePopUp, text=displayText)
+        self.updateLabel = Label(self.UpdatePopUp, text="Sales Price")
         self.updateLabel.pack(padx=10, pady=10)
         self.updateEntry = Entry(self.UpdatePopUp, width=20)
         self.updateEntry.pack(padx=10, pady=10)
@@ -379,7 +379,7 @@ def updateInventory(self):
         self.btnFrame, text='Add Quantity', command=updateQuantityDbs)
     addQuantity.grid(column=0, row=0, padx=10, pady=10, sticky="w")
 
-    changeCost = Button(self.btnFrame, text="Update Cost",
+    changeCost = Button(self.btnFrame, text="Update Sales Price",
                         command=updateCostDbs)
     changeCost.grid(column=1, row=0, padx=10, pady=10, sticky="w")
 
