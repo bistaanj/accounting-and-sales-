@@ -9,6 +9,7 @@ from config.dynamicSize import FR, WR, HR
 from Frames.supportingFunctions import warnUser, getUnitCostPrice
 
 
+
 def updateInventory(self):
     self.displayFrame.destroy()
     self.displayFrame = Frame(self.inventory, bg='#FFFFFF')
