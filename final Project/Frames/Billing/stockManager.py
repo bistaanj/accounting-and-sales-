@@ -6,19 +6,15 @@ database = connection['saiRecords']
 collection = database['presentStock']
 
 
-def manageStock(id, quantity):
+def manageStock(id, quantity, sp):
     connection = pymongo.MongoClient("localhost", 27017)
     database = connection['saiRecords']
     collection = database['presentStock']
     a = quantity
     ref_id = id
     q=collection.find_one({'_id':ObjectId(ref_id)}) 
-    for x in q['Stock']:
-        print(x)
     oq =(q['Stock'][-1]['Quantity'])
     oc = q['Stock'][-1]['CP']
-    print(" oq, oc")
-    print(oq, oc )
     nw = datetime.now()
     id = nw.strftime("%d%m%Y-%H%M%S")
     rawdata=[]
@@ -28,6 +24,7 @@ def manageStock(id, quantity):
         if (oq< a):
             innerDict['Quantity']= oq
             innerDict['CP']= oc
+            innerDict['SP']= sp
             rawdata.append(innerDict)
             a = a - oq
             collection.update_one({'_id':ObjectId(ref_id)}, {'$pop': {'Stock': 1 } } )
@@ -35,17 +32,16 @@ def manageStock(id, quantity):
             oq =(q['Stock'][-1]['Quantity'])
             oc = q['Stock'][-1]['CP']
         else:
+            
             newValue = oq - a
-            innerDict['Quantity']= newValue
+            
+            innerDict['Quantity']= a
             innerDict['CP']= oc
+            innerDict['SP']= sp
             rawdata.append(innerDict)
             a=0
             collection.update_one({'_id':ObjectId(ref_id)}, {'$pop': {'Stock': 1 } } )
             collection.update_one({'_id': ObjectId(ref_id)}, {'$push':{'Stock':{'Quantity':newValue,'CP':oc}}})
     collection = database['outStock']
-    collection.update_one({'_id':ObjectId(ref_id)},{id:rawdata})
+    collection.find_one_and_update({'_id':ObjectId(ref_id)},{'$set':{id:rawdata}})
     
-    
-        
-# a=(q.Stock)
-# print(a[0])

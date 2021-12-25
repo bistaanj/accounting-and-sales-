@@ -202,7 +202,7 @@ def addNewRecord(self, inventory):
     productCostEntry.grid(column=1, row=4,  padx=10, pady=10, sticky="w")
     productCostEntry.bind('<KeyRelease>', showUnitCostPrice)
 
-    productUnitCostLabel = ttk.Label(self.displayLabel, text="Unit Cost Price: Rs.0", font=(
+    productUnitCostLabel = Label(self.displayLabel, text="Unit Cost Price: Rs.0", font=(
         'Helvetica', int(FR*14), 'bold'), background=bgColor, foreground='#BF0909')
     productUnitCostLabel.grid(column=1, row=4, pady=10, padx=10, sticky="e")
     productSalesLabel = ttk.Label(
