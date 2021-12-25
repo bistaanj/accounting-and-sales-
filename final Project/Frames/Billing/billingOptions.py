@@ -1,7 +1,10 @@
 from tkinter import messagebox, ttk
 from tkinter import *
+from warnings import resetwarnings
 import pymongo
 from config.dynamicSize import FR, WR, HR
+from Frames.supportingFunctions import getDateTime
+from Frames.getConnect import getConnect
 import Frames.Billing.viewProductsInBill as viewProductsInBill
 import Frames.Billing.stockManager as sm
 
@@ -31,20 +34,21 @@ def completeBilling(self, viewTree):
     # Assigns customer's name to the bill and saves to dbs
     def saveBilltoDbs(event=''):
         try:
+            if(len(panNumberEntry.get()) != 9):
+                raise ValueError
             if ((askEntry.get()) == ""):
                 raise ValueError
 
+            panNumber = panNumberEntry.get()
             # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
             # db = client.get_database('saiRecords')
             # collection = db.inventory
-
             # For Local Storage
+            collection = getConnect("saiRecords", "inventory")
             connection = pymongo.MongoClient("localhost", 27017)
             database = connection['saiRecords']
             collection = database['inventory']
             for product in self.productsInBill:
-
-                print()
                 orgValue = int((collection.find_one(
                     {'Product Name': product}))['Quantity'])
                 orgValue_sold = int(
@@ -69,13 +73,29 @@ def completeBilling(self, viewTree):
                                                    {'$set': {
                                                        'Sold': (orgValue_sold+int(self.productsInBill[product]['Quantity'])),
                                                    }})
+                    panCol = database["panDetails"]
+                    if not self.panExistsInDB:
+                        if phnNumEntry.get() != "":
+                            panCol.insert_one(
+                                {"_id": panNumber, "Name": askEntry.get(), "Phone Number": phnNumEntry.get()})
+                        else:
+                            panCol.insert_one(
+                                {"_id": panNumber, "Name": askEntry.get()})
+                    else:
+                        if phnNumEntry.get() != "":
+                            panCol.find_one_and_update({'_id': panNumber}, {
+                                                       '$set': {"Name": askEntry.get(), "Phone Number": phnNumEntry.get()}})
+                        else:
+                            panCol.find_one_and_update(
+                                {'_id': panNumber}, {'$set': {"Name": askEntry.get()}})
+
                 else:
                     collection = database['inventory']
                     collection.find_one_and_update({'Product Name': product},
                                                    {'$set': {
                                                        'Order': (orgValue_order+int(self.productsInBill[product]['Quantity'])),
                                                    }})
-            dateTime = self.getDateTime()
+            dateTime = getDateTime(self)
             billDict = {}
             billDict['Date'] = dateTime[0]
             billDict['Time'] = dateTime[1]
@@ -129,7 +149,8 @@ def completeBilling(self, viewTree):
             messagebox.showinfo('Transaction Completed',
                                 'Bill saved to Database')
         except ValueError:
-            messagebox.showerror("Insuccifient Data", "Provide Customer Name")
+            messagebox.showerror(
+                "Invalid Data", "Provide valid Customer Details")
 
     if (len(self.productsInBill) < 1):
         messagebox.showerror("error", "No Products in Bill ! ")
@@ -138,36 +159,86 @@ def completeBilling(self, viewTree):
             "Conformation Required", "Conform Billing ?")
         if(proceedBilling == 1):
 
-            def validateContact(e):
+            def validateNumber(e):
                 try:
                     value = int(phnNumEntry.get())
+                    if len(str(value)) != 10:
+                        phnNumEntry.config(
+                            highlightbackground="red", highlightcolor="red")
+                    else:
+                        phnNumEntry.config(
+                            highlightbackground="black", highlightcolor="black")
                 except ValueError:
                     phnNumEntry.delete(-1, 'end')
+
+            def validatePanNumber(e):
+                try:
+                    pan = int(panNumberEntry.get())
+                    if len(str(pan)) != 9:
+                        panNumberEntry.config(
+                            highlightbackground="red", highlightcolor="red")
+                    else:
+                        panNumberEntry.config(
+                            highlightbackground="black", highlightcolor="black")
+                        panDetails = getConnect("saiRecords", "panDetails")
+                        try:
+                            result = panDetails.find_one({"_id": str(pan)})
+                            try:
+                                self.panExistsInDB = True
+                                askEntry.delete(0, "end")
+                                phnNumEntry.delete(0, "end")
+                                askEntry.insert(0, result["Name"])
+                                try:
+                                    phnNumEntry.insert(
+                                        0, result["Phone Number"])
+                                except:
+                                    pass
+                            except:
+                                self.panExistsInDB = False
+                        except:
+                            self.panExistsInDB = False
+
+                except:
+                    panNumberEntry.delete(-1, "end")
 
             top = Toplevel()
             top.grab_set()
             top.iconbitmap('./res/dsk.ico')
             top.title("Enter Name")
-            top.geometry("+%d+%d" % (500, 500))
-            askLable = Label(top, text='Customer Name : ',
-                             font=('Helvetica', int(FR*15), 'bold'))
-            askLable.grid(row=0, column=0, padx=5, pady=5)
+            top.geometry("+%d+%d" % (510, 280))
+            top.maxsize(int(WR*550), int(HR*300))
+            self.panExistsInDB = False
+            askLablel = Label(top, text='Customer Name : ',
+                              font=('Helvetica', int(FR*15), 'bold'))
+            askLablel.grid(row=1, column=0, padx=5, pady=5)
 
             askEntry = Entry(top, width=int(WR*30),
-                             font=('Comic Sans MS', int(FR*15), 'bold'))
-            askEntry.grid(row=0, column=1, padx=5, pady=5)
+                             font=('Comic Sans MS', int(FR*15), 'bold'), highlightthickness=2)
+            askEntry.grid(row=1, column=1, padx=5, pady=5)
             askEntry.bind('<Return>', saveBilltoDbs)
-            askEntry.focus_set()
+            if self.billing_method == 0:
+                panNumberLabel = Label(
+                    top, text="Pan number *", font=('Helvetica', int(FR*15), 'bold'))
+                panNumberLabel.grid(row=0, column=0, padx=5, pady=5)
+
+                panNumberEntry = Entry(top, width=int(
+                    WR*30), font=('Comic Sans MS', int(FR*15), 'bold'), highlightthickness=2)
+                panNumberEntry.grid(row=0, column=1, padx=5, pady=5)
+                panNumberEntry.bind('<KeyRelease>', validatePanNumber)
+                panNumberEntry.focus()
+            else:
+                askEntry.focus_set()
             phnNum = Label(top, text='Contact Number : ',
                            font=('Helvetica', int(FR*15), 'bold'))
-            phnNum.grid(row=1, column=0, padx=5, pady=5)
+            phnNum.grid(row=2, column=0, padx=5, pady=5)
             phnNumEntry = Entry(top, width=int(
-                WR*30), font=('Comic Sans MS', int(FR*15), 'bold'))
-            phnNumEntry.grid(row=1, column=1, padx=5, pady=5)
-            phnNumEntry.bind('<KeyRelease>', validateContact)
+                WR*30), font=('Comic Sans MS', int(FR*15), 'bold'), highlightthickness=2)
+            phnNumEntry.grid(row=2, column=1, padx=5, pady=5)
+            phnNumEntry.bind('<KeyRelease>', validateNumber)
+
             btn = Button(top, text="Enter", width=int(
-                WR*10), command=saveBilltoDbs)
-            btn.grid(row=2, column=1, padx=5, pady=5)
+                WR*12), command=saveBilltoDbs)
+            btn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
 
     # Bill Product's Quantity Edit Function
 
