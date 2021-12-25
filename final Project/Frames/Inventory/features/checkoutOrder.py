@@ -1,8 +1,9 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 import win32api
 import pymongo
-from Frames.supportingFunctions import warnUser
+from Frames.supportingFunctions import warnUser,getDateTime
 from config.dynamicSize import FR,WR,HR
 import Frames.Billing.billingOptions as billingOptions
 
@@ -32,18 +33,19 @@ def checkoutOrders(self):
 
     amountFrame = Frame(mainBillingFrame, bg='#e8eddf')
     amountFrame.pack(pady = 10)
-    # amountFrame.grid(column = 0, row = 2)
-
+    productDetails = {}
+    billingTotalAmount = 0
+    productsInBill = {}
     connection = pymongo.MongoClient("localhost", 27017)
     database = connection['saiRecords']
     collection = database['inventory']
-    allProducts = collection.find()
-    productDetails = {}
-    for x in allProducts:
-        if x['Order'] > 0:
+    # amountFrame.grid(column = 0, row = 2)
+    def getallOrders():
+        allProducts = collection.find({"Order":{"$gt":0}})
+        for x in allProducts:
             productDetails[x['Product Name']]= {'orderQuantity':x['Order'],'Sales Price':x['Sales Price']}
     #Displays Product in the Listbox of billing tabs to search for Product
-    connection.close()
+    # connection.close()
     
     def editOrder():
         def on_closing():
@@ -209,55 +211,169 @@ def checkoutOrders(self):
 
         def on_closing():
             top.destroy()
+            billingSearchEntry.focus_force()
             self.executing = False
 
         state_left = win32api.GetKeyState(0x01)
-        if state_left<0 and not self.executing and  product == "":
-            index = itemlistbox.index(ANCHOR)
-            product = itemlistbox.get(index)
-            if product == "":
-                warnUser("Product Selection required")
-                return
-            self.executing = True
-            billingSearchEntry.focus()
-            top = Toplevel()
-            top.grab_set()
-            top.iconbitmap('./res/dsk.ico')
-            top.geometry("+%d+%d" % (400, 400))
+        if self.tab_control.tab(self.tab_control.select(), "text") == "Inventory":
+            if state_left<0 and not self.executing and  product == "":
+                index = itemlistbox.index(ANCHOR)
+                product = itemlistbox.get(index)
+                if product == "":
+                    warnUser("Product Selection required")
+                    return
+                self.executing = True
+                billingSearchEntry.focus()
+                top = Toplevel()
+                top.grab_set()
+                top.iconbitmap('./res/dsk.ico')
+                top.geometry("+%d+%d" % (400, 400))
 
-            availableOrderQuantity = Label(top, text="Ordered Quantity", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
-            availableOrderQuantity.grid(row=0, column=0)
+                availableOrderQuantity = Label(top, text="Ordered Quantity", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
+                availableOrderQuantity.grid(row=0, column=0)
 
-            askOrderQuantityEntry = Entry(top, width = int(WR*10), font=('Comic Sans MS', int(FR*15), 'bold'))
-            askOrderQuantityEntry.insert(0,productDetails[product]['orderQuantity'])
-            askOrderQuantityEntry.grid(row=0, column=1)
-            askOrderQuantityEntry.bind("<KeyRelease>",validateQuantity)
+                askOrderQuantityEntry = Entry(top, width = int(WR*10), font=('Comic Sans MS', int(FR*15), 'bold'))
+                askOrderQuantityEntry.insert(0,productDetails[product]['orderQuantity'])
+                askOrderQuantityEntry.grid(row=0, column=1)
+                askOrderQuantityEntry.bind("<KeyRelease>",validateQuantity)
 
-            salesPriceLbl = Label(top, text="Sales Price (RS)", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
-            salesPriceLbl.grid(row = 1, column= 0)
+                salesPriceLbl = Label(top, text="Sales Price (RS)", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
+                salesPriceLbl.grid(row = 1, column= 0)
 
-            askSalesPriceEntry = Entry(top, width = int(WR*10), font=('Comic Sans MS', int(FR*15), 'bold'))
-            askSalesPriceEntry.insert(0,productDetails[product]['Sales Price'])
-            askSalesPriceEntry.grid(row=1, column=1)
-            askSalesPriceEntry.bind("<KeyRelease>",validateSalesPrice)
+                askSalesPriceEntry = Entry(top, width = int(WR*10), font=('Comic Sans MS', int(FR*15), 'bold'))
+                askSalesPriceEntry.insert(0,productDetails[product]['Sales Price'])
+                askSalesPriceEntry.grid(row=1, column=1)
+                askSalesPriceEntry.bind("<KeyRelease>",validateSalesPrice)
 
-            askOrderQuantityEntry.focus()
+                askOrderQuantityEntry.focus()
 
-            okBtn = Button(top, text="Sell", padx=5,pady=10, width = int(WR*8),font=('Georgia', int(FR*10),'bold'),
-            command=displayToBill)
-            okBtn.grid(row=3, column=0)
-            top.protocol("WM_DELETE_WINDOW", on_closing)
-            top.bind('<Return>',displayToBill)
+                okBtn = Button(top, text="Sell", padx=5,pady=10, width = int(WR*8),font=('Georgia', int(FR*10),'bold'),
+                command=displayToBill)
+                okBtn.grid(row=3, column=0)
+                top.protocol("WM_DELETE_WINDOW", on_closing)
+                top.bind('<Return>',displayToBill)
 
-        else:
-            if not self.executing:
-                displayToBill("",product)
             else:
-                return
-    
+                if not self.executing:
+                    displayToBill("",product)
+                else:
+                    return
+        
+    def completeBilling():
 
-    #Billing GUI starts here
-    productsInBill = {}
+        def saveBilltoDbs(event =''):
+            try:
+                if ((askEntry.get()) == ""):
+                    raise ValueError
+
+                # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+                # db = client.get_database('saiRecords')
+                # collection = db.inventory
+
+                ##For Local Storage
+                connection = pymongo.MongoClient("localhost", 27017)
+                database = connection['saiRecords']
+                collection = database['inventory']
+                for product in productsInBill:
+                    print(product)
+                    orgValue = int((collection.find_one({'Product Name': product}))['Quantity'])
+                    orgValue_sold = int((collection.find_one({'Product Name': product}))['Sold'])
+                    orgValue_order = int((collection.find_one({'Product Name': product}))['Order'])
+                    newValue = orgValue-int(productsInBill[product]['Quantity'])
+                    print(newValue)
+                    collection.find_one_and_update({'Product Name': product},
+                    {'$set':{
+                        'Quantity': (orgValue-int(productsInBill[product]['Quantity'])),
+                    }})
+                    collection = database['inventory']
+                    collection.find_one_and_update({'Product Name': product},
+                    {'$set':{
+                        'Sold': (orgValue_sold+int(productsInBill[product]['Quantity'])),
+                    }})
+                    collection = database['inventory']
+                    collection.find_one_and_update({'Product Name': product},
+                    {'$set':{
+                        'Order': (orgValue_order-int(productsInBill[product]['Quantity'])),
+                    }})
+                dateTime = getDateTime()
+                billDict = {}
+                billDict['Date'] = dateTime[0]
+                billDict['Time'] = dateTime[1]
+                billDict['Customer Name'] = askEntry.get()
+                billDict['Contact Number'] = phnNumEntry.get()
+                #Processing the products in bill '.' -> '?'
+                new_dict = {}
+                a= productsInBill
+                print(type(new_dict))
+                for items in a:
+                    if '.' in items:
+                        processed_string = items.replace('.', '?')
+                        new_dict[processed_string] = a[items]
+                    else:
+                        new_dict[items] = a[items]
+                print(productsInBill)
+                billDict['Products']={}
+                billDict['Products']=new_dict
+                billDict['Vatable'] = int(billingTotalAmount)
+                billDict['Grand Total'] = int(int(billingTotalAmount)+0.13*int(billingTotalAmount))
+                collection = database['sales']
+                print("bill saved to vat bill")
+                # collection = db.sales
+
+                res = collection.insert_one(billDict)
+                #Logic to Add value to daily Sales
+                # collection = db.dailySalesData
+                collection = database['dailySalesData']
+                dte = dateTime[0]
+                newValue = self.billingTotalAmount
+                if (collection.count_documents({'_id': dte}) > 0):
+                    collection.find_one_and_update(
+                        {'_id': dte}, {'$inc': {'daySales': newValue}})
+                else:
+                    collection.insert_one({'_id': dte, 'daySales': self.billingTotalAmount})
+                top.destroy()
+                clearBilling()
+                modifyTotalAmount()
+                messagebox.showinfo('Transaction Completed','Bill saved to Database')
+                checkoutOrders(self)
+            except ValueError:
+                messagebox.showerror("Insuccifient Data", "Provide Customer Name")
+
+               
+
+        if (len(productsInBill)<1):
+            messagebox.showerror("error", "No Products in Bill ! ")
+        else:
+            proceedBilling = messagebox.askokcancel("Conformation Required", "Conform Billing ?")
+            if(proceedBilling == 1):
+
+                def validateContact(e):
+                    try:
+                        value=int(phnNumEntry.get())
+                    except ValueError:
+                        phnNumEntry.delete(-1,'end')
+
+                top = Toplevel()
+                top.grab_set()
+                top.iconbitmap('./res/dsk.ico')
+                top.title("Enter Name")
+                top.geometry("+%d+%d" % ( 500, 500))
+                askLable = Label(top, text = 'Customer Name : ', font = ('Helvetica', int(FR*15), 'bold') )
+                askLable.grid(row = 0, column = 0, padx = 5, pady = 5)
+
+                askEntry = Entry(top, width = int(WR*30), font=('Comic Sans MS', int(FR*15), 'bold'))
+                askEntry.grid(row = 0, column = 1, padx = 5, pady = 5)
+                askEntry.bind('<Return>',saveBilltoDbs)
+                askEntry.focus_set()
+                phnNum = Label(top, text = 'Contact Number : ', font = ('Helvetica', int(FR*15), 'bold') )
+                phnNum.grid(row = 1, column = 0, padx = 5, pady = 5)
+                phnNumEntry = Entry(top, width = int(WR*30), font=('Comic Sans MS', int(FR*15), 'bold'))
+                phnNumEntry.grid(row = 1, column = 1, padx = 5, pady = 5)
+                phnNumEntry.bind('<KeyRelease>',validateContact)
+                btn = Button(top, text ="Enter", width = int(WR*10), command = saveBilltoDbs)
+                btn.grid(row = 2, column = 1, padx = 5, pady = 5)
+
+    getallOrders()
     #for billing name
     billtypelabel = Label(billingtypeFrame, text="Checkout Orders",
         bg='#e8eddf', font=('Helvetica',int(FR*30),'bold','underline'),fg ="#5A63F5", border=0 )
@@ -334,7 +450,8 @@ def checkoutOrders(self):
 
 
     #Save Bill and complete Transaction
-    saveBillButton = Button(billingButtonFrame, text="Save Bill",command=lambda:billingOptions.completeBilling(self,viewTree),
+    saveBillButton = Button(billingButtonFrame, text="Save Bill",command=completeBilling,
+
                                     width = int(WR*10),  height = int(HR*2),
                                     font=('Times New Roman', int(FR*15)), bg='#648EF1', fg='#FFFFFF', border=0, cursor = 'hand2')
     saveBillButton.grid(column=0, row=4, sticky="n", padx=10, pady=10, ipadx=8)
