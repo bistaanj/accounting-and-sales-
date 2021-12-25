@@ -17,6 +17,7 @@ def navigationFrame(self, tab):
         chooseEndDate.set_date(today)
 
     def insertInTable(listForTable):
+        totalStockValue = 0
         count = 0
         for rows in viewTree.get_children():
             viewTree.delete(rows)
@@ -32,7 +33,10 @@ def navigationFrame(self, tab):
                 # values['Sold'],
                 values['Stock Value']
             ))
+            totalStockValue += float(values['Stock Value'])
             count += 1
+        totalStockValueLabel.config(
+            text="Toal Stock Value =  Rs. "+str("{:.2f}".format(float(totalStockValue))))
 
     def getDateAndShowToTable():
         descriptionLabel.config(
@@ -43,8 +47,8 @@ def navigationFrame(self, tab):
         else:
             collection1 = getConnect('saiRecords', "restock")
             collection2 = getConnect('saiRecords', "inventory")
+            collection3 = getConnect('saiRecords', "outStock")
             result = collection1.find()
-            totalStockValue = 0
             listForTable = []
             for i in result:
                 rawData = {}
@@ -66,49 +70,70 @@ def navigationFrame(self, tab):
                             rawData["Current Stock"] = product["Quantity"]
                             rawData["Cost Price"] = product["Cost Price"]
                             rawData["Sold"] = product["Sold"]
-                            stockValue += float(i[key]["CP"])
-                if rawData:
-                    rawData["Stock"] = stock
-                    rawData["Stock Value"] = stockValue
-                    listForTable.append(rawData)
-                totalStockValue += stockValue
+                            stockValue += float(i[key]["CP"]) * \
+                                int(i[key]["Quantity"])
 
-            removeDetailsTable()
+                saleAtTime = collection3.find_one({"_id": iid})
+                soldQty = 0
+                soldStockValue = 0
+                for k in saleAtTime:
+                    if k != "_id" and k != "PN":
+                        d = datetime.date(
+                            datetime.strptime(k[0:8], '%d%m%Y'))
+                        if d <= endDate:
+                            for x in saleAtTime[k]:
+                                soldQty += int(x['Quantity'])
+                                soldStockValue += int(x['Quantity']) * \
+                                    float(x["CP"])
+
+                if rawData:
+                    rawData["Stock"] = stock - soldQty
+                    rawData["Stock Value"] = stockValue - soldStockValue
+                    listForTable.append(rawData)
+
             insertInTable(listForTable)
-            totalStockValueLabel.config(
-                text="Toal Stock Value =  Rs. "+str(totalStockValue))
 
     def showDetails(e=""):
         iid = viewTree.focus()
         if iid != "":
             count = 0
-            detailsOfStockLabel.grid(row=1, column=1, rowspan=2)
-            detailsTable.grid(row=2, column=1, pady=20, rowspan=7)
             endDate = chooseEndDate.get_date()
-            collection = getConnect("saiRecords", "restock")
+            collection1 = getConnect("saiRecords", "restock")
+            collection2 = getConnect("saiRecords", "outStock")
             detailsToShow = []
-            result = collection.find_one({"_id": ObjectId(iid)})
-            # temp = collection.find()
-            # for i in temp:
-            #     for key in list(i):
-            #         if key != "_id":
-            #             d = datetime.date(datetime.strptime(key[0:8],'%d%m%Y'))
-            #             if (d <= endDate) and i[key]["Product"] == str(iid):
-            #                 rawData = {}
-            #                 rawData["Date"] = d
-            #                 rawData["Cost Price"] = i[key]["CP"]
-            #                 rawData["Quantity"] = i[key]["Quantity"]
-            #                 detailsToShow.append(rawData)
+            result1 = collection1.find_one({"_id": ObjectId(iid)})
+            result2 = collection2.find_one({"_id": ObjectId(iid)})
 
-            for key in list(result):
-                if key != "_id" and key != "PN":
-                    d = datetime.date(datetime.strptime(key[0:8], '%d%m%Y'))
+            for key1 in result1:
+                if key1 != "_id" and key1 != "PN":
+                    d = datetime.date(datetime.strptime(key1[0:8], '%d%m%Y'))
                     if (d <= endDate):
                         rawData = {}
                         rawData["Date"] = d
-                        rawData["Cost Price"] = result[key]["CP"]
-                        rawData["Quantity"] = result[key]["Quantity"]
+                        rawData["Cost Price"] = result1[key1]["CP"]
+                        rawData["Quantity"] = int(result1[key1]['Quantity'])
                         detailsToShow.append(rawData)
+
+            soldStock = {}
+            for key2 in list(result2):
+                if key2 != "_id" and key2 != "PN":
+                    d1 = datetime.date(datetime.strptime(key2[0:8], '%d%m%Y'))
+                    if d1 <= endDate:
+                        for i in result2[key2]:
+                            try:
+                                soldStock[i['CP']]["sold"] = int(
+                                    soldStock[i['CP']]["sold"]) + int(i['Quantity'])
+                            except:
+                                soldStock[i['CP']] = {"sold": int(
+                                    i['Quantity']), "done": False}
+            for values in reversed(detailsToShow):
+                for i in soldStock:
+                    if values["Cost Price"] == i and not soldStock[i]["done"]:
+                        soldStock[i]["done"] = True
+                        values["Quantity"] = int(
+                            values["Quantity"]) - int(soldStock[i]['sold'])
+                        if int(values["Quantity"]) == 0:
+                            detailsToShow.remove(values)
 
             for rows in detailsTable.get_children():
                 detailsTable.delete(rows)
@@ -122,16 +147,6 @@ def navigationFrame(self, tab):
                                         values['Quantity']
                                     ))
                 count += 1
-        else:
-            removeDetailsTable()
-            # detailsOfStockLabel.grid_forget()
-            # detailsTable.grid_forget()
-
-    def removeDetailsTable(e=""):
-        # print("sth")
-        detailsTable.grid_forget()
-        detailsOfStockLabel.grid_forget()
-        # removeTableButton.grid_forget()
 
     self.displayFrame = Frame(tab)
     self.displayFrame.pack(fill='both')
@@ -175,6 +190,8 @@ def navigationFrame(self, tab):
         tableFrame, text="Stock and Stock Value at particular date frame", font=(fontToUse, int(FR*12)))
     detailsOfStockLabel = Label(
         tableFrame, text="details of stock", font=(fontToUse, int(FR*12)))
+    detailsOfStockLabel.grid(row=1, column=1, rowspan=2)
+
     stockAndStockValueLabel.grid(row=0)
     viewTree = ttk.Treeview(tableFrame, height=int(
         HR*10), style="mystyle.Treeview")
@@ -212,17 +229,18 @@ def navigationFrame(self, tab):
     detailsTable['columns'] = ('Date', 'Cost Price', 'Quantity')
     detailsTable.column('#0', width=int(
         WR*50), minwidth=int(WR*40), anchor=CENTER)
-    detailsTable.column('Date', width=int(WR*150),
+    detailsTable.column('Date', width=int(WR*120),
                         minwidth=int(WR*130), anchor='w')
-    detailsTable.column('Cost Price', width=int(WR*130),
+    detailsTable.column('Cost Price', width=int(WR*150),
                         minwidth=int(WR*100), anchor=CENTER)
     detailsTable.column('Quantity', width=int(WR*130),
                         minwidth=int(WR*120), anchor=CENTER)
     # Create Headings
     detailsTable.heading('#0', text='S.N', anchor=CENTER)
     detailsTable.heading('Date', text='Date', anchor=CENTER)
-    detailsTable.heading('Cost Price', text='Cost Price', anchor=CENTER)
+    detailsTable.heading('Cost Price', text='Unit Cost Price', anchor=CENTER)
     detailsTable.heading('Quantity', text='Quantity', anchor=CENTER)
+    detailsTable.grid(row=2, column=1, pady=20, rowspan=7)
 
     bottomFrame = Frame(self.displayFrame)
     bottomFrame.pack()
