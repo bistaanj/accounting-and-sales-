@@ -160,10 +160,6 @@ def updateInventory(self):
             # for x in rawdata:
             #     print(rawdata[x])
             
-            
-
-
-
 
             for x in rawdata:
                 print(x)
@@ -198,7 +194,6 @@ def updateInventory(self):
         except ValueError:
             messagebox.showerror('Error', 'Value Missing or Insufficient')
             self.UpdatePopUp.destroy()
-
     # def dbsLocationUpdate(event = ''):
     #     try:
     #         iid = self.row_iid
@@ -224,6 +219,7 @@ def updateInventory(self):
     #     except ValueError:
     #         messagebox.showerror('Error', 'Value Missing or Insufficient')
     #         self.UpdatePopUp.destroy()
+
 
     def updateQuantityDbs():
         self.row_iid = getObjectIid()
