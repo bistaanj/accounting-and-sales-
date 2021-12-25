@@ -120,6 +120,7 @@ def viewOrders(self):
                                 except:
                                     temp2[k] = i['Products'][k]['Quantity']
                     j=0
+
                     for i in temp2:
                         i.replace("?",".")
                         itemlistbox.insert(j,i+' --- '+str(temp2[i]))

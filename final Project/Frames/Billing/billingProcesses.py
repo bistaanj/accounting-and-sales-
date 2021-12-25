@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 import Frames.Billing.viewProductsInBill as viewProductsInBill
+
 from config.dynamicSize import FR,WR,HR
 from Frames.supportingFunctions import warnUser
 import pymongo
@@ -67,7 +68,6 @@ def billingProcess(self,viewTree):
         top.grab_set()
         top.iconbitmap('./res/dsk.ico')
         top.geometry("+%d+%d" % (400, 400))
-
         availableQuantity = Label(
             top, text="Available Quantity", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
         availableQuantity.grid(row=0, column=0)
@@ -79,7 +79,6 @@ def billingProcess(self,viewTree):
 
         askQuantityEntry = Entry(top, width = int(WR*10), font=('Comic Sans MS', int(FR*15), 'bold'))
         askQuantityEntry.grid(row=1, column=1)
-        askQuantityEntry.focus()
 
         askSalesPriceLabel = Label(top, text="Sales Price", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
         askSalesPriceLabel.grid(row=2, column=0)
@@ -88,6 +87,7 @@ def billingProcess(self,viewTree):
         askSalesPriceEntry.grid(row=2, column=1)
         askSalesPriceEntry.bind("<KeyRelease>",validateSalesPrice)
 
+        askQuantityEntry.focus_set()
         top.bind('<Return>', displayToBillView)
 
         okBtn = Button(top, text="Sell", padx=5,pady=10, width = int(WR*8),font=('Georgia', int(FR*10),'bold'), command=displayToBillView)

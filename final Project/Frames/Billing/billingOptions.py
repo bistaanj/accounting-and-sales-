@@ -6,7 +6,7 @@ from config.dynamicSize import FR, WR, HR
 from Frames.supportingFunctions import getDateTime
 from Frames.getConnect import getConnect
 import Frames.Billing.viewProductsInBill as viewProductsInBill
-# import Frames.Billing.stockManager as sm
+import Frames.Billing.stockManager as sm
 
 # Clears the billing
 
@@ -64,7 +64,7 @@ def completeBilling(self, viewTree):
 
                 para1 = self.productsInBill[product]['iid']
                 qnty = int(self.productsInBill[product]['Quantity'])
-                # sm.manageStock(para1, qnty)
+                sm.manageStock(para1, qnty)
 
                 if self.billing_method == 0:
                     collection = database['inventory']

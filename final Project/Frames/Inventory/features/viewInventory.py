@@ -61,7 +61,7 @@ def viewInventory(self,tab):
             for x in searchResult:
                 print("Inside Second Loop")
                 viewTree.insert(parent='', index=END, iid=(x["_id"]), text=(self.txt+1), values=(
-                    x['Product Name'], x['Cost Price'], x['Sales Price'], x['Quantity'], x['Units'], x['Location'], x['Purchased From']))
+                    x['Product Name'], x['Cost Price'], x['Sales Price'], x['Quantity'], x['Units'], x['Purchased From']))
                 self.txt += 1
                 print("End of loop ")
                 print("Exited For Loop")
@@ -87,14 +87,14 @@ def viewInventory(self,tab):
 
     #Define Columns
     viewTree['columns'] = ('Product Name', 'Cost Price',
-                            'Sales Price', 'Quantity', 'Units', 'Location','Purchased From')
+                            'Sales Price', 'Quantity', 'Units', 'Purchased From')
     viewTree.column('#0', width = int(WR*60), minwidth=10, anchor=CENTER)
     viewTree.column('Product Name', width = int(WR*200), anchor=W)
     viewTree.column('Cost Price', width = int(WR*138), anchor=CENTER)
     viewTree.column('Sales Price', width = int(WR*138), anchor=CENTER)
     viewTree.column('Quantity', width = int(WR*130), anchor=CENTER)
     viewTree.column('Units', width = int(WR*110), anchor=CENTER)
-    viewTree.column('Location', width = int(WR*150), anchor=CENTER)
+    # viewTree.column('Location', width = int(WR*150), anchor=CENTER)
     viewTree.column('Purchased From', width = int(WR*150), anchor=CENTER)
 
     #Create Headings
@@ -104,7 +104,7 @@ def viewInventory(self,tab):
     viewTree.heading('Sales Price', text='Sales Price', anchor=CENTER)
     viewTree.heading('Quantity', text='Quantity', anchor=CENTER)
     viewTree.heading('Units', text='Units', anchor=CENTER)
-    viewTree.heading('Location', text='Location', anchor=CENTER)
+    # viewTree.heading('Location', text='Location', anchor=CENTER)
     viewTree.heading('Purchased From', text='Purchased', anchor=CENTER)
     viewTree.pack(fill = 'both',expand = 1, padx = 20,pady = 20)
     self.viewTree = viewTree
@@ -145,7 +145,7 @@ def viewInventory(self,tab):
         qnty = x['Quantity']
         if (qnty== 0):
             qnty = "Out of Stock"
-        viewTree.insert(parent='', index=END , iid=(x["_id"]), text =(self.txt+1), values =(x['Product Name'],x['Cost Price'], x['Sales Price'], qnty,x['Units'],x['Location'],x['Purchased From']))
+        viewTree.insert(parent='', index=END , iid=(x["_id"]), text =(self.txt+1), values =(x['Product Name'],x['Cost Price'], x['Sales Price'], qnty,x['Units'],x['Purchased From']))
         self.txt+=1
     self.btnFrame = Frame(self.displayFrame, bg='pink')
     self.btnFrame.pack()
