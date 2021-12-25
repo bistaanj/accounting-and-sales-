@@ -4,7 +4,7 @@ from tkinter import messagebox
 import pymongo
 from datetime import datetime
 from config.dynamicSize import HR, WR, FR
-import Frames.supportingFunctions as supportingFunctions
+from Frames.supportingFunctions import getUnitCostPrice
 # creates widget inside Inventory Label Frame. Tab-> Inventory
 
 
@@ -129,6 +129,25 @@ def addNewRecord(self, inventory):
         self.displayFrame.destroy()
     except:
         pass
+
+    def validateCostPrice():
+        try:
+            float(productCostEntry.get())
+            float(quantityEntry.get())
+        except:
+            productCostEntry.delete(-1, "end")
+            quantityEntry.delete(-1, "end")
+
+    def showUnitCostPrice(e=""):
+        if quantityEntry.get() != "" and productCostEntry.get() != "":
+            validateCostPrice()
+            unitCostPrice = getUnitCostPrice(
+                float(productCostEntry.get()), int(quantityEntry.get()))
+            productUnitCostLabel.config(
+                text="Unit Cost Price: Rs."+str(unitCostPrice))
+        else:
+            productUnitCostLabel.config(text="Unit Cost Price: Rs.0")
+
     self.productCategory = StringVar()
     self.unitType = StringVar()
     self.vatIncluded = BooleanVar()
@@ -175,14 +194,18 @@ def addNewRecord(self, inventory):
     productCostEntry = Entry(self.displayLabel, width=int(
         WR*20), border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
     productCostEntry.grid(column=1, row=4,  padx=10, pady=10, sticky="w")
+    productCostEntry.bind('<KeyRelease>', showUnitCostPrice)
 
+    productUnitCostLabel = ttk.Label(self.displayLabel, text="Unit Cost Price: Rs.0", font=(
+        'Helvetica', int(FR*14), 'bold'), background=bgColor, foreground='#BF0909')
+    productUnitCostLabel.grid(column=1, row=4, pady=10, padx=10, sticky="e")
     productSalesLabel = ttk.Label(
         self.displayLabel, text="Sales Price", style='TLabel')
     productSalesLabel.grid(column=0, row=5,  padx=10, pady=10, sticky="w")
 
-    productCostEntry = Entry(self.displayLabel, width=int(
+    productSalesEntry = Entry(self.displayLabel, width=int(
         WR*20), border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
-    productCostEntry.grid(column=1, row=5,  padx=10, pady=10, sticky="w")
+    productSalesEntry.grid(column=1, row=5,  padx=10, pady=10, sticky="w")
 
     # locationLabel = ttk.Label(
     #     self.displayLabel, text='Location', style='TLabel')
