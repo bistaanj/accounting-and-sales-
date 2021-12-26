@@ -6,7 +6,8 @@ from bson.objectid import ObjectId
 from datetime import datetime
 import pymongo
 from config.dynamicSize import FR, WR, HR
-from Frames.supportingFunctions import warnUser
+from Frames.supportingFunctions import warnUser, getUnitCostPrice
+
 
 
 def updateInventory(self):
@@ -33,7 +34,7 @@ def updateInventory(self):
         self.UpdatePopUp.geometry("+%d+%d" % (400, 300))
         self.UpdatePopUp.minsize(250, 200)
 
-        self.updateLabel = Label(self.UpdatePopUp, text=displayText)
+        self.updateLabel = Label(self.UpdatePopUp, text="Sales Price")
         self.updateLabel.pack(padx=10, pady=10)
         self.updateEntry = Entry(self.UpdatePopUp, width=20)
         self.updateEntry.pack(padx=10, pady=10)
@@ -50,6 +51,14 @@ def updateInventory(self):
             c = seller_entry.get()
             print(a, b, c)
             dbsQuantityUpdate(a, b, c)
+
+        def getAndUpdateUnitCostPrice(e=""):
+            try:
+                unitCp = getUnitCostPrice(
+                    float(cp_entry.get()), int(quantity_entry.get()))
+                unit_cp_label.config(text="Unit Cost Price Rs."+str(unitCp))
+            except:
+                unit_cp_label.config(text="Unit Cost Price Rs.0")
 
         self.UpdatePopUp = Toplevel()
         self.UpdatePopUp.grab_set()
@@ -70,12 +79,16 @@ def updateInventory(self):
 
         cp_entry = Entry(self.UpdatePopUp)
         cp_entry.grid(row=1, column=1, pady=10)
+        cp_entry.bind("<KeyRelease>", getAndUpdateUnitCostPrice)
+
+        unit_cp_label = Label(self.UpdatePopUp, text="Unit Cost Price Rs. 0")
+        unit_cp_label.grid(row=2, column=1, pady=10, columnspan=2)
 
         seller_label = Label(self.UpdatePopUp, text=" Purchased From")
-        seller_label.grid(row=2, column=0)
+        seller_label.grid(row=3, column=0)
 
         seller_entry = Entry(self.UpdatePopUp, width=30)
-        seller_entry.grid(row=2, column=1, pady=10, padx=5)
+        seller_entry.grid(row=3, column=1, pady=10, padx=5)
 
         # self.updateLabel = Label(self.UpdatePopUp, text=displayText)
         # self.updateLabel.pack(padx=10, pady=10)
@@ -85,7 +98,7 @@ def updateInventory(self):
         # self.updateEntry.bind('<Return>', cmd)
         updateBtn = Button(
             self.UpdatePopUp, text="Update Value", command=getCred)
-        updateBtn.grid(row=3, column=0, pady=10)
+        updateBtn.grid(row=4, column=0, pady=10)
 
     def dbsQuantityUpdate(quantity, cp, seller):
 
@@ -366,7 +379,7 @@ def updateInventory(self):
         self.btnFrame, text='Add Quantity', command=updateQuantityDbs)
     addQuantity.grid(column=0, row=0, padx=10, pady=10, sticky="w")
 
-    changeCost = Button(self.btnFrame, text="Update Cost",
+    changeCost = Button(self.btnFrame, text="Update Sales Price",
                         command=updateCostDbs)
     changeCost.grid(column=1, row=0, padx=10, pady=10, sticky="w")
 
