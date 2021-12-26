@@ -44,6 +44,7 @@ def navigationFrame(self, tab):
         descriptionLabel.config(
             text="The stock at the end of " + chooseEndDate.get() + "  is:")
         endDate = chooseEndDate.get_date()
+        
         if endDate > datetime.date(datetime.now()):
             warnUser("invalid Date Provided")
         else:
@@ -57,13 +58,14 @@ def navigationFrame(self, tab):
                 stock = 0
                 stockValue = 0
                 TS = 0  # total stock
+                iid = i['_id']
                 for key in i:
                     if key != "_id" and key != "PN":
                         TS += int(i[key]["Quantity"])
                         d = datetime.date(
                             datetime.strptime(key[0:8], '%d%m%Y'))
                         if(d <= endDate):
-                            iid = i["_id"]
+                            # iid = i["_id"]
                             stock += int(i[key]["Quantity"])
                             product = collection2.find_one(
                                 {"_id": ObjectId(iid)})
@@ -75,7 +77,7 @@ def navigationFrame(self, tab):
                             stockValue += float(i[key]["CP"]) * \
                                 int(i[key]["Quantity"])
 
-                saleAtTime = collection3.find_one({"_id": iid})
+                saleAtTime = collection3.find_one({"_id": ObjectId(iid)})
                 soldQty = 0
                 soldStockValue = 0
                 for k in saleAtTime:
