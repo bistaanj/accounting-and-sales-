@@ -139,9 +139,11 @@ def addNewRecord(self, inventory):
     def validateCostPrice():
         try:
             float(productCostEntry.get())
-            float(quantityEntry.get())
         except:
             productCostEntry.delete(-1, "end")
+        try:
+            float(quantityEntry.get())
+        except:
             quantityEntry.delete(-1, "end")
 
     def showUnitCostPrice(e=""):
