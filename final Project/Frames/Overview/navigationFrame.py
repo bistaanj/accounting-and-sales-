@@ -42,7 +42,7 @@ def navigationFrame(self, tab):
         for rows in detailsTable.get_children():
                 detailsTable.delete(rows)            
         descriptionLabel.config(
-            text="The stock of products in your shop at " + chooseEndDate.get() + "  is:")
+            text="The stock at the end of " + chooseEndDate.get() + "  is:")
         endDate = chooseEndDate.get_date()
         if endDate > datetime.date(datetime.now()):
             warnUser("invalid Date Provided")
@@ -157,7 +157,9 @@ def navigationFrame(self, tab):
                       text="Overview of Stocks", font=(fontToUse, int(FR*20)))
     descLabel.pack()
     topFrame = Frame(self.displayFrame)
-    topFrame.pack()
+    topFrame.pack(side = 'top')
+    bottomFrame = Frame(self.displayFrame)
+    bottomFrame.pack(side = 'bottom', pady = WR*20)
 
     fromLabel = Label(topFrame, text="Search Stock at ",
                       font=(fontToUse, int(FR*10)))
@@ -186,13 +188,16 @@ def navigationFrame(self, tab):
     descriptionLabel.grid(columnspan=5, pady=12)
 
     tableFrame = Frame(self.displayFrame)
-    tableFrame.pack(padx=20)
+    tableFrame.pack(padx=WR*10, side = 'left')
+    detailsFrame = Frame(self.displayFrame)
+    detailsFrame.pack(padx=WR*10, side = 'left')
+    
 
     stockAndStockValueLabel = Label(
         tableFrame, text="Stock and Stock Value at particular date frame", font=(fontToUse, int(FR*12)))
     detailsOfStockLabel = Label(
-        tableFrame, text="details of stock", font=(fontToUse, int(FR*12)))
-    detailsOfStockLabel.grid(row=1, column=1, rowspan=2)
+        detailsFrame, text="details of stock", font=(fontToUse, int(FR*12)))
+    detailsOfStockLabel.grid(row=0, column=0)
 
     stockAndStockValueLabel.grid(row=0)
     viewTree = ttk.Treeview(tableFrame, height=int(
@@ -221,12 +226,12 @@ def navigationFrame(self, tab):
     viewTree.heading('Stock', text='Stock', anchor=CENTER)
     # viewTree.heading('Sold', text='Sold', anchor=CENTER)
     viewTree.heading('Stock Value', text='Stock Value', anchor=CENTER)
-    viewTree.grid(row=1, column=0, pady=20, rowspan=10)
+    viewTree.grid(row=1, column=0, pady=WR*20, rowspan=10, padx=WR*10)
 
     viewTree.bind('<ButtonRelease-1>', showDetails)
 
     detailsTable = ttk.Treeview(
-        tableFrame, height=int(HR*7), style="mystyle.Treeview")
+        detailsFrame, height=int(HR*7), style="mystyle.Treeview")
     # Define Columns
     detailsTable['columns'] = ('Date', 'Cost Price', 'Quantity')
     detailsTable.column('#0', width=int(
@@ -242,10 +247,9 @@ def navigationFrame(self, tab):
     detailsTable.heading('Date', text='Date', anchor=CENTER)
     detailsTable.heading('Cost Price', text='Unit Cost Price', anchor=CENTER)
     detailsTable.heading('Quantity', text='Quantity', anchor=CENTER)
-    detailsTable.grid(row=2, column=1, pady=20, rowspan=7)
+    detailsTable.grid(row=1, column=0, pady=20, rowspan=7)
 
-    bottomFrame = Frame(self.displayFrame)
-    bottomFrame.pack()
+    
 
     totalStockValueLabel = Label(
         bottomFrame, text="Toal Stock Value =  Rs. 0.00", font=(fontToUse, int(FR*15)))
