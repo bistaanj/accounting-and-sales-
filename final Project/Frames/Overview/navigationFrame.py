@@ -1,20 +1,34 @@
 from tkinter import ttk
 from bson.objectid import ObjectId
-from config.dynamicSize import WR, FR, HR, fontToUse, day1Date
+from config.dynamicSize import WR, FR, HR, fontToUse,nepaliDate
 from Frames.supportingFunctions import warnUser
 from Frames.getConnect import getConnect
-
+from pyBSDate import convert_BS_to_AD
+from pyBSDate import convert_AD_to_BS
 from tkinter import *
 from tkcalendar import DateEntry
 from datetime import datetime
-
+from config.dynamicSize import nPDates,Y,M,D
 # Current date time in local system
-
-
 def navigationFrame(self, tab):
     def insertDate(e=""):
-        today = datetime.date(datetime.now())
-        chooseEndDate.set_date(today)
+        if nepaliDate:
+            setTodayNepaliDate()
+        else:
+            today = datetime.date(datetime.now())
+            chooseEndDate.set_date(today)
+
+    def getMonthLength(e=""):
+        try:
+            if nepaliYear.get() != "" or nepaliMonth.get() != "":
+                y = str(nepaliYear.get())
+                m = M.index(nepaliMonth.get())
+                monthLength = nPDates[y]["daysonmonth"][m]
+                D = []
+                for i in range(0,monthLength):
+                    D.append(i+1)
+                nepaliDay["values"] = D
+        except:pass
 
     def insertInTable(listForTable):
         totalStockValue = 0
@@ -38,12 +52,24 @@ def navigationFrame(self, tab):
         totalStockValueLabel.config(
             text="Toal Stock Value =  Rs. "+str("{:.2f}".format(float(totalStockValue))))
 
+    def getSelectedDateInAD(e=""):
+        if nepaliDate:
+            y = nepaliYear.get()
+            m = M.index(nepaliMonth.get())+1
+            d = nepaliDay.get()
+            res = convert_BS_to_AD(y,m,d)
+            temp = str(res[0])+str(res[1])+str(res[2])
+            return datetime.date(datetime.strptime(temp,"%Y%m%d"))
+        else:
+            return chooseEndDate.get_date()
+
     def getDateAndShowToTable():
+        endDate = getSelectedDateInAD()
         for rows in detailsTable.get_children():
-                detailsTable.delete(rows)            
+            detailsTable.delete(rows)            
         descriptionLabel.config(
-            text="The stock at the end of " + chooseEndDate.get() + "  is:")
-        endDate = chooseEndDate.get_date()
+            text="The stock at the end of " + selectedDate() + "  is:")
+        # endDate = chooseEndDate.get_date()
         
         if endDate > datetime.date(datetime.now()):
             warnUser("invalid Date Provided")
@@ -101,7 +127,7 @@ def navigationFrame(self, tab):
         iid = viewTree.focus()
         if iid != "":
             count = 0
-            endDate = chooseEndDate.get_date()
+            endDate = getSelectedDateInAD()
             collection1 = getConnect("saiRecords", "restock")
             collection2 = getConnect("saiRecords", "outStock")
             detailsToShow = []
@@ -152,6 +178,38 @@ def navigationFrame(self, tab):
                                     ))
                 count += 1
 
+    def getTodayNepaliDate(e=""):
+        now = datetime.date(datetime.now())
+        year = now.year
+        month =now.month
+        day = now.day
+        return convert_AD_to_BS(year,month,day)
+    
+    def setTodayNepaliDate(e=""):
+        res = getTodayNepaliDate()
+        try:
+            nepaliDay.delete(-1,"end")
+        except:pass
+        try:
+            nepaliMonth.delete(-1,"end")
+        except:pass
+        try:
+            nepaliYear.delete(-1,"end")
+        except:pass
+        nepaliYear.insert(0,res[0])
+        nepaliMonth.insert(0,M[res[1]-1])
+        getMonthLength()
+        nepaliDay.insert(0,res[2])
+
+    def selectedDate():
+        if nepaliDate:
+            y = nepaliYear.get()
+            m = nepaliMonth.get()
+            d = nepaliDay.get()
+            return str(y)+"-"+str(M.index(m)+1)+"-"+str(d)
+        else:
+            return chooseEndDate.get_date()
+    
     self.displayFrame = Frame(tab)
     self.displayFrame.pack(fill='both')
 
@@ -166,28 +224,35 @@ def navigationFrame(self, tab):
     fromLabel = Label(topFrame, text="Search Stock at ",
                       font=(fontToUse, int(FR*10)))
     fromLabel.grid(row=0, column=0, padx=5)
-
-    chooseEndDate = DateEntry(topFrame, width=12, background='darkblue', selectmode='day',
-                              foreground='white', borderwidth=2, year=2021)
-    chooseEndDate.grid(row=0, column=1, padx=5)
-
+    
     todayDateButton = Button(topFrame, text="today", command=insertDate)
-    todayDateButton.grid(row=1, column=1)
-
     findButton = Button(topFrame, text="Find", font=(
         fontToUse, int(FR*11)), command=getDateAndShowToTable)
-    findButton.grid(row=0, column=3, padx=5)
 
-    # GuI for overView Table
+    if nepaliDate:
+        todayDateButton.grid(row=1, column=1,columnspan=6)
+        Label(topFrame,text="Year").grid(row=0,column=1)
+        nepaliYear = ttk.Combobox(topFrame,values=Y,width=5)
+        nepaliYear.grid(row=0,column=2)
+        Label(topFrame,text="Month").grid(row=0,column=3)
+        nepaliMonth = ttk.Combobox(topFrame,values=M,width=8)
+        nepaliMonth.grid(row=0,column=4)
+        nepaliMonth.bind('<<ComboboxSelected>>',getMonthLength)
+        Label(topFrame,text="Day").grid(row=0,column=5)
+        nepaliDay = ttk.Combobox(topFrame,values=D,width=5)
+        nepaliDay.grid(row=0,column=6)
+        setTodayNepaliDate()
+        findButton.grid(row=0, column=7, padx=5)
+    else:
+        chooseEndDate = DateEntry(topFrame, width=12, background='darkblue', selectmode='day',
+                                foreground='white', borderwidth=2, year=2021)
+        chooseEndDate.grid(row=0, column=1, padx=5)
+        todayDateButton.grid(row=1, column=1)
+        findButton.grid(row=0, column=2, padx=5)
+        # dateToShow = datetime.date(datetime.now())
 
-    # detailsFrame = Frame(self.displayFrame)
-    # detailsFrame.pack()
-
-    deleteImage = PhotoImage(file="./res/delete.png")
-
-    descriptionLabel = Label(topFrame, text="The stock of products in your shop at  " +
-                             chooseEndDate.get() + "  is :", font=(fontToUse, int(FR*15)))
-    descriptionLabel.grid(columnspan=5, pady=12)
+    descriptionLabel = Label(topFrame, text="The stock at the end of " + str(selectedDate()) + "  is:", font=(fontToUse, int(FR*15)))
+    descriptionLabel.grid(columnspan=15, pady=12)
 
     tableFrame = Frame(self.displayFrame)
     tableFrame.pack(padx=WR*10, side = 'left')
