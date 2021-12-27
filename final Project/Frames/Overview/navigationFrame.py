@@ -139,7 +139,8 @@ def navigationFrame(self, tab):
                     d = datetime.date(datetime.strptime(key1[0:8], '%d%m%Y'))
                     if (d <= endDate):
                         rawData = {}
-                        rawData["Date"] = d
+                        res = convert_AD_to_BS(d.year,d.month,d.day)
+                        rawData["Date"] = str(res[0])+"-"+str(res[1])+"-"+str(res[2])
                         rawData["Cost Price"] = result1[key1]["CP"]
                         rawData["Quantity"] = int(result1[key1]['Quantity'])
                         detailsToShow.append(rawData)
