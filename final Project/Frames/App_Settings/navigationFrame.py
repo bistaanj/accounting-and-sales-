@@ -99,7 +99,9 @@ def navigationFrame(self,tab):
             # collection = db.configuration
 
             sysData=collection.find_one({'_id': 'settingsData'})
+            print('Oho k ho??')
             print(sysData)
+            print('K yei ho ?')
             connection.close()
             receiverLabel = Label(self.displayFrame, text = " Send mail using :", font = ('Helvetica', int(FR*10),'bold'))
             receiverLabel.grid(row=0, column=0, padx=10, pady=10, sticky='w')
