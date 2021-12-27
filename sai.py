@@ -2595,8 +2595,8 @@ class AuthUser(Tk):
         except smtplib.socket.gaierror:
             messagebox.showerror("Connection Failed", 'This function requires active internet connection.')
 
-#authUser = AuthUser()
-#authUser.mainloop()
+authUser = AuthUser()
+authUser.mainloop()
 
-window = Window()
-window.mainloop()
+# window = Window()
+# window.mainloop()
