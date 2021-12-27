@@ -68,7 +68,7 @@ def navigationFrame(self, tab):
         for rows in detailsTable.get_children():
             detailsTable.delete(rows)            
         descriptionLabel.config(
-            text="The stock at the end of " + selectedDate() + "  is:")
+            text="The stock at the end of " + str(selectedDate()) + "  is:")
         # endDate = chooseEndDate.get_date()
         
         if endDate > datetime.date(datetime.now()):
