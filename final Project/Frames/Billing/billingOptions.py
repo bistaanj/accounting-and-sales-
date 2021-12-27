@@ -34,11 +34,12 @@ def completeBilling(self, viewTree):
     # Assigns customer's name to the bill and saves to dbs
     def saveBilltoDbs(event=''):
         try:
-            if(len(str(panNumberEntry.get())) != 9):
-                raise ValueError
+            if self.billing_method == 0:
+                if(len(str(panNumberEntry.get())) != 9):
+                    raise ValueError
+                panNumber = panNumberEntry.get()
             if ((askEntry.get()) == ""):
                 raise ValueError
-            panNumber = panNumberEntry.get()
             # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
             # db = client.get_database('saiRecords')
             # collection = db.inventory
