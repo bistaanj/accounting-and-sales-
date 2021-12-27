@@ -1,6 +1,8 @@
 from tkinter import ttk
 from tkinter import *
-from config.dynamicSize import FR,WR,HR
+from config.dynamicSize import FR,WR,HR,nepaliDate
+from pyBSDate import convert_AD_to_BS
+from datetime import datetime
 import pymongo
 
 def navigationFrame(self, tab):
@@ -41,8 +43,13 @@ def navigationFrame(self, tab):
             else:
                 Collection= database['order']
             bill=Collection.find_one({'_id':self.billpointer[index]})
-            print(bill)
-            dateLabel.config(text=bill['Date'])
+            
+            if nepaliDate:
+                addDate = datetime.date(datetime.strptime(bill['Date'],"%d/%m/%Y"))
+                bsdate = convert_AD_to_BS(addDate.year,addDate.month,addDate.day)
+                dateLabel.config(text=str(bsdate[0])+"-"+str(bsdate[1])+"-"+str(bsdate[1]))
+            else:
+                dateLabel.config(text=bill['Date'])
             timeLabel.config(text=bill['Time'])
             customerNameLabel.config(text=bill['Customer Name'])
             helloat.config(text=bill['Contact Number'])
