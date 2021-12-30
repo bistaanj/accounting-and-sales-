@@ -7,7 +7,6 @@ def addEnterprise(name, password,dbsKey):
     connection = pymongo.MongoClient('localhost',27017)
     dbs = connection['enterprise']
     key = dbsKey
-    print(key)
     collection = dbs['registeredEnterprise']
     try:
         nm = name
@@ -23,6 +22,7 @@ def addEnterprise(name, password,dbsKey):
         rawData['name']= nm 
         rawData['password']= ps
         rawData['key']= key
+        
         collection.insert_one(rawData)
     except ValueError:
         return(False)
@@ -32,7 +32,8 @@ def addEnterprise(name, password,dbsKey):
         "_id": "settingsData",
         "receiver_email": "gmail@gmail.com",
         "sender_email": "gmail@gmail.com",
-        "sender_password": "insertPassword"
+        "sender_password": "insertPassword",
+        "master_password": ps
         }
     collection.insert_one(configData)
     return(True)

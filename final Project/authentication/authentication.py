@@ -4,6 +4,7 @@ from tkinter import messagebox
 from datetime import datetime
 from tkinter import ttk
 from authentication import createEnterprise as ce
+
 import pymongo
 import smtplib
 from config.dynamicSize import FR, WR, HR
@@ -164,25 +165,20 @@ class AuthUser(Tk):
 
 
     def checkPass(self,name,key):
-        print(name)
-        print(key)
-
         connection = pymongo.MongoClient('localhost',27017)
         dbs = connection['enterprise']
         collection = dbs['registeredEnterprise']
         capturedData = collection.find_one({'name':name, 'password': key})
         
-        print(capturedData['key']) 
-
         try:
             self.activeDatabase= capturedData['key']
-            print(self.activeDatabase)
-            # for online lisence authentication accessStatus is used
+            
+           # for online lisence authentication accessStatus is used
             accessStatus=1
             if (accessStatus):
                 if (len(self.activeDatabase)>0):
                     self.destroy()
-                    window = Window.Window()
+                    window = Window.Window(self.activeDatabase)
                     window.mainloop()
                 
             else:
