@@ -6,11 +6,11 @@ import smtplib
 def dayEnd(self):
     try:
         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-        # db = client.get_database('saiRecords')
+        # db = client.get_database(self.activeDatabase)
         # collection = db.configuration
         ##for local database
         connection = pymongo.MongoClient('localhost',27017)
-        dbs = connection['saiRecords']
+        dbs = connection[self.activeDatabase]
         collection = dbs['configuration']
         sysData=collection.find_one({'_id': 'settingsData'})
         # collection = db.dailySalesData

@@ -3,11 +3,12 @@ from tkinter import *
 from tkinter import ttk
 import pymongo
 from bson.objectid import ObjectId
+from Frames.supportingFunctions import warnUser
 
 def viewInventory(self,tab):
     try:
         self.displayFrame.destroy()
-    except:print("here")    
+    except:pass    
     self.displayFrame = Frame(tab)
     self.displayFrame.pack(fill="both", side="left")
 
@@ -23,18 +24,16 @@ def viewInventory(self,tab):
 
     def displaySearchResult(event=""):
         searchResult = []
-        # print("Checking Search Result")
-        # print(searchResult)
+        
         clearTree()
         searchValue = self.searchEntry.get()
-        # print(searchValue)
 
         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-        # db = client.get_database('saiRecords')
+        # db = client.get_database(self.activeDatabase)
         # collection = db.inventory
         ##For local Database Storage
         connection = pymongo.MongoClient("localhost", 27017)
-        database = connection['saiRecords']
+        database = connection[self.activeDatabase]
         collection = database['inventory']
         searchResult = collection.find(
             {"Product Name": {'$regex': searchValue, '$options': 'i'}})
@@ -51,21 +50,15 @@ def viewInventory(self,tab):
             viewTree.pack_configure(expand=0)
             
         if (lenCheck == 0):
-            self.warnUser("Product Not Found")
-            print("Warned !!!!!!!")
+            warnUser("Product Not Found")
         else:
             showCondition = True
         if (showCondition == TRUE):
-            print("Printing Results")
             self.txt = 0
             for x in searchResult:
-                print("Inside Second Loop")
                 viewTree.insert(parent='', index=END, iid=(x["_id"]), text=(self.txt+1), values=(
                     x['Product Name'], x['Cost Price'], x['Sales Price'], x['Quantity'], x['Units'], x['Purchased From']))
                 self.txt += 1
-                print("End of loop ")
-                print("Exited For Loop")
-        print("Exited If ELse Statement")
     
 
     totalSoldLabel = Label(self.displayFrame,text="",font=('Comic Sans MS', int(FR*15)))
@@ -114,7 +107,7 @@ def viewInventory(self,tab):
         if(row_iid != ''):
             viewTree.pack_configure(expand=0)
             connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
+            database = connection[self.activeDatabase]
             collection = database['inventory']
             databaseRow = collection.find_one({'_id': ObjectId(row_iid)})
             totalSoldLabel.pack()
@@ -131,11 +124,11 @@ def viewInventory(self,tab):
     
 
     # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-    # db = client.get_database('saiRecords')
+    # db = client.get_database(self.activeDatabase)
     # collection = db.inventory
     ##For local database Storage
     connection = pymongo.MongoClient("localhost", 27017)
-    database = connection['saiRecords']
+    database = connection[self.activeDatabase]
     collection = database['inventory']
 
     inventorydata= collection.find()

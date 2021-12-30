@@ -41,12 +41,12 @@ def completeBilling(self, viewTree):
             if ((askEntry.get()) == ""):
                 raise ValueError
             # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-            # db = client.get_database('saiRecords')
+            # db = client.get_database(self.activeDatabase)
             # collection = db.inventory
             # For Local Storage
-            collection = getConnect("saiRecords", "inventory")
+            collection = getConnect(self.activeDatabase, "inventory")
             connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
+            database = connection[self.activeDatabase]
             collection = database['inventory']
             for product in self.productsInBill:
                 orgValue = int((collection.find_one(
@@ -57,7 +57,6 @@ def completeBilling(self, viewTree):
                     (collection.find_one({'Product Name': product}))['Order'])
                 newValue = orgValue - \
                     int(self.productsInBill[product]['Quantity'])
-                print(newValue)
                 collection.find_one_and_update({'Product Name': product},
                                                {'$set': {
                                                    'Quantity': (orgValue-int(self.productsInBill[product]['Quantity'])),
@@ -66,7 +65,7 @@ def completeBilling(self, viewTree):
                 para1 = self.productsInBill[product]['iid']
                 qnty = int(self.productsInBill[product]['Quantity'])
                 sp = self.productsInBill[product]['Sales Price']
-                sm.manageStock(para1, qnty, sp)
+                sm.manageStock(para1, qnty, sp,self.activeDatabase)
 
                 if self.billing_method == 0:
                     collection = database['inventory']
@@ -105,14 +104,12 @@ def completeBilling(self, viewTree):
             # Processing the products in bill '.' -> '?'
             new_dict = {}
             a = self.productsInBill
-            print(type(new_dict))
             for items in a:
                 if '.' in items:
                     processed_string = items.replace('.', '?')
                     new_dict[processed_string] = a[items]
                 else:
                     new_dict[items] = a[items]
-            print(self.productsInBill)
             billDict['Products'] = {}
             billDict['Products'] = new_dict
             if self.billing_method == 0:
@@ -120,11 +117,9 @@ def completeBilling(self, viewTree):
                 billDict['Grand Total'] = int(
                     int(self.billingTotalAmount)+0.13*int(self.billingTotalAmount))
                 collection = database['sales']
-                print("bill saved to vat bill")
             else:
                 billDict['Grand Total'] = int(self.billingTotalAmount)
                 collection = database['order']
-                print("bill saved to order data set")
             # collection = db.sales
 
             collection.insert_one(billDict)
@@ -187,7 +182,7 @@ def completeBilling(self, viewTree):
                     else:
                         panNumberEntry.config(
                             highlightbackground="black", highlightcolor="black")
-                        panDetails = getConnect("saiRecords", "panDetails")
+                        panDetails = getConnect(self.activeDatabase, "panDetails")
                         try:
                             result = panDetails.find_one({"_id": str(pan)})
                             try:

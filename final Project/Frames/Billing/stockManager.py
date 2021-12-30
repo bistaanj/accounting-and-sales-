@@ -1,14 +1,16 @@
 import pymongo
 from bson.objectid import ObjectId
+
 from datetime import datetime
-connection = pymongo.MongoClient("localhost", 27017)
-database = connection['saiRecords']
-collection = database['presentStock']
 
 
-def manageStock(id, quantity, sp):
+
+def manageStock(id, quantity, sp, activeDatabase):
     connection = pymongo.MongoClient("localhost", 27017)
-    database = connection['saiRecords']
+    database = connection[activeDatabase]
+    collection = database['presentStock']
+    connection = pymongo.MongoClient("localhost", 27017)
+    database = connection[activeDatabase]
     collection = database['presentStock']
     a = quantity
     ref_id = id

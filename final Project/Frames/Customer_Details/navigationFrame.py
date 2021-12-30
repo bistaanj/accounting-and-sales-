@@ -37,7 +37,7 @@ def navigationFrame(self, tab):
             print(index)
             print(self.billpointer[index])
             connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
+            database = connection[self.activeDatabase]
             if 'Sales' in self.name_list[index]:
                 Collection= database['sales']
             else:
@@ -78,7 +78,7 @@ def navigationFrame(self, tab):
             name = ent_name.get()
             number = ent_phone.get()
             connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
+            database = connection[self.activeDatabase]
             collection = database['sales']
             billList.delete(0, END)
 

@@ -20,9 +20,7 @@ def getDateTime(self):
 def fetchRecord(self):
     self.widgetValue = []
     self.widgetlabel = []
-    print(" Captured")
     for widget in self.displayLabel.winfo_children():
-        print(widget.winfo_class())
         if(widget.winfo_class() == "TLabel"):
             self.widgetlabel.append(widget.cget("text"))
         elif (widget.winfo_class() == "Entry"):
@@ -40,7 +38,6 @@ def fetchRecord(self):
 
 def createRecord(self, inventory):
     self.rawData = fetchRecord(self)
-    print(self.rawData)
     try:
         for x in self.widgetValue:
             if (x == ''):
@@ -56,28 +53,13 @@ def createRecord(self, inventory):
 
 def postRecord(self, inventory):
     self.capturedRecord = self.rawData
-    print("Captured Data: ")
-    print(self.capturedRecord)
 
-    # print("Connecting to firebase...")
-    # fb = firebase.FirebaseApplication("https://expensedb-24f43.firebaseio.com/",None)
-    # print("Posting data to firebase...")
-    # self.firebasePostResult = fb.post('/expensedb-24f43/expenses',self.capturedRecord)
-    # print("Data Posting Successful.")
-    # print(" Document header id: ")
-    # print( self.firebasePostResult)
-    # print("Connecting to localhost:27017..")
-    # print("Posting Data to localhost:27017.. ")
-
+    
     # uncomment this line for local storage
     connection = pymongo.MongoClient("localhost", 27017)
-    database = connection['saiRecords']
+    database = connection[self.activeDatabase]
     collection = database['inventory']
 
-    # for cloud atlas
-    # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-    # db = client.get_database('saiRecords')
-    # collection = db.inventory
     try:
         validate = collection.find_one(
             {'Product Name': self.rawData['Product Name']}, {'_id': 1})
@@ -94,7 +76,6 @@ def postRecord(self, inventory):
             self.rawData['Sold'] = 0
 
             inserted = collection.insert_one(self.rawData)
-            print("Data Posting Completed")
             ref_id = inserted.inserted_id
             collection = database['restock']
             nw = datetime.now()
@@ -135,6 +116,7 @@ def addNewRecord(self, inventory):
         self.displayFrame.destroy()
     except:
         pass
+
 
     def validateCostPrice():
         try:

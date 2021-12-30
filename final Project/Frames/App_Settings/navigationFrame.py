@@ -13,13 +13,13 @@ def navigationFrame(self,tab):
 
         ##For local Database storage
         connection = pymongo.MongoClient('localhost',27017)
-        dbs = connection['saiRecords']
+        dbs = connection[self.activeDatabase]
         collection = dbs['configuration']
 
         ##For Cloud Atlas
         # client = MongoClient(
         #     "mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-        # db = client.get_database('saiRecords')
+        # db = client.get_database(self.activeDatabase)
         # collection = db.configuration
 
 
@@ -47,7 +47,6 @@ def navigationFrame(self,tab):
         configureSettingsData('sender_password', value)
     def update_MasterPassword():
         value = self.AppsSettingsEntry.get()
-        print('Flag3')
         configureSettingsData('master_password', value)
 
     #Displays pop-Up to get new Values
@@ -64,7 +63,6 @@ def navigationFrame(self,tab):
         self.AppsSettingsEntry = Entry(self.UpdatePopUp, width=20)
         self.AppsSettingsEntry.grid(row = 1, column = 0,padx=10, pady=10)
         self.AppsSettingsEntry.focus()
-        print("Flag1")
         updateBtn = Button(self.UpdatePopUp, text="Update Value", command=cmd)
         updateBtn.grid(row=2, column=0, padx=10, pady=20)
 
@@ -81,7 +79,6 @@ def navigationFrame(self,tab):
         displayTop('Enter New Receiver Mail-id', update_receiver)
 
     def getMasterPassword():
-        print('Flag2')
         displayTop('Enter New Master Password', update_MasterPassword)
 
     #Displays content in the App Settings Tab after authentyication
@@ -90,18 +87,15 @@ def navigationFrame(self,tab):
 
             ##For local database storage
             connection = pymongo.MongoClient('localhost',27017)
-            dbs = connection['saiRecords']
+            dbs = connection[self.activeDatabase]
             collection = dbs['configuration']
 
             #For Cloud Atlas
             # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-            # db = client.get_database('saiRecords')
+            # db = client.get_database(self.activeDatabase)
             # collection = db.configuration
 
             sysData=collection.find_one({'_id': 'settingsData'})
-            print('Oho k ho??')
-            print(sysData)
-            print('K yei ho ?')
             connection.close()
             receiverLabel = Label(self.displayFrame, text = " Send mail using :", font = ('Helvetica', int(FR*10),'bold'))
             receiverLabel.grid(row=0, column=0, padx=10, pady=10, sticky='w')
@@ -153,7 +147,6 @@ def navigationFrame(self,tab):
             upd_mailPassword.grid(row = 2, column =2 )
             upd_receiverMail = ttk.Button(self.displayFrame, text="Update", style='Update.TButton', command=getNewReceiver)
             upd_receiverMail.grid(row=4, column=2)
-            print('Flag1')
             upd_masterPassword = ttk.Button(self.displayFrame, text="Update", style='Update.TButton', command=getMasterPassword)
             upd_masterPassword.grid(row=6, column=2)
 

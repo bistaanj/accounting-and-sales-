@@ -74,9 +74,9 @@ def navigationFrame(self, tab):
         if endDate > datetime.date(datetime.now()):
             warnUser("invalid Date Provided")
         else:
-            collection1 = getConnect('saiRecords', "restock")
-            collection2 = getConnect('saiRecords', "inventory")
-            collection3 = getConnect('saiRecords', "outStock")
+            collection1 = getConnect(self.activeDatabase, "restock")
+            collection2 = getConnect(self.activeDatabase, "inventory")
+            collection3 = getConnect(self.activeDatabase, "outStock")
             result = collection1.find()
             listForTable = []
             for i in result:

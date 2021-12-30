@@ -42,12 +42,12 @@ def navigationFrame(self, tab):
 
             ##For Cloud Atlas
             # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-            # db = client.get_database('saiRecords')
+            # db = client.get_database(self.activeDatabase)
             # collection = db.sales
 
             ##For Local Database Storage
             connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
+            database = connection[self.activeDatabase]
             collection = database['sales']
 
             data = collection.find_one({'_id': ObjectId(billId)})
@@ -118,12 +118,12 @@ def navigationFrame(self, tab):
                     self.helpLabel.config(text='(Search Format : Name)')
                 #For Local database Storage
                 connection = pymongo.MongoClient("localhost", 27017)
-                database = connection['saiRecords']
+                database = connection[self.activeDatabase]
                 collection = database['sales']
 
                 ##For Cloud Atlas
                 # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-                # db = client.get_database('saiRecords')
+                # db = client.get_database(self.activeDatabase)
                 # collection = db.sales
 
                 result = collection.find({key: {'$regex': searchValue, '$options': searchFilter}})
@@ -246,12 +246,12 @@ def navigationFrame(self, tab):
 
         ##For Local Database Storage
         connection = pymongo.MongoClient("localhost", 27017)
-        database = connection['saiRecords']
+        database = connection[self.activeDatabase]
         collection = database['sales']
 
         ##For Cloud Atlas
         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-        # db = client.get_database('saiRecords')
+        # db = client.get_database(self.activeDatabase)
         # collection = db.sales
 
 

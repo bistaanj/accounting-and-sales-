@@ -29,6 +29,4 @@ def viewProductsInBill(self, viewTree):
                 text=int(self.billingTotalAmount+0.13*self.billingTotalAmount))
 
         count += 1
-    print('Products in Bill')
-    print(self.productsInBill)
     self.executing = False

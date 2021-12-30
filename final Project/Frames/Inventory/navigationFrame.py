@@ -1,11 +1,12 @@
 from tkinter import *
 from tkinter import messagebox
+from tkinter import font
 from config.dynamicSize import FR, WR, HR
 from tkinter import ttk
 from Frames.Inventory.features.config import *
 
 def navigationFrame(self, tab):
-    buttonBg = "#284F9B"
+    buttonBg = "#30353b"
     self.buttonFrame = Frame(tab, bg=buttonBg)
     self.buttonFrame.pack(fill=Y, side="left")
 
@@ -13,21 +14,20 @@ def navigationFrame(self, tab):
     self.belowFrame.pack(fill=X, side="bottom")
 
     s_btn = ttk.Style()
-    s_btn.configure('TButton', height=int(HR*3), width=int(WR*20), border=0,
-                    background=buttonBg, font=("Helvetica", int(FR*14), 'bold'))
-    s_btn.map('TButton',
-              foreground=[('disabled', 'yellow'),
-                          ('pressed', 'red'),
-                          ('active', '#5A63F5')],
-              background=[('disabled', 'magenta'),
-                          ('pressed', '!focus', 'cyan'),
-                          ('active', 'green')],
-              )
-    self.btn_addProduct = ttk.Button(self.buttonFrame, text="Add New Product", style='TButton', command= lambda:addNewProduct.addNewRecord(self,tab))
+    s_btn.configure("TButton", bg = '#30353b', border=0)
+    # s_btn.map('TButton',
+    #           foreground=[('disabled', 'yellow'),
+    #                       ('pressed', 'red'),
+    #                       ('active', '#white')],
+    #           background=[('disabled', 'white'),
+    #                       ('pressed', '!focus', '#30353b'),
+    #                       ('active', 'green')],
+    #           )
+    self.btn_addProduct = Button(self.buttonFrame,background='#30353b', cursor='Hand2',font=('Helvetical', 15), border = 0 ,fg='white',text="Add New Product", command= lambda:addNewProduct.addNewRecord(self,tab))
     self.btn_addProduct.grid(column=0, row=1, pady=10)
 
     self.btn_update = ttk.Button(
-        self.buttonFrame, text="Update Inventory", style='TButton', command=lambda:updateInventory.updateInventory(self))
+        self.buttonFrame, text="Update Inventory", command=lambda:updateInventory.updateInventory(self))
     self.btn_update.grid(column=0, row=2, pady=5)
 
     self.btn_viewInventory = ttk.Button(

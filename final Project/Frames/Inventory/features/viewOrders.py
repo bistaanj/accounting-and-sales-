@@ -55,7 +55,7 @@ def viewOrders(self):
         item = itemlistbox.get(index)
         if len(item) > 0:
             connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
+            database = connection[self.activeDatabase]
             collection = database['order']
             allOrders = collection.find()
             connection.close()
@@ -87,7 +87,7 @@ def viewOrders(self):
             else:
                 #For Local database Storage
                 connection = pymongo.MongoClient("localhost", 27017)
-                database = connection['saiRecords']
+                database = connection[self.activeDatabase]
                 collection = database['order']
                 if(key == 'By Product'):
                     customerNameEntry.grid_forget()
