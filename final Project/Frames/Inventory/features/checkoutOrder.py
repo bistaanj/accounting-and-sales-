@@ -37,7 +37,7 @@ def checkoutOrders(self):
     billingTotalAmount = 0
     productsInBill = {}
     connection = pymongo.MongoClient("localhost", 27017)
-    database = connection['saiRecords']
+    database = connection[self.activeDatabase]
     collection = database['inventory']
     # amountFrame.grid(column = 0, row = 2)
     def getallOrders():
@@ -270,7 +270,7 @@ def checkoutOrders(self):
                 panNumber = panNumberEntry.get()
                 ##For Local Storage
                 connection = pymongo.MongoClient("localhost", 27017)
-                database = connection['saiRecords']
+                database = connection[self.activeDatabase]
                 collection = database['inventory']
                 for product in productsInBill:
                     orgValue = int((collection.find_one({'Product Name': product}))['Quantity'])
@@ -361,7 +361,7 @@ def checkoutOrders(self):
                         else:
                             panNumberEntry.config(
                                 highlightbackground="black", highlightcolor="black")
-                            panDetails = getConnect("saiRecords", "panDetails")
+                            panDetails = getConnect(self.activeDatabase, "panDetails")
                             try:
                                 result = panDetails.find_one({"_id": str(pan)})
                                 try:

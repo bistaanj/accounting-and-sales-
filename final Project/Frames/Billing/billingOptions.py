@@ -41,12 +41,12 @@ def completeBilling(self, viewTree):
             if ((askEntry.get()) == ""):
                 raise ValueError
             # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-            # db = client.get_database('saiRecords')
+            # db = client.get_database(self.activeDatabase)
             # collection = db.inventory
             # For Local Storage
-            collection = getConnect("saiRecords", "inventory")
+            collection = getConnect(self.activeDatabase, "inventory")
             connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
+            database = connection[self.activeDatabase]
             collection = database['inventory']
             for product in self.productsInBill:
                 orgValue = int((collection.find_one(
@@ -187,7 +187,7 @@ def completeBilling(self, viewTree):
                     else:
                         panNumberEntry.config(
                             highlightbackground="black", highlightcolor="black")
-                        panDetails = getConnect("saiRecords", "panDetails")
+                        panDetails = getConnect(self.activeDatabase, "panDetails")
                         try:
                             result = panDetails.find_one({"_id": str(pan)})
                             try:

@@ -111,12 +111,12 @@ def updateInventory(self):
                 raise ValueError
 
             # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-            # db = client.get_database('saiRecords')
+            # db = client.get_database(self.activeDatabase)
             # collection = db.inventory
 
             # For local Storage
             connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
+            database = connection[self.activeDatabase]
             collection = database['inventory']
 
             databaseRow = collection.find_one(
@@ -194,12 +194,12 @@ def updateInventory(self):
                 raise ValueError
 
             # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-            # db = client.get_database('saiRecords')
+            # db = client.get_database(self.activeDatabase)
             # collection = db.inventory
 
             # For local Storage
             connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
+            database = connection[self.activeDatabase]
             collection = database['inventory']
 
             collection.update_one({'_id': ObjectId(iid)}, {
@@ -219,12 +219,12 @@ def updateInventory(self):
     #         grabbedValue = str(grabbedValue)
 
     #         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-    #         # db = client.get_database('saiRecords')
+    #         # db = client.get_database(self.activeDatabase)
     #         # collection = db.inventory
 
     #         ##For local Storage
     #         connection = pymongo.MongoClient("localhost", 27017)
-    #         database = connection['saiRecords']
+    #         database = connection[self.activeDatabase]
     #         collection = database['inventory']
 
     #         collection.update_one({'_id': ObjectId(iid)}, {
@@ -265,12 +265,12 @@ def updateInventory(self):
         # print(searchValue)
 
         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-        # db = client.get_database('saiRecords')
+        # db = client.get_database(self.activeDatabase)
         # collection = db.inventory
 
         # For Local Database
         connection = pymongo.MongoClient("localhost", 27017)
-        database = connection['saiRecords']
+        database = connection[self.activeDatabase]
         collection = database['inventory']
         searchResult = collection.find(
             {"Product Name": {'$regex': searchValue, '$options': 'i'}})
@@ -308,11 +308,11 @@ def updateInventory(self):
                 "Conformation Required", "This process is irreversible. Are you sure?")
             if conformation:
                 # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-                # db = client.get_database('saiRecords')
+                # db = client.get_database(self.activeDatabase)
                 # collection = db.inventory
                 # For Local Database
                 connection = pymongo.MongoClient("localhost", 27017)
-                database = connection['saiRecords']
+                database = connection[self.activeDatabase]
                 collection = database['inventory']
                 trans = collection.delete_one({'_id': ObjectId(iid)})
                 print(trans)

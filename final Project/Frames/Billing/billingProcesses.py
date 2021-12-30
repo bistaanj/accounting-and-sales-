@@ -49,7 +49,7 @@ def billingProcess(self, viewTree):
                     top.destroy()
 
         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-        # db = client.get_database('saiRecords')
+        # db = client.get_database(self.activeDatabase)
         # collection = db.inventory
 
         # For local database storage
@@ -61,7 +61,7 @@ def billingProcess(self, viewTree):
                 askSalesPriceEntry.delete(-1, 'end')
 
         connection = pymongo.MongoClient("localhost", 27017)
-        database = connection['saiRecords']
+        database = connection[self.activeDatabase]
         collection = database['inventory']
         toadd = self.itemlistbox.get(ANCHOR)
         print("Selected from itemlistbox" + toadd)
@@ -120,10 +120,10 @@ def billingProcess(self, viewTree):
 
 def getConnect(self):
     # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-    # db = client.get_database('saiRecords')
+    # db = client.get_database(self.activeDatabase)
     # collection = db.inventory
     connection = pymongo.MongoClient('localhost', 27017)
-    database = connection['saiRecords']
+    database = connection[self.activeDatabase]
     collection = database['inventory']
     return collection
 

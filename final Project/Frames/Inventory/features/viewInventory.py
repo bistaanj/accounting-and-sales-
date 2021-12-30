@@ -30,11 +30,11 @@ def viewInventory(self,tab):
         # print(searchValue)
 
         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-        # db = client.get_database('saiRecords')
+        # db = client.get_database(self.activeDatabase)
         # collection = db.inventory
         ##For local Database Storage
         connection = pymongo.MongoClient("localhost", 27017)
-        database = connection['saiRecords']
+        database = connection[self.activeDatabase]
         collection = database['inventory']
         searchResult = collection.find(
             {"Product Name": {'$regex': searchValue, '$options': 'i'}})
@@ -114,7 +114,7 @@ def viewInventory(self,tab):
         if(row_iid != ''):
             viewTree.pack_configure(expand=0)
             connection = pymongo.MongoClient("localhost", 27017)
-            database = connection['saiRecords']
+            database = connection[self.activeDatabase]
             collection = database['inventory']
             databaseRow = collection.find_one({'_id': ObjectId(row_iid)})
             totalSoldLabel.pack()
@@ -131,11 +131,11 @@ def viewInventory(self,tab):
     
 
     # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-    # db = client.get_database('saiRecords')
+    # db = client.get_database(self.activeDatabase)
     # collection = db.inventory
     ##For local database Storage
     connection = pymongo.MongoClient("localhost", 27017)
-    database = connection['saiRecords']
+    database = connection[self.activeDatabase]
     collection = database['inventory']
 
     inventorydata= collection.find()

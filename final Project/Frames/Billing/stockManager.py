@@ -2,7 +2,7 @@ import pymongo
 from bson.objectid import ObjectId
 from datetime import datetime
 connection = pymongo.MongoClient("localhost", 27017)
-database = connection['saiRecords']
+database = connection[self.activeDatabase]
 collection = database['presentStock']
 
 

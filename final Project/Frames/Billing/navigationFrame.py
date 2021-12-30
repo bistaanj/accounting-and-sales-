@@ -69,12 +69,12 @@ def navigationFrame(self, tab):
         searchValue = self.billingSearchEntry.get()
 
         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-        # db = client.get_database('saiRecords')
+        # db = client.get_database(self.activeDatabase)
         # collection = db.inventory
 
         # For local storage
         connection = pymongo.MongoClient("localhost", 27017)
-        database = connection['saiRecords']
+        database = connection[self.activeDatabase]
         collection = database['inventory']
         result = collection.find(
             {"Product Name": {'$regex': searchValue, '$options': 'i'}})
