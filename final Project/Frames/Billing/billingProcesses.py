@@ -3,8 +3,7 @@ from tkinter import messagebox
 import Frames.Billing.viewProductsInBill as viewProductsInBill
 
 from config.dynamicSize import FR, WR, HR
-from Frames.supportingFunctions import warnUser
-import pymongo
+from Frames.supportingFunctions import warnUser,getConnect
 # New Add Product Funtion to add products in bill
 
 
@@ -60,9 +59,7 @@ def billingProcess(self, viewTree):
             except ValueError:
                 askSalesPriceEntry.delete(-1, 'end')
 
-        connection = pymongo.MongoClient("localhost", 27017)
-        database = connection['saiRecords']
-        collection = database['inventory']
+        collection = getConnect(self.activeDatabase,'inventory')
         toadd = self.itemlistbox.get(ANCHOR)
 
         productToBill = collection.find_one({'Product Name': toadd})
@@ -115,15 +112,6 @@ def billingProcess(self, viewTree):
         self.executing = False
         messagebox.showerror(
             'Invalid Request', 'The selected product seems Out of Stock. Try adding the product in the inventory')
-
-
-def getConnect(self):
-    
-    connection = pymongo.MongoClient('localhost', 27017)
-    database = connection['saiRecords']
-    collection = database['inventory']
-    return collection
-
 
 def billingEditProcess(self, viewTree):
     def validateQuantity(e):

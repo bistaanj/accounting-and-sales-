@@ -2,10 +2,9 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import pymongo
 from datetime import datetime
 from config.dynamicSize import HR, WR, FR
-from Frames.supportingFunctions import getUnitCostPrice
+from Frames.supportingFunctions import getUnitCostPrice,getConnect
 # creates widget inside Inventory Label Frame. Tab-> Inventory
 
 
@@ -56,9 +55,7 @@ def postRecord(self, inventory):
 
     
     # uncomment this line for local storage
-    connection = pymongo.MongoClient("localhost", 27017)
-    database = connection[self.activeDatabase]
-    collection = database['inventory']
+    collection = getConnect(self.activeDatabase,'inventory')
 
     try:
         validate = collection.find_one(
@@ -77,7 +74,7 @@ def postRecord(self, inventory):
 
             inserted = collection.insert_one(self.rawData)
             ref_id = inserted.inserted_id
-            collection = database['restock']
+            collection = getConnect(self.activeDatabase,'restock')
             nw = datetime.now()
             id = nw.strftime("%d%m%Y-%H%M%S")
             ref_collection = {'_id': ref_id, 'PN': self.rawData['Product Name'],
@@ -86,14 +83,14 @@ def postRecord(self, inventory):
                 'CP': self.rawData['Cost Price']
             }}
             collection.insert_one(ref_collection)
-            collection = database['presentStock']
+            collection = getConnect(self.activeDatabase,'presentStock')
 
             ref_collection = {'_id': ref_id, 'PN': self.rawData['Product Name'],
                               'Stock': [{'Quantity': self.rawData['Quantity'], 'CP':self.rawData['Cost Price']}]
                               }
             collection.insert_one(ref_collection)
 
-            collection = database['outStock']
+            collection = getConnect(self.activeDatabase,'outStock')
             ref_collection = {'_id':ref_id, 'PN': self.rawData['Product Name']}
             collection.insert_one(ref_collection)
 

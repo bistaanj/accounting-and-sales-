@@ -3,7 +3,7 @@ from tkinter import *
 from config.dynamicSize import FR,WR,HR,nepaliDate
 from pyBSDate import convert_AD_to_BS
 from datetime import datetime
-import pymongo
+from Frames.supportingFunctions import getConnect
 
 def navigationFrame(self, tab):
     buttonBg = "#284F9B"
@@ -34,14 +34,10 @@ def navigationFrame(self, tab):
 
         def displayBill():
             index = billList.index(ANCHOR)
-            print(index)
-            print(self.billpointer[index])
-            connection = pymongo.MongoClient("localhost", 27017)
-            database = connection[self.activeDatabase]
             if 'Sales' in self.name_list[index]:
-                Collection= database['sales']
+                Collection=  getConnect(self.activeDatabase,'sales')
             else:
-                Collection= database['order']
+                Collection= getConnect(self.activeDatabase,'order')
             bill=Collection.find_one({'_id':self.billpointer[index]})
             
             if nepaliDate:
@@ -61,12 +57,9 @@ def navigationFrame(self, tab):
 
 
             for vlue in (bill['Products']):
-                print(vlue)
                 if "?" in vlue:
-                    print('inside  if statement')
                     processed_name=vlue.replace('?','.')
                 else:
-                    print('inside else statement')
                     processed_name=vlue
                     view_viewTree.insert(parent='', index=END,
                                         iid=(bill['Products'][vlue]['iid']), text=(count+1), values=( processed_name ,
@@ -77,9 +70,7 @@ def navigationFrame(self, tab):
         def searchCustomer():
             name = ent_name.get()
             number = ent_phone.get()
-            connection = pymongo.MongoClient("localhost", 27017)
-            database = connection[self.activeDatabase]
-            collection = database['sales']
+            collection = getConnect(self.activeDatabase,'sales')
             billList.delete(0, END)
 
             self.name_list = []
@@ -87,14 +78,13 @@ def navigationFrame(self, tab):
             totalPurchase = 0
             result = collection.find({'Customer Name':{'$regex': name, '$options': 'i' } , 'Contact Number': number})
 
-            print("List of Object ID")
             for x in result:
                     totalPurchase+=x['Grand Total']
                     self.name_list.append(
                         x['Customer Name'] +  '------' + x['Date'] + '---' + 'Sales')
                     self.billpointer.append(x['_id'])
                     # self.view_productId.append(x['_id'])
-            collection = database['order']
+            collection = getConnect(self.activeDatabase,'order')
             result = collection.find({'Customer Name':{'$regex': name, '$options': 'i' } , 'Contact Number': number})
             for x in result:
                 totalPurchase+=x['Grand Total']

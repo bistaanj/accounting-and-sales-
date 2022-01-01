@@ -1,10 +1,8 @@
 from tkinter import messagebox, ttk
 from tkinter import *
 from warnings import resetwarnings
-import pymongo
 from config.dynamicSize import FR, WR, HR
-from Frames.supportingFunctions import getDateTime
-from Frames.getConnect import getConnect
+from Frames.supportingFunctions import getDateTime,getConnect
 import Frames.Billing.viewProductsInBill as viewProductsInBill
 import Frames.Billing.stockManager as sm
 
@@ -44,10 +42,7 @@ def completeBilling(self, viewTree):
             # db = client.get_database(self.activeDatabase)
             # collection = db.inventory
             # For Local Storage
-            collection = getConnect(self.activeDatabase, "inventory")
-            connection = pymongo.MongoClient("localhost", 27017)
-            database = connection[self.activeDatabase]
-            collection = database['inventory']
+            collection = getConnect(self.activeDatabase,'inventory')
             for product in self.productsInBill:
                 orgValue = int((collection.find_one(
                     {'Product Name': product}))['Quantity'])
@@ -68,12 +63,12 @@ def completeBilling(self, viewTree):
                 sm.manageStock(para1, qnty, sp,self.activeDatabase)
 
                 if self.billing_method == 0:
-                    collection = database['inventory']
+                    collection = getConnect(self.activeDatabase,'inventory')
                     collection.find_one_and_update({'Product Name': product},
                                                    {'$set': {
                                                        'Sold': (orgValue_sold+int(self.productsInBill[product]['Quantity'])),
                                                    }})
-                    panCol = database["panDetails"]
+                    panCol = getConnect(self.activeDatabase,"panDetails")
                     if not self.panExistsInDB:
                         if phnNumEntry.get() != "":
                             panCol.insert_one(
@@ -90,7 +85,7 @@ def completeBilling(self, viewTree):
                                 {'_id': panNumber}, {'$set': {"Name": askEntry.get()}})
 
                 else:
-                    collection = database['inventory']
+                    collection =getConnect(self.activeDatabase,'inventory')
                     collection.find_one_and_update({'Product Name': product},
                                                    {'$set': {
                                                        'Order': (orgValue_order+int(self.productsInBill[product]['Quantity'])),
@@ -116,16 +111,16 @@ def completeBilling(self, viewTree):
                 billDict['Vatable'] = int(self.billingTotalAmount)
                 billDict['Grand Total'] = int(
                     int(self.billingTotalAmount)+0.13*int(self.billingTotalAmount))
-                collection = database['sales']
+                collection = getConnect(self.activeDatabase,'sales')
             else:
                 billDict['Grand Total'] = int(self.billingTotalAmount)
-                collection = database['order']
+                collection = getConnect(self.activeDatabase,'order')
             # collection = db.sales
 
             collection.insert_one(billDict)
             # Logic to Add value to daily Sales
             # collection = db.dailySalesData
-            collection = database['dailySalesData']
+            collection = getConnect(self.activeDatabase,'dailySalesData')
             dte = dateTime[0]
             newValue = self.billingTotalAmount
             if (collection.count_documents({'_id': dte}) > 0):

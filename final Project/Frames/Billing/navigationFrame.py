@@ -1,8 +1,7 @@
 from tkinter import *
 from tkinter import ttk
-from tkinter import messagebox
 import win32api
-import pymongo
+from Frames.supportingFunctions import getConnect
 from config.dynamicSize import FR, WR, HR
 from Frames.Billing.config import *
 # creates frame and buttons inside the Billing tab's Navigation Button
@@ -73,9 +72,7 @@ def navigationFrame(self, tab):
         # collection = db.inventory
 
         # For local storage
-        connection = pymongo.MongoClient("localhost", 27017)
-        database = connection[self.activeDatabase]
-        collection = database['inventory']
+        collection = getConnect(self.activeDatabase,'inventory')
         result = collection.find(
             {"Product Name": {'$regex': searchValue, '$options': 'i'}})
         # connection.close()

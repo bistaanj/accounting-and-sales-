@@ -2,7 +2,7 @@ import win32api
 from config.dynamicSize import FR, WR, HR
 from tkinter import *
 from tkinter import ttk,messagebox
-import pymongo
+from Frames.supportingFunctions import getConnect
 
 def viewOrders(self):
     self.displayFrame.destroy()
@@ -54,11 +54,9 @@ def viewOrders(self):
         index = itemlistbox.index(ANCHOR)
         item = itemlistbox.get(index)
         if len(item) > 0:
-            connection = pymongo.MongoClient("localhost", 27017)
-            database = connection[self.activeDatabase]
-            collection = database['order']
+            collection = getConnect(self.activeDatabase,'order')
             allOrders = collection.find()
-            connection.close()
+            # connection.close()
             if PtypeCombo.get() == "By Customer":
                 y = []
                 for x in allOrders:
@@ -86,9 +84,9 @@ def viewOrders(self):
                 raise ValueError
             else:
                 #For Local database Storage
-                connection = pymongo.MongoClient("localhost", 27017)
-                database = connection[self.activeDatabase]
-                collection = database['order']
+                # connection = pymongo.MongoClient("localhost", 27017)
+                # database = connection['saiRecords']
+                collection = getConnect(self.activeDatabase,'order')
                 if(key == 'By Product'):
                     customerNameEntry.grid_forget()
                     customerNameLabel.grid_forget()
@@ -135,7 +133,6 @@ def viewOrders(self):
                     for i in result:
                         for a in i['Products']:
                             if searchValue.lower() == a.lower():
-                                # print(searchValue)
                                 process1 = {'date':i['Date'],'cName' :i['Customer Name'], 'product': i['Products'][a]}
                                 final[i['_id']]=process1
                     displayInTreeProduct('',final)
@@ -143,7 +140,7 @@ def viewOrders(self):
                 else:
                     contact = customerPhoneEntry.get()
                     allOrders = collection.find()
-                    connection.close()
+                    # connection.close()
                     y=[]
                     self.nameAndPhoneNumber = {}
                     for x in allOrders:
