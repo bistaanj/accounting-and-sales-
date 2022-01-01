@@ -5,6 +5,8 @@ from tkinter import messagebox
 from datetime import datetime
 from config.dynamicSize import HR, WR, FR
 from Frames.supportingFunctions import getUnitCostPrice,getConnect
+from Frames.Inventory.features import newRow
+
 # creates widget inside Inventory Label Frame. Tab-> Inventory
 
 
@@ -148,88 +150,106 @@ def addNewRecord(self, inventory):
     self.displayLabel.pack(fill="both", side="top", pady=20)
 
     s = ttk.Style()
-    s.configure('TLabel', font=('Helvetica', int(FR*18), 'bold'),
+    s.configure('TLabel', font=('Helvetica', int(FR*12), 'bold'),
                 background=bgColor, foreground='#BF0909')
     productNameLabel = ttk.Label(
         self.displayLabel, text="Product Name", style='TLabel')
     productNameLabel.grid(column=0, row=1, padx=15, sticky='w')
 
     productNameEntry = Entry(self.displayLabel, width=int(
-        WR*50), border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
-    productNameEntry.grid(column=1, row=1, padx=10,
-                          pady=10, sticky="w", columnspan=3)
+        WR*50), border=0, bg='#CED7D7', font=('Helvetica', int(FR*12), 'bold'))
+    productNameEntry.grid(column=1, row=1, padx= int(WR*10),
+                          pady=int(HR*10), sticky="w", columnspan=3)
 
     quantityLabel = ttk.Label(
         self.displayLabel, text="Quantity", style='TLabel')
-    quantityLabel.grid(column=0, row=2, padx=10, pady=10, sticky="w")
+    quantityLabel.grid(column=0, row=2, padx= int(WR*10), pady=int(HR*10), sticky="w")
 
-    quantityEntry = Entry(self.displayLabel, width=int(WR*10), font=('Helvetica', int(FR*15), 'bold'),
+    quantityEntry = Entry(self.displayLabel, width=int(WR*10), font=('Helvetica', int(FR*12), 'bold'),
                           border=0, bg='#CED7D7')
-    quantityEntry.grid(column=1, row=2, padx=10, pady=10, sticky="w")
+    quantityEntry.grid(column=1, row=2, padx= int(WR*10), pady=int(HR*10), sticky="w")
 
     pType = ttk.Label(self.displayLabel, text='Units', style='TLabel')
-    pType.grid(column=2, row=2, padx=5, pady=10)
+    pType.grid(column=2, row=2, padx=5, pady=int(HR*10))
 
     PtypeCombo = ttk.Combobox(self.displayLabel, background='#CED7D7', values=[
                               'Pcs', 'Pkts', 'Liters', 'Bundle', 'Kgs', 'Meter', 'Other'], font=('Comic Sans MS', int(FR*10), 'bold'))
-    PtypeCombo.grid(column=3, row=2, padx=5, pady=10, sticky="w")
+    PtypeCombo.grid(column=3, row=2, padx=5, pady=int(HR*10), sticky="w")
 
     productCostLabel = ttk.Label(
         self.displayLabel, text="Cost Price", style='TLabel')
-    productCostLabel.grid(column=0, row=4,  padx=10, pady=10, sticky="w")
+    productCostLabel.grid(column=0, row=4,  padx= int(WR*10), pady=int(HR*10), sticky="w")
 
     productCostEntry = Entry(self.displayLabel, width=int(
-        WR*20), border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
-    productCostEntry.grid(column=1, row=4,  padx=10, pady=10, sticky="w")
+        WR*20), border=0, bg='#CED7D7', font=('Helvetica', int(FR*12), 'bold'))
+    productCostEntry.grid(column=1, row=4,  padx= int(WR*10), pady=int(HR*10), sticky="w")
     productCostEntry.bind('<KeyRelease>', showUnitCostPrice)
 
     productUnitCostLabel = Label(self.displayLabel, text="Unit Cost Price: Rs.0", font=(
         'Helvetica', int(FR*14), 'bold'), background=bgColor, foreground='#BF0909')
-    productUnitCostLabel.grid(column=1, row=4, pady=10, padx=10, sticky="e")
+    productUnitCostLabel.grid(column=1, row=4, pady=int(HR*10), padx= int(WR*10), sticky="e")
     productSalesLabel = ttk.Label(
         self.displayLabel, text="Sales Price", style='TLabel')
-    productSalesLabel.grid(column=0, row=5,  padx=10, pady=10, sticky="w")
+    productSalesLabel.grid(column=0, row=5,  padx= int(WR*10), pady=int(HR*10), sticky="w")
 
     productSalesEntry = Entry(self.displayLabel, width=int(
-        WR*20), border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
-    productSalesEntry.grid(column=1, row=5,  padx=10, pady=10, sticky="w")
+        WR*20), border=0, bg='#CED7D7', font=('Helvetica', int(FR*12), 'bold'))
+    productSalesEntry.grid(column=1, row=5,  padx= int(WR*10), pady=int(HR*10), sticky="w")
 
     # locationLabel = ttk.Label(
     #     self.displayLabel, text='Location', style='TLabel')
-    # locationLabel.grid(column=0, row=6, padx=10, pady=10, sticky="w")
+    # locationLabel.grid(column=0, row=6, padx= int(WR*10), pady=int(HR*10), sticky="w")
 
-    # locationEntry = Entry(self.displayLabel, width = int(WR*20),border=0, bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
-    # locationEntry.grid(column=1, row=6, padx=10, pady=10, sticky="w")
+    # locationEntry = Entry(self.displayLabel, width = int(WR*20),border=0, bg='#CED7D7', font=('Helvetica', int(FR*12), 'bold'))
+    # locationEntry.grid(column=1, row=6, padx= int(WR*10), pady=int(HR*10), sticky="w")
 
     productDescriptionLabel = ttk.Label(
         self.displayLabel, text="Purchased From", style='TLabel')
     productDescriptionLabel.grid(
-        column=0, row=7,  padx=10, pady=10, sticky="w")
+        column=0, row=7,  padx= int(WR*10), pady=int(HR*10), sticky="w")
 
     productDescription = Entry(self.displayLabel, border=0, width=int(
-        WR*50), bg='#CED7D7', font=('Helvetica', int(FR*15), 'bold'))
-    productDescription.grid(column=1, row=7, padx=10, pady=10, sticky="w")
+        WR*50), bg='#CED7D7', font=('Helvetica', int(FR*12), 'bold'))
+    productDescription.grid(column=1, row=7, padx= int(WR*10), pady=int(HR*10), sticky="w")
 
-    self.submit_record_btn = Button(self.displayLabel, cursor="hand2", text="Record", command=lambda: createRecord(self, inventory),
-                                    font=('Times New Roman', int(FR*20)), bg='#648EF1', fg='#FFFFFF', border=0)
-    self.submit_record_btn.grid(column=0, row=8, padx=10, pady=20, sticky="se")
+    productDescriptionLabel = Label(
+        self.displayLabel, text="Alternative Measures of Sales : ", bg = "#ffffff", fg ='grey', font = ('Comic Sans MS', int(FR*15), 'bold', 'underline'))
+    productDescriptionLabel.grid(
+        column=0, row=8,  padx= int(WR*10), pady=int(HR*15), sticky="w", columnspan= 2)
 
-    tips = Label(self.displayLabel, text="*record validations:-",
-                 font=('Times New Roman', int(FR*10), 'underline'), fg='red', bg='white')
-    tips.grid(column=0, row=9, padx=5, pady=10, sticky="w")
+    
+    ucOuterFrame = Frame(self.displayLabel, bg = '#ffffff')
+    ucOuterFrame.grid(row = 9, column= 0, rowspan= 4, columnspan= 6)
+    
+    ucInnerFrame = Frame(ucOuterFrame, bg = '#ffffff')
+    ucInnerFrame.pack(side='top', fill='both')
+    newRow.createNewRow(ucInnerFrame)
 
-    tips = Label(self.displayLabel, text="- check for the product in inventory before recording",
-                 font=('Times New Roman', int(FR*10)), fg='red', bg='white')
-    tips.grid(column=0, row=10, padx=5, pady=0, sticky="w", columnspan=2)
+    newRow_btn = Button(ucOuterFrame, text = 'Add New Row', command = lambda:newRow.countRows(ucInnerFrame,ucOuterFrame) )
+    newRow_btn.pack(side='bottom')
 
-    tips = Label(self.displayLabel, text="- recording of similar product will pop error msg",
-                 font=('Times New Roman', int(FR*10)), fg='red', bg='white')
-    tips.grid(column=0, row=11, padx=5, pady=0, sticky="w", columnspan=2)
 
-    tips = Label(self.displayLabel, text="- ensure all fields are filled before recording",
-                 font=('Times New Roman', int(FR*10)), fg='red', bg='white')
-    tips.grid(column=0, row=12, padx=5, pady=0, sticky="w", columnspan=2)
 
-    tips = Label(self.displayLabel, text="- 'Quantity' and 'Sales Price' must be a number",
-                 font=('Times New Roman', int(FR*10)), fg='red', bg='white')
-    tips.grid(column=0, row=13, padx=5, pady=0, sticky="w", columnspan=2)
+    # self.submit_record_btn = Button(self.displayLabel, cursor="hand2", text="Record", command=lambda: createRecord(self, inventory),
+    #                                 font=('Times New Roman', int(FR*20)), bg='#648EF1', fg='#FFFFFF', border=0)
+    # self.submit_record_btn.grid(column=0, row=8, padx= int(WR*10), pady=20, sticky="se")
+
+    # tips = Label(self.displayLabel, text="*record validations:-",
+    #              font=('Times New Roman', int(FR*10), 'underline'), fg='red', bg='white')
+    # tips.grid(column=0, row=9, padx=5, pady=int(HR*10), sticky="w")
+
+    # tips = Label(self.displayLabel, text="- check for the product in inventory before recording",
+    #              font=('Times New Roman', int(FR*10)), fg='red', bg='white')
+    # tips.grid(column=0, row=10, padx=5, pady=0, sticky="w", columnspan=2)
+
+    # tips = Label(self.displayLabel, text="- recording of similar product will pop error msg",
+    #              font=('Times New Roman', int(FR*10)), fg='red', bg='white')
+    # tips.grid(column=0, row=11, padx=5, pady=0, sticky="w", columnspan=2)
+
+    # tips = Label(self.displayLabel, text="- ensure all fields are filled before recording",
+    #              font=('Times New Roman', int(FR*10)), fg='red', bg='white')
+    # tips.grid(column=0, row=12, padx=5, pady=0, sticky="w", columnspan=2)
+
+    # tips = Label(self.displayLabel, text="- 'Quantity' and 'Sales Price' must be a number",
+    #              font=('Times New Roman', int(FR*10)), fg='red', bg='white')
+    # tips.grid(column=0, row=13, padx=5, pady=0, sticky="w", columnspan=2)

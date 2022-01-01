@@ -7,7 +7,7 @@ from config.configuration import *
 from Frames.Inventory.features.addNewProduct import addNewRecord
 
 class Window(Tk):
-    def __init__(self,name):
+    def __init__(self):
         super(Window,self).__init__()
         self.executing = False
         self.title("Inventory and sales")
@@ -17,8 +17,12 @@ class Window(Tk):
         self.minsize(1366,768)
         # self.maxsize(850,530)
         self.state('zoomed')
+
         #sets active database for user
-        self.activeDatabase=name 
+        # self.activeDatabase=name 
+        
+        #for testing phase only
+        self.activeDatabase = 'saiRecords'
 
         # Creates Notebook
         self.tab_control = ttk.Notebook(self)
