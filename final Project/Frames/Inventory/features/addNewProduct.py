@@ -110,6 +110,7 @@ def postRecord(self, inventory):
 
 
 def addNewRecord(self, inventory):
+    self.rownum = 0
     # getDateTime(self)
     try:
         self.displayFrame.destroy()
@@ -223,9 +224,9 @@ def addNewRecord(self, inventory):
     
     ucInnerFrame = Frame(ucOuterFrame, bg = '#ffffff')
     ucInnerFrame.pack(side='top', fill='both')
-    newRow.createNewRow(ucInnerFrame)
+    newRow.createNewRow(self,ucInnerFrame)
 
-    newRow_btn = Button(ucOuterFrame, text = 'Add New Row', command = lambda:newRow.countRows(ucInnerFrame,ucOuterFrame) )
+    newRow_btn = Button(ucOuterFrame, text = 'Add New Row', command = lambda:newRow.countRows(self,ucInnerFrame,ucOuterFrame) )
     newRow_btn.pack(side='bottom')
 
 
