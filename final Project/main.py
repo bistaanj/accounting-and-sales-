@@ -6,7 +6,7 @@ def main():
     # authUser = authentication.AuthUser()
     # authUser.mainloop()
 
-    mainframe = window.Window()
+    mainframe = window.Window("ramDB")
     mainframe.mainloop()
 
 main()
