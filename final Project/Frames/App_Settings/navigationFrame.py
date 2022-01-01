@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox,ttk
-import pymongo
 from config.dynamicSize import FR,WR,HR
+from Frames.supportingFunctions import getConnect
 
 def navigationFrame(self,tab):
     
@@ -11,10 +11,7 @@ def navigationFrame(self,tab):
     def configureSettingsData(key,value):
         self.UpdatePopUp.destroy()
 
-        ##For local Database storage
-        connection = pymongo.MongoClient('localhost',27017)
-        dbs = connection[self.activeDatabase]
-        collection = dbs['configuration']
+        collection = getConnect(self.activeDatabase,'configuration')
 
         ##For Cloud Atlas
         # client = MongoClient(
@@ -86,9 +83,7 @@ def navigationFrame(self,tab):
         try:
 
             ##For local database storage
-            connection = pymongo.MongoClient('localhost',27017)
-            dbs = connection[self.activeDatabase]
-            collection = dbs['configuration']
+            collection = getConnect(self.activeDatabase,'configuration')
 
             #For Cloud Atlas
             # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
@@ -96,7 +91,7 @@ def navigationFrame(self,tab):
             # collection = db.configuration
 
             sysData=collection.find_one({'_id': 'settingsData'})
-            connection.close()
+            # connection.close()
             receiverLabel = Label(self.displayFrame, text = " Send mail using :", font = ('Helvetica', int(FR*10),'bold'))
             receiverLabel.grid(row=0, column=0, padx=10, pady=10, sticky='w')
 

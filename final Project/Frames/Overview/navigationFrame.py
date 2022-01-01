@@ -1,8 +1,7 @@
 from tkinter import ttk
 from bson.objectid import ObjectId
 from config.dynamicSize import WR, FR, HR, fontToUse,nepaliDate
-from Frames.supportingFunctions import warnUser
-from Frames.getConnect import getConnect
+from Frames.supportingFunctions import warnUser,getConnect
 from pyBSDate import convert_BS_to_AD
 from pyBSDate import convert_AD_to_BS
 from tkinter import *

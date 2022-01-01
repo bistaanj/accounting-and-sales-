@@ -2,9 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import win32api
-import pymongo
-from Frames.supportingFunctions import warnUser,getDateTime
-from Frames.getConnect import getConnect
+from Frames.supportingFunctions import warnUser,getDateTime,getConnect
 from config.dynamicSize import FR,WR,HR
 
 # creates frame and buttons inside the Billing tab's Navigation Button
@@ -36,9 +34,9 @@ def checkoutOrders(self):
     productDetails = {}
     billingTotalAmount = 0
     productsInBill = {}
-    connection = pymongo.MongoClient("localhost", 27017)
-    database = connection[self.activeDatabase]
-    collection = database['inventory']
+    # connection = pymongo.MongoClient("localhost", 27017)
+    # database = connection[self.activeDatabase]
+    collection = getConnect(self.activeDatabase,'inventory')
     # amountFrame.grid(column = 0, row = 2)
     def getallOrders():
         allProducts = collection.find({"Order":{"$gt":0}})
@@ -198,7 +196,6 @@ def checkoutOrders(self):
             if (productToBill['Product Name'] in productsInBill.keys()):
                 self.executing = False
                 warnUser("Product Already in Bill")
-                print("Already in bill")
             else:
                 productTotal = int(salesPrice)*orderQuatity
                 productsInBill[productToBill['Product Name']] = {}
@@ -269,9 +266,7 @@ def checkoutOrders(self):
                     raise ValueError
                 panNumber = panNumberEntry.get()
                 ##For Local Storage
-                connection = pymongo.MongoClient("localhost", 27017)
-                database = connection[self.activeDatabase]
-                collection = database['inventory']
+                collection = getConnect(self.activeDatabase,'inventory')
                 for product in productsInBill:
                     orgValue = int((collection.find_one({'Product Name': product}))['Quantity'])
                     orgValue_sold = int((collection.find_one({'Product Name': product}))['Sold'])
@@ -281,12 +276,12 @@ def checkoutOrders(self):
                     {'$set':{
                         'Sold': (orgValue_sold+int(productsInBill[product]['Quantity'])),
                     }})
-                    collection = database['inventory']
+                    collection = getConnect(self.activeDatabase,'inventory')
                     collection.find_one_and_update({'Product Name': product},
                     {'$set':{
                         'Order': (orgValue_order-int(productsInBill[product]['Quantity'])),
                     }})
-                    panCol = database["panDetails"]
+                    panCol = getConnect(self.activeDatabase,"panDetails")
                     if not self.panExistsInDB:
                         if phnNumEntry.get() != "":
                             panCol.insert_one(
@@ -310,7 +305,6 @@ def checkoutOrders(self):
                 #Processing the products in bill '.' -> '?'
                 new_dict = {}
                 a= productsInBill
-                print(type(new_dict))
                 for items in a:
                     if '.' in items:
                         processed_string = items.replace('.', '?')
@@ -321,14 +315,13 @@ def checkoutOrders(self):
                 billDict['Products']=new_dict
                 billDict['Vatable'] = int(billingTotalAmount)
                 billDict['Grand Total'] = int(int(billingTotalAmount)+0.13*int(billingTotalAmount))
-                collection = database['sales']
-                print("bill saved to vat bill")
+                collection = getConnect(self.activeDatabase,'sales')
                 # collection = db.sales
 
                 res = collection.insert_one(billDict)
                 #Logic to Add value to daily Sales
                 # collection = db.dailySalesData
-                collection = database['dailySalesData']
+                collection = getConnect(self.activeDatabase,'dailySalesData')
                 dte = dateTime[0]
                 newValue = self.billingTotalAmount
                 if (collection.count_documents({'_id': dte}) > 0):

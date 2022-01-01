@@ -49,7 +49,6 @@ def updateInventory(self):
             a = quantity_entry.get()
             b = cp_entry.get()
             c = seller_entry.get()
-            print(a, b, c)
             dbsQuantityUpdate(a, b, c)
 
         def getAndUpdateUnitCostPrice(e=""):
@@ -123,8 +122,6 @@ def updateInventory(self):
                 {'_id': ObjectId(iid)}, {'Quantity': 1, 'Product Name': 1, '_id': 0})
             # connection.close()
             currentValue = databaseRow['Quantity']
-            print(type(currentValue))
-            print(type(grabbedValue))
 
             currentValue = int(currentValue)
             newValue = grabbedValue + currentValue
@@ -140,7 +137,6 @@ def updateInventory(self):
             nw = datetime.now()
             id = nw.strftime("%d%m%Y-%H%M%S")
 
-            print(iid)
             rawdata = {}
             rawdata['Quantity'] = quantity
             rawdata['CP'] = cp
@@ -176,10 +172,6 @@ def updateInventory(self):
             # for x in rawdata:
             #     print(rawdata[x])
 
-            for x in rawdata:
-                print(x)
-                print(rawdata[x])
-            rawdata
             warnUser("Value Updated")
             displaySearchResult()
         except ValueError:
@@ -258,11 +250,9 @@ def updateInventory(self):
 
     def displaySearchResult(event=""):
         searchResult = []
-        # print("Checking Search Result")
-        # print(searchResult)
+
         clearTree()
         searchValue = self.searchEntry.get()
-        # print(searchValue)
 
         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
         # db = client.get_database(self.activeDatabase)
@@ -283,7 +273,6 @@ def updateInventory(self):
 
         if (lenCheck == 0):
             warnUser("Product Not Found")
-            print("Warned !!!!!!!")
         else:
             showCondition = True
         if (showCondition == TRUE):
@@ -314,8 +303,7 @@ def updateInventory(self):
                 connection = pymongo.MongoClient("localhost", 27017)
                 database = connection[self.activeDatabase]
                 collection = database['inventory']
-                trans = collection.delete_one({'_id': ObjectId(iid)})
-                print(trans)
+                collection.delete_one({'_id': ObjectId(iid)})
                 messagebox.showinfo(
                     "Transaction Completed", "Product Removed Successfully")
                 connection.close()

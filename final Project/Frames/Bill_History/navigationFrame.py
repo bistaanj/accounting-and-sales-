@@ -1,11 +1,11 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import pymongo
 from bson.objectid import ObjectId
 from reportlab.pdfgen import canvas
 import webbrowser as wb
 from config.dynamicSize import FR,WR,HR
+from Frames.supportingFunctions import getConnect
 
 def navigationFrame(self, tab):
     self.displayFrame = Frame(tab)
@@ -46,13 +46,10 @@ def navigationFrame(self, tab):
             # collection = db.sales
 
             ##For Local Database Storage
-            connection = pymongo.MongoClient("localhost", 27017)
-            database = connection[self.activeDatabase]
-            collection = database['sales']
 
+            collection = getConnect(self.activeDatabase,'sales')
             data = collection.find_one({'_id': ObjectId(billId)})
-            connection.close()
-            print(data)
+            # connection.close()
             count = 0
             for rows in view_viewTree.get_children():
                 view_viewTree.delete(rows)
@@ -63,15 +60,10 @@ def navigationFrame(self, tab):
             self.billTotalLabel.config(text=data['Grand Total'])
 
             for vlue in (data['Products']):
-                print(vlue)
                 if "?" in vlue:
-                    print('inside  if statement')
                     processed_name=vlue.replace('?','.')
                 else:
-                    print('inside else statement')
                     processed_name=vlue
-                print(data['Products'][vlue]['iid'])
-                print()
                 view_viewTree.insert(parent='', index=END,
                                         iid=(data['Products'][vlue]['iid']), text=(count+1), values=(processed_name,
                                         data['Products'][vlue]['Quantity'],
@@ -117,9 +109,7 @@ def navigationFrame(self, tab):
                     searchFilter = 'i'
                     self.helpLabel.config(text='(Search Format : Name)')
                 #For Local database Storage
-                connection = pymongo.MongoClient("localhost", 27017)
-                database = connection[self.activeDatabase]
-                collection = database['sales']
+                collection = getConnect(self.activeDatabase,'sales')
 
                 ##For Cloud Atlas
                 # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
@@ -127,7 +117,7 @@ def navigationFrame(self, tab):
                 # collection = db.sales
 
                 result = collection.find({key: {'$regex': searchValue, '$options': searchFilter}})
-                connection.close()
+                # connection.close()
                 for x in result:
                     example.append(x['Customer Name'] + ' ------  ' + x['Date'] + '------' +  x['Contact Number'])
                     self.view_productId.append(x['_id'])
@@ -245,19 +235,14 @@ def navigationFrame(self, tab):
         billId = self.view_productId[billIndex]
 
         ##For Local Database Storage
-        connection = pymongo.MongoClient("localhost", 27017)
-        database = connection[self.activeDatabase]
-        collection = database['sales']
+        collection = getConnect(self.activeDatabase,'sales')
 
         ##For Cloud Atlas
         # client = MongoClient("mongodb+srv://rootUser:clouddbaccess@trialdbs.i4jhu.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
         # db = client.get_database(self.activeDatabase)
         # collection = db.sales
 
-
-
         data = collection.find_one({'_id': ObjectId(billId)})
-        connection.close()
 
         # Creating Canvas
         c = canvas.Canvas("bill.pdf", pagesize=(595,800), bottomup=0)
@@ -302,8 +287,6 @@ def navigationFrame(self, tab):
                 name=items
             c.drawString(x+50, y, name)
             qty = str(data['Products'][items]['Quantity'])
-
-            # print(data)
             c.drawCentredString(x+360, y, str(data['Products'][items]['Sales Price']))  #x+345
             c.drawCentredString(x+445, y, qty)
             c.drawCentredString(x+520, y, str(data['Products'][items]['Product Total']))
