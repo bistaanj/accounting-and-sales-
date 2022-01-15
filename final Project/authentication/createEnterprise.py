@@ -33,7 +33,9 @@ def addEnterprise(name, password,dbsKey):
         "receiver_email": "gmail@gmail.com",
         "sender_email": "gmail@gmail.com",
         "sender_password": "insertPassword",
-        "master_password": ps
+        "master_password": ps,
+        "fontToUse":"Helvetica",
+        "currentDateType":"AD"
         }
     collection.insert_one(configData)
     return(True)

@@ -2,7 +2,7 @@ from tkinter import messagebox, ttk
 from tkinter import *
 from warnings import resetwarnings
 from config.dynamicSize import FR, WR, HR
-from Frames.supportingFunctions import getDateTime,getConnect
+from Frames.supportingFunctions import getDateTime, getConnect
 import Frames.Billing.viewProductsInBill as viewProductsInBill
 import Frames.Billing.stockManager as sm
 
@@ -42,7 +42,7 @@ def completeBilling(self, viewTree):
             # db = client.get_database(self.activeDatabase)
             # collection = db.inventory
             # For Local Storage
-            collection = getConnect(self.activeDatabase,'inventory')
+            collection = getConnect(self.activeDatabase, 'inventory')
             for product in self.productsInBill:
                 orgValue = int((collection.find_one(
                     {'Product Name': product}))['Quantity'])
@@ -60,15 +60,15 @@ def completeBilling(self, viewTree):
                 para1 = self.productsInBill[product]['iid']
                 qnty = int(self.productsInBill[product]['Quantity'])
                 sp = self.productsInBill[product]['Sales Price']
-                sm.manageStock(para1, qnty, sp,self.activeDatabase)
+                sm.manageStock(para1, qnty, sp, self.activeDatabase)
 
                 if self.billing_method == 0:
-                    collection = getConnect(self.activeDatabase,'inventory')
+                    collection = getConnect(self.activeDatabase, 'inventory')
                     collection.find_one_and_update({'Product Name': product},
                                                    {'$set': {
                                                        'Sold': (orgValue_sold+int(self.productsInBill[product]['Quantity'])),
                                                    }})
-                    panCol = getConnect(self.activeDatabase,"panDetails")
+                    panCol = getConnect(self.activeDatabase, "panDetails")
                     if not self.panExistsInDB:
                         if phnNumEntry.get() != "":
                             panCol.insert_one(
@@ -85,7 +85,7 @@ def completeBilling(self, viewTree):
                                 {'_id': panNumber}, {'$set': {"Name": askEntry.get()}})
 
                 else:
-                    collection =getConnect(self.activeDatabase,'inventory')
+                    collection = getConnect(self.activeDatabase, 'inventory')
                     collection.find_one_and_update({'Product Name': product},
                                                    {'$set': {
                                                        'Order': (orgValue_order+int(self.productsInBill[product]['Quantity'])),
@@ -111,16 +111,16 @@ def completeBilling(self, viewTree):
                 billDict['Vatable'] = int(self.billingTotalAmount)
                 billDict['Grand Total'] = int(
                     int(self.billingTotalAmount)+0.13*int(self.billingTotalAmount))
-                collection = getConnect(self.activeDatabase,'sales')
+                collection = getConnect(self.activeDatabase, 'sales')
             else:
                 billDict['Grand Total'] = int(self.billingTotalAmount)
-                collection = getConnect(self.activeDatabase,'order')
+                collection = getConnect(self.activeDatabase, 'order')
             # collection = db.sales
 
             collection.insert_one(billDict)
             # Logic to Add value to daily Sales
             # collection = db.dailySalesData
-            collection = getConnect(self.activeDatabase,'dailySalesData')
+            collection = getConnect(self.activeDatabase, 'dailySalesData')
             dte = dateTime[0]
             newValue = self.billingTotalAmount
             if (collection.count_documents({'_id': dte}) > 0):
@@ -177,7 +177,8 @@ def completeBilling(self, viewTree):
                     else:
                         panNumberEntry.config(
                             highlightbackground="black", highlightcolor="black")
-                        panDetails = getConnect(self.activeDatabase, "panDetails")
+                        panDetails = getConnect(
+                            self.activeDatabase, "panDetails")
                         try:
                             result = panDetails.find_one({"_id": str(pan)})
                             try:
@@ -207,27 +208,27 @@ def completeBilling(self, viewTree):
             self.panExistsInDB = False
             if self.billing_method == 0:
                 panNumberLabel = Label(
-                    top, text="Pan number *", font=('Helvetica', int(FR*15), 'bold'))
+                    top, text="Pan number *", font=(self.fontToUse, int(FR*15), 'bold'))
                 panNumberLabel.grid(row=0, column=0, padx=5, pady=5)
 
                 panNumberEntry = Entry(top, width=int(
-                    WR*30), font=('Comic Sans MS', int(FR*15), 'bold'), highlightthickness=2)
+                    WR*30), font=(self.fontToUse, int(FR*15), 'bold'), highlightthickness=2)
                 panNumberEntry.grid(row=0, column=1, padx=5, pady=5)
                 panNumberEntry.bind('<KeyRelease>', validatePanNumber)
                 panNumberEntry.focus()
             askLablel = Label(top, text='Customer Name : ',
-                              font=('Helvetica', int(FR*15), 'bold'))
+                              font=(self.fontToUse, int(FR*15), 'bold'))
             askLablel.grid(row=1, column=0, padx=5, pady=5)
 
             askEntry = Entry(top, width=int(WR*30),
-                             font=('Comic Sans MS', int(FR*15), 'bold'), highlightthickness=2)
+                             font=(self.fontToUse, int(FR*15), 'bold'), highlightthickness=2)
             askEntry.grid(row=1, column=1, padx=5, pady=5)
             askEntry.bind('<Return>', saveBilltoDbs)
             phnNum = Label(top, text='Contact Number : ',
-                           font=('Helvetica', int(FR*15), 'bold'))
+                           font=(self.fontToUse, int(FR*15), 'bold'))
             phnNum.grid(row=2, column=0, padx=5, pady=5)
             phnNumEntry = Entry(top, width=int(
-                WR*30), font=('Comic Sans MS', int(FR*15), 'bold'), highlightthickness=2)
+                WR*30), font=(self.fontToUse, int(FR*15), 'bold'), highlightthickness=2)
             phnNumEntry.grid(row=2, column=1, padx=5, pady=5)
             phnNumEntry.bind('<KeyRelease>', validateNumber)
             if self.billing_method != 0:
@@ -236,7 +237,7 @@ def completeBilling(self, viewTree):
                 WR*12), command=saveBilltoDbs)
             btn.grid(row=3, column=0, columnspan=2, padx=5, pady=5)
             top.protocol("WM_DELETE_WINDOW", on_closing)
-            top.bind('<Return>',saveBilltoDbs)
+            top.bind('<Return>', saveBilltoDbs)
 
     # Bill Product's Quantity Edit Function
 
@@ -301,20 +302,20 @@ def applyDiscountProcess(self, viewTree):
         top.iconbitmap('./res/dsk.ico')
         top.geometry("+%d+%d" % (300, 300))
         discountSchemeLabel = Label(
-            top, text="Discount Scheme", font=('Helvetica', int(FR*15), 'bold'))
+            top, text="Discount Scheme", font=(self.fontToUse, int(FR*15), 'bold'))
         discountSchemeLabel.grid(row=0, column=0, padx=5, pady=10,)
 
         schemeType = ttk.Combobox(top, width=int(
-            WR*15), values=['Sales Price', 'Product Total'], font=('Comic Sans MS', int(FR*15), 'bold'))
+            WR*15), values=['Sales Price', 'Product Total'], font=(self.fontToUse, int(FR*15), 'bold'))
         schemeType.grid(row=0, column=1, padx=5, pady=10,)
         schemeType.current(0)
 
         quantityLabel = Label(top, text="Enter New Value",
-                              font=('Helvetica', int(FR*15), 'bold'))
+                              font=(self.fontToUse, int(FR*15), 'bold'))
         quantityLabel.grid(row=2, column=0, padx=5, pady=10,)
 
         discountedValue = Entry(top, width=int(
-            WR*15),  font=('Comic Sans MS', int(FR*15), 'bold'))
+            WR*15),  font=(self.fontToUse, int(FR*15), 'bold'))
         discountedValue.grid(row=2, column=1, padx=5, pady=10,)
         discountedValue.bind('<Return>', applyDiscounts)
 

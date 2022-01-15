@@ -23,7 +23,3 @@ def navigationFrame(self,tab):
     # mailButton = Button(displayFrame,text="Mail Details",command= callback)
     # mailButton.pack()
     
-    currneFontLabel = Label(self.displayFrame,text="Font")
-    currneFontLabel.grid()
-    changeFontButton = Button(self.displayFrame,text="Change")
-    changeFontButton.grid()

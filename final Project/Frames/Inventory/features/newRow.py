@@ -10,21 +10,21 @@ def createNewRow(self,frame):
     frameBox = Frame(frame, bg = '#ffffff')
     frameBox.grid(pady = int(HR*10))
     uom_label = Label(
-        frameBox, text=" UOM ", bg = "#ffffff", font = ('Comic Sans MS', int(FR*10)))
+        frameBox, text=" UOM ", bg = "#ffffff", font = (self.fontToUse, int(FR*10)))
     uom_label.grid(row = self.rownum,column = 0)
-    uom_entry = Entry(frameBox, border=0,bg='#CED7D7',font = ('Comic Sans MS', int(FR*10)))
+    uom_entry = Entry(frameBox, border=0,bg='#CED7D7',font = (self.fontToUse, int(FR*10)))
     uom_entry.grid(row = self.rownum,column = 1)
     
     bue_label = Label(
-        frameBox, text=" Base Unit Eqv. ", bg = "#ffffff", font = ('Comic Sans MS', int(FR*10)))
+        frameBox, text=" Base Unit Eqv. ", bg = "#ffffff", font = (self.fontToUse, int(FR*10)))
     bue_label.grid(row = self.rownum,column = 2)
-    bue_entry = Entry(frameBox, border=0,bg='#CED7D7',font = ('Comic Sans MS', int(FR*10)))
+    bue_entry = Entry(frameBox, border=0,bg='#CED7D7',font = (self.fontToUse, int(FR*10)))
     bue_entry.grid(row = self.rownum,column = 3)
 
     cpPerUnit_label = Label(
-        frameBox, text=" CP per Unit ", bg = "#ffffff", font = ('Comic Sans MS', int(FR*10)))
+        frameBox, text=" CP per Unit ", bg = "#ffffff", font = (self.fontToUse, int(FR*10)))
     cpPerUnit_label.grid(row = self.rownum,column = 4)
-    cp_entry = Entry(frameBox, border=0,bg='#CED7D7',font = ('Comic Sans MS', int(FR*10)))
+    cp_entry = Entry(frameBox, border=0,bg='#CED7D7',font = (self.fontToUse, int(FR*10)))
     cp_entry.grid(row = self.rownum,column = 5)
 
     def deleteRow():

@@ -23,7 +23,7 @@ def navigationFrame(self, tab):
     #                       ('pressed', '!focus', '#30353b'),
     #                       ('active', 'green')],
     #           )
-    self.btn_addProduct = Button(self.buttonFrame,background='#30353b', cursor='Hand2',font=('Helvetical', 15), border = 0 ,fg='white',text="Add New Product", command= lambda:addNewProduct.addNewRecord(self,tab))
+    self.btn_addProduct = Button(self.buttonFrame,background='#30353b', cursor='Hand2',font=(self.fontToUse, 15), border = 0 ,fg='white',text="Add New Product", command= lambda:addNewProduct.addNewRecord(self,tab))
     self.btn_addProduct.grid(column=0, row=1, pady=10)
 
     self.btn_update = ttk.Button(

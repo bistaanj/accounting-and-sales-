@@ -1,6 +1,6 @@
 from tkinter import ttk
 from bson.objectid import ObjectId
-from config.dynamicSize import WR, FR, HR, fontToUse,nepaliDate
+from config.dynamicSize import WR, FR, HR
 from Frames.supportingFunctions import warnUser,getConnect
 from pyBSDate import convert_BS_to_AD
 from pyBSDate import convert_AD_to_BS
@@ -11,7 +11,7 @@ from config.dynamicSize import nPDates,Y,M,D
 # Current date time in local system
 def navigationFrame(self, tab):
     def insertDate(e=""):
-        if nepaliDate:
+        if self.currentDateType == "BS":
             setTodayNepaliDate()
         else:
             today = datetime.date(datetime.now())
@@ -52,12 +52,12 @@ def navigationFrame(self, tab):
             text="Toal Stock Value =  Rs. "+str("{:.2f}".format(float(totalStockValue))))
 
     def getSelectedDateInAD(e=""):
-        if nepaliDate:
+        if self.currentDateType == "BS":
             y = nepaliYear.get()
             m = M.index(nepaliMonth.get())+1
             d = nepaliDay.get()
             res = convert_BS_to_AD(y,m,d)
-            temp = str(res[0])+str(res[1])+str(res[2])
+            temp = str(res[0])+('0'+str(res[1]) if res[1] < 10 else str[1])+str(res[2])
             return datetime.date(datetime.strptime(temp,"%Y%m%d"))
         else:
             return chooseEndDate.get_date()
@@ -202,7 +202,7 @@ def navigationFrame(self, tab):
         nepaliDay.insert(0,res[2])
 
     def selectedDate():
-        if nepaliDate:
+        if self.currentDateType == "BS":
             y = nepaliYear.get()
             m = nepaliMonth.get()
             d = nepaliDay.get()
@@ -214,7 +214,7 @@ def navigationFrame(self, tab):
     self.displayFrame.pack(fill='both')
 
     descLabel = Label(self.displayFrame,
-                      text="Overview of Stocks", font=(fontToUse, int(FR*20)))
+                      text="Overview of Stocks", font=(self.fontToUse, int(FR*20)))
     descLabel.pack()
     topFrame = Frame(self.displayFrame)
     topFrame.pack(side = 'top')
@@ -222,14 +222,14 @@ def navigationFrame(self, tab):
     bottomFrame.pack(side = 'bottom', pady = WR*20)
 
     fromLabel = Label(topFrame, text="Search Stock at ",
-                      font=(fontToUse, int(FR*10)))
+                      font=(self.fontToUse, int(FR*10)))
     fromLabel.grid(row=0, column=0, padx=5)
     
     todayDateButton = Button(topFrame, text="today", command=insertDate)
     findButton = Button(topFrame, text="Find", font=(
-        fontToUse, int(FR*11)), command=getDateAndShowToTable)
+        self.fontToUse, int(FR*11)), command=getDateAndShowToTable)
 
-    if nepaliDate:
+    if self.currentDateType == "BS":
         todayDateButton.grid(row=1, column=1,columnspan=6)
         Label(topFrame,text="Year").grid(row=0,column=1)
         nepaliYear = ttk.Combobox(topFrame,values=Y,width=5)
@@ -251,7 +251,7 @@ def navigationFrame(self, tab):
         findButton.grid(row=0, column=2, padx=5)
         # dateToShow = datetime.date(datetime.now())
 
-    descriptionLabel = Label(topFrame, text="The stock at the end of " + str(selectedDate()) + "  is:", font=(fontToUse, int(FR*15)))
+    descriptionLabel = Label(topFrame, text="The stock at the end of " + str(selectedDate()) + "  is:", font=(self.fontToUse, int(FR*15)))
     descriptionLabel.grid(columnspan=15, pady=12)
 
     tableFrame = Frame(self.displayFrame)
@@ -261,9 +261,9 @@ def navigationFrame(self, tab):
     
 
     stockAndStockValueLabel = Label(
-        tableFrame, text="Stock and Stock Value at particular date frame", font=(fontToUse, int(FR*12)))
+        tableFrame, text="Stock and Stock Value at particular date frame", font=(self.fontToUse, int(FR*12)))
     detailsOfStockLabel = Label(
-        detailsFrame, text="details of stock", font=(fontToUse, int(FR*12)))
+        detailsFrame, text="details of stock", font=(self.fontToUse, int(FR*12)))
     detailsOfStockLabel.grid(row=0, column=0)
 
     stockAndStockValueLabel.grid(row=0)
@@ -319,5 +319,5 @@ def navigationFrame(self, tab):
     
 
     totalStockValueLabel = Label(
-        bottomFrame, text="Toal Stock Value =  Rs. 0.00", font=(fontToUse, int(FR*15)))
+        bottomFrame, text="Toal Stock Value =  Rs. 0.00", font=(self.fontToUse, int(FR*15)))
     totalStockValueLabel.pack()

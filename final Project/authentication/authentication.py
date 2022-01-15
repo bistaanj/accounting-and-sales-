@@ -4,7 +4,6 @@ from tkinter import messagebox
 from datetime import datetime
 from tkinter import ttk
 from authentication import createEnterprise as ce
-
 import pymongo
 import smtplib
 from config.dynamicSize import FR, WR, HR
@@ -19,7 +18,6 @@ class AuthUser(Tk):
         self.iconbitmap('./res/dsk.ico')
         self.geometry('400x500')
         self.configure(bg='#ffffff')
-        
 
         self.minsize(400,400)
         self.maxsize(500,450)
