@@ -169,9 +169,11 @@ class AuthUser(Tk):
         dbs = connection['enterprise']
         collection = dbs['registeredEnterprise']
         capturedData = collection.find_one({'name':name, 'password': key})
+        print(len(capturedData['key']))
         
         try:
             self.activeDatabase= capturedData['key']
+            print(self.activeDatabase)
             
            # for online lisence authentication accessStatus is used
             accessStatus=1
@@ -181,8 +183,8 @@ class AuthUser(Tk):
                     window = Window.Window(self.activeDatabase)
                     window.mainloop()
                 
-            else:
-                raise ValueError
+                else:
+                    raise ValueError
         except ValueError:
             messagebox.showwarning("Access Denied", "Your Lisence is expired. Please Contact Developer. ")
             self.destroy()
