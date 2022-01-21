@@ -3,7 +3,7 @@ from tkinter import messagebox
 import Frames.Billing.viewProductsInBill as viewProductsInBill
 
 from config.dynamicSize import FR, WR, HR
-from Frames.supportingFunctions import warnUser,getConnect
+from Frames.supportingFunctions import warnUser, getConnect
 # New Add Product Funtion to add products in bill
 
 
@@ -59,7 +59,7 @@ def billingProcess(self, viewTree):
             except ValueError:
                 askSalesPriceEntry.delete(-1, 'end')
 
-        collection = getConnect(self.activeDatabase,'inventory')
+        collection = getConnect(self.activeDatabase, 'inventory')
         toadd = self.itemlistbox.get(ANCHOR)
 
         productToBill = collection.find_one({'Product Name': toadd})
@@ -73,25 +73,25 @@ def billingProcess(self, viewTree):
         top.iconbitmap('./res/dsk.ico')
         top.geometry("+%d+%d" % (400, 400))
         availableQuantity = Label(
-            top, text="Available Quantity", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
+            top, text="Available Quantity", padx=5, pady=5, font=(self.fontToUse, int(FR*15), 'bold'))
         availableQuantity.grid(row=0, column=0)
         displayAvailableQuantity = Label(top, text=(str(productToBill['Quantity'])+" " + str(
-            productToBill['Units'])), padx=5, pady=5, font=('Comic Sans MS', int(FR*15), 'bold'))
+            productToBill['Units'])), padx=5, pady=5, font=(self.fontToUse, int(FR*15), 'bold'))
         displayAvailableQuantity.grid(row=0, column=1)
 
         askQuantityLabel = Label(top, text="Enter Quantity", padx=5, pady=5, font=(
-            'Helvetica', int(FR*15), 'bold'))
+            self.fontToUse, int(FR*15), 'bold'))
         askQuantityLabel.grid(row=1, column=0)
 
         askQuantityEntry = Entry(top, width=int(
-            WR*10), font=('Comic Sans MS', int(FR*15), 'bold'))
+            WR*10), font=(self.fontToUse, int(FR*15), 'bold'))
         askQuantityEntry.grid(row=1, column=1)
 
         askSalesPriceLabel = Label(top, text="Sales Price", padx=5, pady=5, font=(
-            'Helvetica', int(FR*15), 'bold'))
+            self.fontToUse, int(FR*15), 'bold'))
         askSalesPriceLabel.grid(row=2, column=0)
         askSalesPriceEntry = Entry(top, width=int(
-            WR*10), font=('Comic Sans MS', int(FR*15), 'bold'))
+            WR*10), font=(self.fontToUse, int(FR*15), 'bold'))
         askSalesPriceEntry.insert(0, productToBill['Sales Price'])
         askSalesPriceEntry.grid(row=2, column=1)
         askSalesPriceEntry.bind("<KeyRelease>", validateSalesPrice)
@@ -112,6 +112,7 @@ def billingProcess(self, viewTree):
         self.executing = False
         messagebox.showerror(
             'Invalid Request', 'The selected product seems Out of Stock. Try adding the product in the inventory')
+
 
 def billingEditProcess(self, viewTree):
     def validateQuantity(e):
@@ -161,18 +162,18 @@ def billingEditProcess(self, viewTree):
             'Quantity': 1, '_id': 0})
         avalQuantity = float(rslt['Quantity'])
         availableQuantity = Label(
-            top, text="Available Quantity", padx=5, pady=5, font=('Helvetica', int(FR*15), 'bold'))
+            top, text="Available Quantity", padx=5, pady=5, font=(self.fontToUse, int(FR*15), 'bold'))
         availableQuantity.grid(row=0, column=0)
         displayAvailableQuantity = Label(
-            top, text=avalQuantity, padx=5, pady=5, font=('Comic Sans MS', int(FR*15), 'bold'))
+            top, text=avalQuantity, padx=5, pady=5, font=(self.fontToUse, int(FR*15), 'bold'))
         displayAvailableQuantity.grid(row=0, column=1)
 
         quantityLabel = Label(top, text="Enter New Quantity", padx=5, pady=5, font=(
-            'Helvetica', int(FR*15), 'bold'))
+            self.fontToUse, int(FR*15), 'bold'))
         quantityLabel.grid(row=1, column=0)
 
         quantityEntry = Entry(top, width=int(
-            WR*10),  font=('Comic Sans MS', int(FR*15), 'bold'))
+            WR*10),  font=(self.fontToUse, int(FR*15), 'bold'))
         quantityEntry.grid(row=1, column=1)
         quantityEntry.focus()
         quantityEntry.bind('<KeyRelease>', validateQuantity)

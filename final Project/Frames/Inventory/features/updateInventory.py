@@ -9,7 +9,6 @@ from config.dynamicSize import FR, WR, HR
 from Frames.supportingFunctions import warnUser, getUnitCostPrice
 
 
-
 def updateInventory(self):
     self.displayFrame.destroy()
     self.displayFrame = Frame(self.inventory, bg='#FFFFFF')
@@ -313,7 +312,7 @@ def updateInventory(self):
                 "Invalid Request", "Product Selection required")
 
     self.searchEntry = Entry(self.searchFrame, width=int(
-        WR*40), bg='#4F83FC', fg='#FFFFFF', border=0, font=('Comic Sans MS', int(FR*15)))
+        WR*40), bg='#4F83FC', fg='#FFFFFF', border=0, font=(self.fontToUse, int(FR*15)))
     self.searchEntry.grid(column=1, row=1, padx=10, pady=10, sticky="w")
     self.searchEntry.insert(0, 'search for...')
     self.searchEntry.bind('<FocusIn>', clearPlaceHolder)
@@ -321,14 +320,14 @@ def updateInventory(self):
     self.searchEntry.bind('<Return>', displaySearchResult)
 
     searchBtn = Button(self.searchFrame, text="GO", command=displaySearchResult,
-                       font=('Times New Roman', int(FR*18), 'bold', 'underline'), bg='#4F83FC', fg='#FFFFFF', border=0, cursor="hand2")
+                       font=(self.fontToUse, int(FR*18), 'bold', 'underline'), bg='#4F83FC', fg='#FFFFFF', border=0, cursor="hand2")
     searchBtn.grid(column=2, row=1, padx=10, pady=10, sticky="w")
 
     self.rsltFrame = Frame(self.displayFrame, bg='white')
     self.rsltFrame.pack()  # fill = 'both', side = 'left', anchor = S
 
     lb = Label(self.rsltFrame, text='Search Result', font=(
-        'Helvetica', int(FR*15), 'bold', 'underline'), bg='white')
+        self.fontToUse, int(FR*15), 'bold', 'underline'), bg='white')
     lb.pack(pady=20)
     # Table view starts from here
     viewTree = ttk.Treeview(self.rsltFrame, height=int(

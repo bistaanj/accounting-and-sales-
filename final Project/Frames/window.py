@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from datetime import datetime
 import tkinter.font as font
+import config.dynamicSize as dynamic
 from config.dynamicSize import FR,WR,HR
 from config.configuration import *
 from Frames.Inventory.features.addNewProduct import addNewRecord
@@ -10,6 +11,8 @@ class Window(Tk):
     def __init__(self,name):
         super(Window,self).__init__()
         self.executing = False
+        self.fontToUse = dynamic.getFontToUse(name)
+        self.currentDateType = dynamic.getCurrentDateType(name)
         self.title("Inventory and sales")
         self.iconbitmap('./res/dsk.ico')
         self.geometry('1366x768+0+0')
@@ -27,7 +30,8 @@ class Window(Tk):
         # Creates Notebook
         self.tab_control = ttk.Notebook(self)
         notebookstyle = ttk.Style()
-        notebookstyle.configure('TNotebook.Tab',font=('URW Gothic L', int(FR*15), 'bold'), padding=[10, 10])
+        # notebookstyle.configure('TNotebook.Tab',font=('URW Gothic L', int(FR*15), 'bold'), padding=[10, 10])
+        notebookstyle.configure('TNotebook.Tab',font=(self.fontToUse, int(FR*15), 'bold'), padding=[10, 10])
 
         #Creates Expense Tab
         self.inventory = Frame(self.tab_control, padx = 5, bg = "white" )
@@ -72,20 +76,12 @@ class Window(Tk):
         self.displayFrame.pack(fill = "both", side = "left")
 
         #Style Section for the widgets
-        self.myFont = font.Font(family='Helvetica', size=int(FR*20), weight='bold')
+        self.myFont = font.Font(family=self.fontToUse, size=int(FR*20), weight='bold')
 
         self.tab_control.select(self.inventory)
             
         addNewRecord(self,self.inventory)
 
         #Displays Inventory Page Initiallt
-
-
-    #Gets Date and time from system and initialize self.(date/time)
-    def getDateTime(self):
-        nw = datetime.now()
-        date = nw.strftime("%d/%m/%Y")
-        time = nw.strftime("%H:%M")
-        return (date,time)
 
     

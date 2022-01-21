@@ -4,7 +4,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from datetime import datetime
 from config.dynamicSize import HR, WR, FR
-from Frames.supportingFunctions import getUnitCostPrice,getConnect
+from Frames.supportingFunctions import getUnitCostPrice, getConnect
 from Frames.Inventory.features import newRow
 
 # creates widget inside Inventory Label Frame. Tab-> Inventory
@@ -55,9 +55,8 @@ def createRecord(self, inventory):
 def postRecord(self, inventory):
     self.capturedRecord = self.rawData
 
-    
     # uncomment this line for local storage
-    collection = getConnect(self.activeDatabase,'inventory')
+    collection = getConnect(self.activeDatabase, 'inventory')
 
     try:
         validate = collection.find_one(
@@ -76,7 +75,7 @@ def postRecord(self, inventory):
 
             inserted = collection.insert_one(self.rawData)
             ref_id = inserted.inserted_id
-            collection = getConnect(self.activeDatabase,'restock')
+            collection = getConnect(self.activeDatabase, 'restock')
             nw = datetime.now()
             id = nw.strftime("%d%m%Y-%H%M%S")
             ref_collection = {'_id': ref_id, 'PN': self.rawData['Product Name'],
@@ -85,15 +84,16 @@ def postRecord(self, inventory):
                 'CP': self.rawData['Cost Price']
             }}
             collection.insert_one(ref_collection)
-            collection = getConnect(self.activeDatabase,'presentStock')
+            collection = getConnect(self.activeDatabase, 'presentStock')
 
             ref_collection = {'_id': ref_id, 'PN': self.rawData['Product Name'],
                               'Stock': [{'Quantity': self.rawData['Quantity'], 'CP':self.rawData['Cost Price']}]
                               }
             collection.insert_one(ref_collection)
 
-            collection = getConnect(self.activeDatabase,'outStock')
-            ref_collection = {'_id':ref_id, 'PN': self.rawData['Product Name']}
+            collection = getConnect(self.activeDatabase, 'outStock')
+            ref_collection = {'_id': ref_id,
+                              'PN': self.rawData['Product Name']}
             collection.insert_one(ref_collection)
 
             # connection.close()
@@ -116,7 +116,6 @@ def addNewRecord(self, inventory):
         self.displayFrame.destroy()
     except:
         pass
-
 
     def validateCostPrice():
         try:
@@ -147,89 +146,95 @@ def addNewRecord(self, inventory):
     self.displayFrame.pack(fill="both", side="left")
     bgColor = '#FFFFFF'
     self.displayLabel = LabelFrame(self.displayFrame, text="Product Details",
-                                   bg=bgColor, font=('Helvetica', int(FR*30), 'bold', 'underline'), fg="#5A63F5", border=0, labelanchor='n')
+                                   bg=bgColor, font=(self.fontToUse, int(FR*30), 'bold', 'underline'), fg="#5A63F5", border=0, labelanchor='n')
     self.displayLabel.pack(fill="both", side="top", pady=20)
 
     s = ttk.Style()
-    s.configure('TLabel', font=('Helvetica', int(FR*12), 'bold'),
+    s.configure('TLabel', font=(self.fontToUse, int(FR*12), 'bold'),
                 background=bgColor, foreground='#BF0909')
     productNameLabel = ttk.Label(
         self.displayLabel, text="Product Name", style='TLabel')
     productNameLabel.grid(column=0, row=1, padx=15, sticky='w')
 
     productNameEntry = Entry(self.displayLabel, width=int(
-        WR*50), border=0, bg='#CED7D7', font=('Helvetica', int(FR*12), 'bold'))
-    productNameEntry.grid(column=1, row=1, padx= int(WR*10),
+        WR*50), border=0, bg='#CED7D7', font=(self.fontToUse, int(FR*12), 'bold'))
+    productNameEntry.grid(column=1, row=1, padx=int(WR*10),
                           pady=int(HR*10), sticky="w", columnspan=3)
 
     quantityLabel = ttk.Label(
         self.displayLabel, text="Quantity", style='TLabel')
-    quantityLabel.grid(column=0, row=2, padx= int(WR*10), pady=int(HR*10), sticky="w")
+    quantityLabel.grid(column=0, row=2, padx=int(
+        WR*10), pady=int(HR*10), sticky="w")
 
-    quantityEntry = Entry(self.displayLabel, width=int(WR*10), font=('Helvetica', int(FR*12), 'bold'),
+    quantityEntry = Entry(self.displayLabel, width=int(WR*10), font=(self.fontToUse, int(FR*12), 'bold'),
                           border=0, bg='#CED7D7')
-    quantityEntry.grid(column=1, row=2, padx= int(WR*10), pady=int(HR*10), sticky="w")
+    quantityEntry.grid(column=1, row=2, padx=int(
+        WR*10), pady=int(HR*10), sticky="w")
 
     pType = ttk.Label(self.displayLabel, text='Units', style='TLabel')
     pType.grid(column=2, row=2, padx=5, pady=int(HR*10))
 
     PtypeCombo = ttk.Combobox(self.displayLabel, background='#CED7D7', values=[
-                              'Pcs', 'Pkts', 'Liters', 'Bundle', 'Kgs', 'Meter', 'Other'], font=('Comic Sans MS', int(FR*10), 'bold'))
+                              'Pcs', 'Pkts', 'Liters', 'Bundle', 'Kgs', 'Meter', 'Other'], font=(self.fontToUse, int(FR*10), 'bold'))
     PtypeCombo.grid(column=3, row=2, padx=5, pady=int(HR*10), sticky="w")
 
     productCostLabel = ttk.Label(
         self.displayLabel, text="Cost Price", style='TLabel')
-    productCostLabel.grid(column=0, row=4,  padx= int(WR*10), pady=int(HR*10), sticky="w")
+    productCostLabel.grid(column=0, row=4,  padx=int(
+        WR*10), pady=int(HR*10), sticky="w")
 
     productCostEntry = Entry(self.displayLabel, width=int(
-        WR*20), border=0, bg='#CED7D7', font=('Helvetica', int(FR*12), 'bold'))
-    productCostEntry.grid(column=1, row=4,  padx= int(WR*10), pady=int(HR*10), sticky="w")
+        WR*20), border=0, bg='#CED7D7', font=(self.fontToUse, int(FR*12), 'bold'))
+    productCostEntry.grid(column=1, row=4,  padx=int(
+        WR*10), pady=int(HR*10), sticky="w")
     productCostEntry.bind('<KeyRelease>', showUnitCostPrice)
 
     productUnitCostLabel = Label(self.displayLabel, text="Unit Cost Price: Rs.0", font=(
-        'Helvetica', int(FR*14), 'bold'), background=bgColor, foreground='#BF0909')
-    productUnitCostLabel.grid(column=1, row=4, pady=int(HR*10), padx= int(WR*10), sticky="e")
+        self.fontToUse, int(FR*14), 'bold'), background=bgColor, foreground='#BF0909')
+    productUnitCostLabel.grid(column=1, row=4, pady=int(
+        HR*10), padx=int(WR*10), sticky="e")
     productSalesLabel = ttk.Label(
         self.displayLabel, text="Sales Price", style='TLabel')
-    productSalesLabel.grid(column=0, row=5,  padx= int(WR*10), pady=int(HR*10), sticky="w")
+    productSalesLabel.grid(column=0, row=5,  padx=int(
+        WR*10), pady=int(HR*10), sticky="w")
 
     productSalesEntry = Entry(self.displayLabel, width=int(
-        WR*20), border=0, bg='#CED7D7', font=('Helvetica', int(FR*12), 'bold'))
-    productSalesEntry.grid(column=1, row=5,  padx= int(WR*10), pady=int(HR*10), sticky="w")
+        WR*20), border=0, bg='#CED7D7', font=(self.fontToUse, int(FR*12), 'bold'))
+    productSalesEntry.grid(column=1, row=5,  padx=int(
+        WR*10), pady=int(HR*10), sticky="w")
 
     # locationLabel = ttk.Label(
     #     self.displayLabel, text='Location', style='TLabel')
     # locationLabel.grid(column=0, row=6, padx= int(WR*10), pady=int(HR*10), sticky="w")
 
-    # locationEntry = Entry(self.displayLabel, width = int(WR*20),border=0, bg='#CED7D7', font=('Helvetica', int(FR*12), 'bold'))
+    # locationEntry = Entry(self.displayLabel, width = int(WR*20),border=0, bg='#CED7D7', font=(self.fontToUse, int(FR*12), 'bold'))
     # locationEntry.grid(column=1, row=6, padx= int(WR*10), pady=int(HR*10), sticky="w")
 
     productDescriptionLabel = ttk.Label(
         self.displayLabel, text="Purchased From", style='TLabel')
     productDescriptionLabel.grid(
-        column=0, row=7,  padx= int(WR*10), pady=int(HR*10), sticky="w")
+        column=0, row=7,  padx=int(WR*10), pady=int(HR*10), sticky="w")
 
     productDescription = Entry(self.displayLabel, border=0, width=int(
-        WR*50), bg='#CED7D7', font=('Helvetica', int(FR*12), 'bold'))
-    productDescription.grid(column=1, row=7, padx= int(WR*10), pady=int(HR*10), sticky="w")
+        WR*50), bg='#CED7D7', font=(self.fontToUse, int(FR*12), 'bold'))
+    productDescription.grid(column=1, row=7, padx=int(
+        WR*10), pady=int(HR*10), sticky="w")
 
     productDescriptionLabel = Label(
-        self.displayLabel, text="Alternative Measures of Sales : ", bg = "#ffffff", fg ='grey', font = ('Comic Sans MS', int(FR*15), 'bold', 'underline'))
+        self.displayLabel, text="Alternative Measures of Sales : ", bg="#ffffff", fg='grey', font=(self.fontToUse, int(FR*15), 'bold', 'underline'))
     productDescriptionLabel.grid(
-        column=0, row=8,  padx= int(WR*10), pady=int(HR*15), sticky="w", columnspan= 2)
+        column=0, row=8,  padx=int(WR*10), pady=int(HR*15), sticky="w", columnspan=2)
 
-    
-    ucOuterFrame = Frame(self.displayLabel, bg = '#ffffff')
-    ucOuterFrame.grid(row = 9, column= 0, rowspan= 4, columnspan= 6)
-    
-    ucInnerFrame = Frame(ucOuterFrame, bg = '#ffffff')
+    ucOuterFrame = Frame(self.displayLabel, bg='#ffffff')
+    ucOuterFrame.grid(row=9, column=0, rowspan=4, columnspan=6)
+
+    ucInnerFrame = Frame(ucOuterFrame, bg='#ffffff')
     ucInnerFrame.pack(side='top', fill='both')
-    newRow.createNewRow(self,ucInnerFrame)
+    newRow.createNewRow(self, ucInnerFrame)
 
-    newRow_btn = Button(ucOuterFrame, text = 'Add New Row', command = lambda:newRow.countRows(self,ucInnerFrame,ucOuterFrame) )
+    newRow_btn = Button(ucOuterFrame, text='Add New Row', command=lambda: newRow.countRows(
+        self, ucInnerFrame, ucOuterFrame))
     newRow_btn.pack(side='bottom')
-
-
 
     # self.submit_record_btn = Button(self.displayLabel, cursor="hand2", text="Record", command=lambda: createRecord(self, inventory),
     #                                 font=('Times New Roman', int(FR*20)), bg='#648EF1', fg='#FFFFFF', border=0)
