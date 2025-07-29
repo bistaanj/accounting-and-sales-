@@ -1,6 +1,6 @@
 # Inventory and Sales Management System
 
-This folder (`final Project`) contains a **Python–based desktop application** for managing product inventories and sales transactions.  
+The folder (`final Project`) contains a **Python–based desktop application** for managing product inventories and sales transactions.  
 We have used [Tkinter](https://docs.python.org/3/library/tkinter.html) to build a graphical user interface and [MongoDB](https://www.mongodb.com/) as its back‑end database.  
 It includes modules for user/enterprise authentication, product inventory tracking, billing, backup/recovery, and settings customization.
 
