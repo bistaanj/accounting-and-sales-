@@ -42,6 +42,22 @@ It includes modules for user/enterprise authentication, product inventory tracki
 
 ---
 
+## 📥 Clone the Repository
+
+To clone this repository to your local machine, use the following command:
+
+```bash
+git clone https://github.com/bistaanj/accounting-and-sales-.git
+```
+
+Then navigate to the project folder:
+
+```bash
+cd accounting-and-sales-/final\ Project
+```
+
+---
+
 ## ⚙️ Requirements
 
 Install the dependencies listed in `requirements.txt`:
@@ -92,7 +108,7 @@ final Project/
 
 We are **not accepting external contributions**.  
 The project is provided as‑is for educational use, and there is no active maintenance or development roadmap.  
-This project can be used for personal and educational purpose and nothing beyond that. 
+This project can be used for personal and educational purpose and nothing beyond that.  
 If you discover any issue or would like to suggest an improvement, feel free to open an issue for discussion, but please be aware that pull requests may not be reviewed or merged.
 
 ---
